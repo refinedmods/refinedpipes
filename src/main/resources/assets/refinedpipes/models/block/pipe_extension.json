@@ -1,0 +1,346 @@
+{
+  "credit": "Made with Blockbench",
+  "textures": {
+    "0": "refinedpipes:blocks/glass",
+    "1": "refinedpipes:blocks/pipe",
+    "particle": "refinedpipes:blocks/pipe"
+  },
+  "elements": [
+    {
+      "name": "Glass Core Extension",
+      "from": [
+        5,
+        5,
+        0
+      ],
+      "to": [
+        11,
+        11,
+        5
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            0.5,
+            1,
+            5.5,
+            7
+          ],
+          "texture": "#0"
+        },
+        "south": {
+          "uv": [
+            0.5,
+            1,
+            5.5,
+            7
+          ],
+          "texture": "#0"
+        },
+        "west": {
+          "uv": [
+            0.5,
+            1,
+            5.5,
+            7
+          ],
+          "texture": "#0"
+        },
+        "up": {
+          "uv": [
+            0.5,
+            1,
+            6.5,
+            6
+          ],
+          "texture": "#0"
+        },
+        "down": {
+          "uv": [
+            0.5,
+            1,
+            6.5,
+            6
+          ],
+          "texture": "#0"
+        }
+      }
+    },
+    {
+      "name": "Horizontal Line Extension 1",
+      "from": [
+        4,
+        11,
+        0
+      ],
+      "to": [
+        5,
+        12,
+        4
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            6,
+            1,
+            7
+          ],
+          "texture": "#1"
+        },
+        "east": {
+          "uv": [
+            0,
+            6,
+            4,
+            7
+          ],
+          "texture": "#1"
+        },
+        "south": {
+          "uv": [
+            0,
+            6,
+            1,
+            7
+          ],
+          "texture": "#1"
+        },
+        "west": {
+          "uv": [
+            0,
+            6,
+            4,
+            7
+          ],
+          "texture": "#1"
+        },
+        "up": {
+          "uv": [
+            0,
+            6,
+            4,
+            7
+          ],
+          "texture": "#1"
+        },
+        "down": {
+          "uv": [
+            0,
+            6,
+            4,
+            7
+          ],
+          "texture": "#1"
+        }
+      }
+    },
+    {
+      "name": "Horizontal Line Extension 2",
+      "from": [
+        4,
+        4,
+        0
+      ],
+      "to": [
+        5,
+        5,
+        4
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            6,
+            1,
+            7
+          ],
+          "texture": "#1"
+        },
+        "east": {
+          "uv": [
+            0,
+            6,
+            4,
+            7
+          ],
+          "texture": "#1"
+        },
+        "south": {
+          "uv": [
+            0,
+            6,
+            1,
+            7
+          ],
+          "texture": "#1"
+        },
+        "west": {
+          "uv": [
+            0,
+            6,
+            4,
+            7
+          ],
+          "texture": "#1"
+        },
+        "up": {
+          "uv": [
+            0,
+            6,
+            4,
+            7
+          ],
+          "texture": "#1"
+        },
+        "down": {
+          "uv": [
+            0,
+            6,
+            4,
+            7
+          ],
+          "texture": "#1"
+        }
+      }
+    },
+    {
+      "name": "Horizontal Line Extension 3",
+      "from": [
+        11,
+        4,
+        0
+      ],
+      "to": [
+        12,
+        5,
+        4
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            6,
+            1,
+            7
+          ],
+          "texture": "#1"
+        },
+        "east": {
+          "uv": [
+            0,
+            6,
+            4,
+            7
+          ],
+          "texture": "#1"
+        },
+        "south": {
+          "uv": [
+            0,
+            6,
+            1,
+            7
+          ],
+          "texture": "#1"
+        },
+        "west": {
+          "uv": [
+            0,
+            6,
+            4,
+            7
+          ],
+          "texture": "#1"
+        },
+        "up": {
+          "uv": [
+            0,
+            6,
+            4,
+            7
+          ],
+          "texture": "#1"
+        },
+        "down": {
+          "uv": [
+            0,
+            6,
+            4,
+            7
+          ],
+          "texture": "#1"
+        }
+      }
+    },
+    {
+      "name": "Horizontal Line Extension 4",
+      "from": [
+        11,
+        11,
+        0
+      ],
+      "to": [
+        12,
+        12,
+        4
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            6,
+            1,
+            7
+          ],
+          "texture": "#1"
+        },
+        "east": {
+          "uv": [
+            0,
+            6,
+            4,
+            7
+          ],
+          "texture": "#1"
+        },
+        "south": {
+          "uv": [
+            0,
+            6,
+            1,
+            7
+          ],
+          "texture": "#1"
+        },
+        "west": {
+          "uv": [
+            0,
+            6,
+            4,
+            7
+          ],
+          "texture": "#1"
+        },
+        "up": {
+          "uv": [
+            0,
+            6,
+            4,
+            7
+          ],
+          "texture": "#1"
+        },
+        "down": {
+          "uv": [
+            0,
+            6,
+            4,
+            7
+          ],
+          "texture": "#1"
+        }
+      }
+    }
+  ]
+}
