@@ -1,0 +1,135 @@
+buildscript {
+    repositories {
+        maven { url = 'https://files.minecraftforge.net/maven' }
+        jcenter()
+        mavenCentral()
+    }
+    dependencies {
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
+    }
+}
+
+apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'eclipse'
+apply plugin: 'maven-publish'
+
+version = '0.1'
+def env = System.getenv()
+if (env.BUILD_NUMBER) {
+    version = version + "+" + "${env.BUILD_NUMBER}"
+}
+group = 'com.raoulvdberge'
+archivesBaseName = 'refinedpipes'
+
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
+
+minecraft {
+    mappings channel: 'snapshot', version: '20190719-1.14.3'
+
+    runs {
+        client {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+            property 'forge.logging.console.level', 'debug'
+            mods {
+                refinedpipes {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        server {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+            property 'forge.logging.console.level', 'debug'
+            mods {
+                refinedpipes {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        data {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+            property 'forge.logging.console.level', 'debug'
+            args '--mod', 'refinedpipes', '--all', '--output', file('src/generated/resources/')
+            mods {
+                refinedpipes {
+                    source sourceSets.main
+                }
+            }
+        }
+    }
+}
+
+processResources {
+    inputs.property 'version', project.version
+
+    from(sourceSets.main.resources.srcDirs) {
+        include 'META-INF/mods.toml'
+
+        expand 'version': project.version
+    }
+
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'META-INF/mods.toml'
+    }
+}
+
+dependencies {
+    minecraft 'net.minecraftforge:forge:1.14.4-28.1.70'
+}
+
+jar {
+    manifest {
+        attributes([
+                "Specification-Title"     : "refinedpipes",
+                "Specification-Vendor"    : "raoulvdberge",
+                "Specification-Version"   : "1",
+                "Implementation-Title"    : project.name,
+                "Implementation-Version"  : "${version}",
+                "Implementation-Vendor"   : "raoulvdberge",
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
+    }
+}
+
+jar.finalizedBy('reobfJar')
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task deobfJar(type:Jar) {
+    from sourceSets.main.output
+    classifier 'deobf'
+}
+
+artifacts {
+    archives jar
+    archives sourcesJar
+    archives deobfJar
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId = project.group
+            artifactId = project.archivesBaseName
+            version = project.version
+            artifact jar
+            artifact sourcesJar
+            artifact deobfJar
+        }
+    }
+}
+
+publishing {
+    repositories {
+        maven {
+            url "/var/www/repo"
+        }
+    }
+}
