@@ -1,6 +1,7 @@
 package com.raoulvdberge.refinedpipes.network;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
@@ -32,6 +33,10 @@ public class Pipe {
         return network;
     }
 
+    public void setNetwork(Network network) {
+        this.network = network;
+    }
+
     public void joinNetwork(Network network) {
         this.network = network;
 
@@ -51,6 +56,18 @@ public class Pipe {
     private void updateBlock() {
         BlockState state = world.getBlockState(pos);
         world.notifyBlockUpdate(pos, state, state, 1 | 2);
+    }
+
+    public CompoundNBT writeToNbt(CompoundNBT tag) {
+        tag.putLong("pos", pos.toLong());
+
+        return tag;
+    }
+
+    public static Pipe fromNbt(World world, CompoundNBT tag) {
+        BlockPos pos = BlockPos.fromLong(tag.getLong("pos"));
+
+        return new Pipe(world, pos);
     }
 
     @Override

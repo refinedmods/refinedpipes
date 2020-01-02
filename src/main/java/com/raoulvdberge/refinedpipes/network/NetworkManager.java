@@ -3,11 +3,14 @@ package com.raoulvdberge.refinedpipes.network;
 import com.raoulvdberge.refinedpipes.RefinedPipes;
 import com.raoulvdberge.refinedpipes.network.graph.NetworkGraphScannerResult;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.INBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.WorldSavedData;
+import net.minecraftforge.common.util.Constants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -25,32 +28,39 @@ public class NetworkManager extends WorldSavedData {
     public static NetworkManager get(ServerWorld world) {
         String name = NAME + "_" + world.getDimension().getType().getRegistryName().getNamespace() + "_" + world.getDimension().getType().getRegistryName().getPath();
 
-        return world.getSavedData().getOrCreate(() -> new NetworkManager(name), name);
+        return world.getSavedData().getOrCreate(() -> new NetworkManager(name, world), name);
     }
 
-    private final Set<Network> networks = new HashSet<>();
+    private final World world;
+    private final Map<String, Network> networks = new HashMap<>();
     private final Map<BlockPos, Pipe> pipes = new HashMap<>();
 
-    public NetworkManager(String name) {
+    public NetworkManager(String name, World world) {
         super(name);
+
+        this.world = world;
     }
 
     public void addNetwork(Network network) {
-        if (!networks.add(network)) {
+        if (networks.containsKey(network.getId())) {
             throw new RuntimeException("Duplicate network " + network.getId());
         }
+
+        networks.put(network.getId(), network);
 
         LOGGER.debug("Network {} created", network.getId());
 
         markDirty();
     }
 
-    public void removeNetwork(Network network) {
-        if (!networks.remove(network)) {
-            throw new RuntimeException("Network " + network.getId() + " not found");
+    public void removeNetwork(String id) {
+        if (!networks.containsKey(id)) {
+            throw new RuntimeException("Network " + id + " not found");
         }
 
-        LOGGER.debug("Network {} removed", network.getId());
+        networks.remove(id);
+
+        LOGGER.debug("Network {} removed", id);
 
         markDirty();
     }
@@ -84,7 +94,7 @@ public class NetworkManager extends WorldSavedData {
 
         while (networks.hasNext()) {
             // Remove all the other networks.
-            removeNetwork(networks.next());
+            removeNetwork(networks.next().getId());
         }
 
         mainNetwork.scanGraph(world, pos);
@@ -175,7 +185,7 @@ public class NetworkManager extends WorldSavedData {
         } else {
             LOGGER.debug("Removing empty network {}", originPipe.getNetwork().getId());
 
-            removeNetwork(originPipe.getNetwork());
+            removeNetwork(originPipe.getNetwork().getId());
         }
     }
 
@@ -211,13 +221,41 @@ public class NetworkManager extends WorldSavedData {
         return pipes.get(pos);
     }
 
-    @Override
-    public void read(CompoundNBT nbt) {
-
+    @Nullable
+    public Network getNetwork(String id) {
+        return networks.get(id);
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT compound) {
-        return new CompoundNBT();
+    public void read(CompoundNBT tag) {
+        ListNBT pipes = tag.getList("pipes", Constants.NBT.TAG_COMPOUND);
+        for (INBT item : pipes) {
+            Pipe pipe = Pipe.fromNbt(world, (CompoundNBT) item);
+
+            this.pipes.put(pipe.getPos(), pipe);
+        }
+
+        ListNBT nets = tag.getList("networks", Constants.NBT.TAG_COMPOUND);
+        for (INBT item : nets) {
+            Network network = Network.fromNbt(this, (CompoundNBT) item);
+
+            networks.put(network.getId(), network);
+        }
+
+        LOGGER.debug("Read {} pipes", pipes.size());
+        LOGGER.debug("Read {} networks", networks.size());
+    }
+
+    @Override
+    public CompoundNBT write(CompoundNBT tag) {
+        ListNBT pipes = new ListNBT();
+        this.pipes.values().forEach(p -> pipes.add(p.writeToNbt(new CompoundNBT())));
+        tag.put("pipes", pipes);
+
+        ListNBT networks = new ListNBT();
+        this.networks.values().forEach(n -> networks.add(n.writeToNbt(new CompoundNBT())));
+        tag.put("networks", networks);
+
+        return tag;
     }
 }

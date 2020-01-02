@@ -16,6 +16,10 @@ public class NetworkGraph {
         this.network = network;
     }
 
+    public Set<Pipe> getPipes() {
+        return pipes;
+    }
+
     public NetworkGraphScannerResult scan(World originWorld, BlockPos originPos) {
         NetworkGraphScanner scanner = new NetworkGraphScanner(pipes);
 

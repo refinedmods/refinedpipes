@@ -62,7 +62,11 @@ public class PipeTileEntity extends TileEntity implements ITickableTileEntity {
         super.validate();
 
         if (!world.isRemote) {
-            NetworkManager.get(world).addPipe(new Pipe(world, pos));
+            NetworkManager mgr = NetworkManager.get(world);
+
+            if (mgr.getPipe(pos) == null) {
+                mgr.addPipe(new Pipe(world, pos));
+            }
         }
     }
 
