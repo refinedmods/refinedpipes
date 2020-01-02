@@ -1,7 +1,7 @@
 package com.raoulvdberge.refinedpipes.network;
 
 import com.raoulvdberge.refinedpipes.network.graph.NetworkGraph;
-import com.raoulvdberge.refinedpipes.network.graph.NetworkGraphScanner;
+import com.raoulvdberge.refinedpipes.network.graph.NetworkGraphScannerResult;
 import com.raoulvdberge.refinedpipes.render.Color;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -15,6 +15,7 @@ public class Network {
 
     public Network() {
         Random r = new Random();
+
         this.id = generateRandomString(r, 4);
         this.color = new Color(
             r.nextInt(255) + 1,
@@ -31,7 +32,7 @@ public class Network {
         return color;
     }
 
-    public NetworkGraphScanner scanGraph(World originWorld, BlockPos originPos) {
+    public NetworkGraphScannerResult scanGraph(World originWorld, BlockPos originPos) {
         return graph.scan(originWorld, originPos);
     }
 

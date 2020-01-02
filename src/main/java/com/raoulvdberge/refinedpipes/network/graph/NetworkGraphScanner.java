@@ -24,8 +24,24 @@ public class NetworkGraphScanner {
         this.removedPipes.addAll(currentPipes);
     }
 
-    public void scanAt(World world, BlockPos pos) {
+    public NetworkGraphScannerResult scanAt(World world, BlockPos pos) {
+        requests.add(new NetworkGraphScannerRequest(world, pos));
+
+        NetworkGraphScannerRequest request;
+        while ((request = requests.poll()) != null) {
+            singleScanAt(request.getWorld(), request.getPos());
+        }
+
+        return new NetworkGraphScannerResult(
+            foundPipes,
+            newPipes,
+            removedPipes
+        );
+    }
+
+    private void singleScanAt(World world, BlockPos pos) {
         Pipe pipe = NetworkManager.get(world).getPipe(pos);
+
         if (pipe != null) {
             if (foundPipes.add(pipe)) {
                 if (!currentPipes.contains(pipe)) {
@@ -42,21 +58,5 @@ public class NetworkGraphScanner {
                 }
             }
         }
-    }
-
-    public Queue<NetworkGraphScannerRequest> getRequests() {
-        return requests;
-    }
-
-    public Set<Pipe> getFoundPipes() {
-        return foundPipes;
-    }
-
-    public Set<Pipe> getNewPipes() {
-        return newPipes;
-    }
-
-    public Set<Pipe> getRemovedPipes() {
-        return removedPipes;
     }
 }

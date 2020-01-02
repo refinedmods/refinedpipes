@@ -71,7 +71,7 @@ public class PipeTileEntity extends TileEntity implements ITickableTileEntity {
         super.remove();
 
         if (!world.isRemote) {
-            NetworkManager.get(world).removePipe(new Pipe(world, pos));
+            NetworkManager.get(world).removePipe(pos);
         }
     }
 

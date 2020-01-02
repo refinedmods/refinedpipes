@@ -16,21 +16,16 @@ public class NetworkGraph {
         this.network = network;
     }
 
-    public NetworkGraphScanner scan(World originWorld, BlockPos originPos) {
+    public NetworkGraphScannerResult scan(World originWorld, BlockPos originPos) {
         NetworkGraphScanner scanner = new NetworkGraphScanner(pipes);
 
-        scanner.getRequests().add(new NetworkGraphScannerRequest(originWorld, originPos));
+        NetworkGraphScannerResult result = scanner.scanAt(originWorld, originPos);
 
-        NetworkGraphScannerRequest request;
-        while ((request = scanner.getRequests().poll()) != null) {
-            scanner.scanAt(request.getWorld(), request.getPos());
-        }
+        this.pipes = result.getFoundPipes();
 
-        this.pipes = scanner.getFoundPipes();
+        result.getNewPipes().forEach(p -> p.joinNetwork(network));
+        result.getRemovedPipes().forEach(Pipe::leaveNetwork);
 
-        scanner.getNewPipes().forEach(p -> p.joinNetwork(network));
-        scanner.getRemovedPipes().forEach(Pipe::leaveNetwork);
-
-        return scanner;
+        return result;
     }
 }
