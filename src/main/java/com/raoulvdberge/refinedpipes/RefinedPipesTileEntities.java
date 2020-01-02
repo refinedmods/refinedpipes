@@ -1,10 +1,10 @@
 package com.raoulvdberge.refinedpipes;
 
-import com.raoulvdberge.refinedpipes.tile.PipeTile;
+import com.raoulvdberge.refinedpipes.tile.PipeTileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.registries.ObjectHolder;
 
-public class RefinedPipesTiles {
+public class RefinedPipesTileEntities {
     @ObjectHolder(RefinedPipes.ID + ":pipe")
-    public static final TileEntityType<PipeTile> PIPE = null;
+    public static final TileEntityType<PipeTileEntity> PIPE = null;
 }

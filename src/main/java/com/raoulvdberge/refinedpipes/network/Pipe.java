@@ -1,11 +1,16 @@
 package com.raoulvdberge.refinedpipes.network;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Objects;
 
 public class Pipe {
+    private static final Logger LOGGER = LogManager.getLogger(Pipe.class);
+
     private final World world;
     private final BlockPos pos;
     private Network network;
@@ -29,12 +34,23 @@ public class Pipe {
 
     public void joinNetwork(Network network) {
         this.network = network;
-        System.out.println(pos + " joined network " + network.getId());
+
+        LOGGER.debug(pos + " joined network " + network.getId());
+
+        updateBlock();
     }
 
     public void leaveNetwork() {
-        System.out.println(pos + " left network " + network.getId());
+        LOGGER.debug(pos + " left network " + network.getId());
+
         this.network = null;
+
+        updateBlock();
+    }
+
+    private void updateBlock() {
+        BlockState state = world.getBlockState(pos);
+        world.notifyBlockUpdate(pos, state, state, 1 | 2);
     }
 
     @Override

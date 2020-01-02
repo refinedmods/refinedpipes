@@ -1,7 +1,7 @@
 package com.raoulvdberge.refinedpipes.block;
 
 import com.raoulvdberge.refinedpipes.RefinedPipes;
-import com.raoulvdberge.refinedpipes.tile.PipeTile;
+import com.raoulvdberge.refinedpipes.tile.PipeTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
@@ -52,7 +52,7 @@ public class PipeBlock extends Block {
     @Nullable
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return new PipeTile();
+        return new PipeTileEntity();
     }
 
     @Override
@@ -111,18 +111,18 @@ public class PipeBlock extends Block {
         return shape;
     }
 
-    private boolean hasNode(IWorld world, BlockPos pos, Direction direction) {
+    private static boolean hasConnection(IWorld world, BlockPos pos, Direction direction) {
         return world.getBlockState(pos.offset(direction)).getBlock() instanceof PipeBlock ||
             world.getTileEntity(pos.offset(direction)) instanceof ChestTileEntity;
     }
 
-    private BlockState getState(BlockState currentState, IWorld world, BlockPos pos) {
-        boolean north = hasNode(world, pos, Direction.NORTH);
-        boolean east = hasNode(world, pos, Direction.EAST);
-        boolean south = hasNode(world, pos, Direction.SOUTH);
-        boolean west = hasNode(world, pos, Direction.WEST);
-        boolean up = hasNode(world, pos, Direction.UP);
-        boolean down = hasNode(world, pos, Direction.DOWN);
+    private static BlockState getState(BlockState currentState, IWorld world, BlockPos pos) {
+        boolean north = hasConnection(world, pos, Direction.NORTH);
+        boolean east = hasConnection(world, pos, Direction.EAST);
+        boolean south = hasConnection(world, pos, Direction.SOUTH);
+        boolean west = hasConnection(world, pos, Direction.WEST);
+        boolean up = hasConnection(world, pos, Direction.UP);
+        boolean down = hasConnection(world, pos, Direction.DOWN);
 
         return currentState
             .with(NORTH, north)

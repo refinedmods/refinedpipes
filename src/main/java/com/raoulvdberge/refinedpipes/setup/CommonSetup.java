@@ -4,7 +4,7 @@ import com.raoulvdberge.refinedpipes.RefinedPipes;
 import com.raoulvdberge.refinedpipes.RefinedPipesBlocks;
 import com.raoulvdberge.refinedpipes.block.PipeBlock;
 import com.raoulvdberge.refinedpipes.item.BlockItemBase;
-import com.raoulvdberge.refinedpipes.tile.PipeTile;
+import com.raoulvdberge.refinedpipes.tile.PipeTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntityType;
@@ -23,7 +23,7 @@ public class CommonSetup {
     }
 
     @SubscribeEvent
-    public void onRegisterTiles(RegistryEvent.Register<TileEntityType<?>> e) {
-        e.getRegistry().register(TileEntityType.Builder.create(() -> new PipeTile(), RefinedPipesBlocks.PIPE).build(null).setRegistryName(RefinedPipes.ID, "pipe"));
+    public void onRegisterTileEntities(RegistryEvent.Register<TileEntityType<?>> e) {
+        e.getRegistry().register(TileEntityType.Builder.create(() -> new PipeTileEntity(), RefinedPipesBlocks.PIPE).build(null).setRegistryName(RefinedPipes.ID, "pipe"));
     }
 }

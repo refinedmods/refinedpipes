@@ -8,12 +8,15 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.WorldSavedData;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import java.util.*;
 
 public class NetworkManager extends WorldSavedData {
     private static final String NAME = RefinedPipes.ID + "_networks";
+    private static final Logger LOGGER = LogManager.getLogger(NetworkManager.class);
 
     public static NetworkManager get(World world) {
         return get((ServerWorld) world);
@@ -36,13 +39,15 @@ public class NetworkManager extends WorldSavedData {
     }
 
     public void addNetwork(Network network) {
-        System.out.println("Network created " + network.getId());
+        LOGGER.debug("Network created " + network.getId());
+
         networks.add(network);
         markDirty();
     }
 
     public void addPipe(Pipe pipe) {
-        System.out.println("Pipe added @ " + pipe.getPos());
+        LOGGER.debug("Pipe added @ " + pipe.getPos());
+
         pipes.put(pipe.getPos(), pipe);
         markDirty();
 
@@ -106,7 +111,8 @@ public class NetworkManager extends WorldSavedData {
     }
 
     public void removePipe(Pipe pipe) {
-        System.out.println("Pipe removed @ " + pipe.getPos());
+        LOGGER.debug("Pipe removed @ " + pipe.getPos());
+
         pipes.remove(pipe.getPos());
         markDirty();
 
@@ -142,7 +148,8 @@ public class NetworkManager extends WorldSavedData {
     }
 
     public void removeNetwork(Network network) {
-        System.out.println("Network removed " + network.getId());
+        LOGGER.debug("Network removed " + network.getId());
+
         networks.remove(network);
         markDirty();
     }
