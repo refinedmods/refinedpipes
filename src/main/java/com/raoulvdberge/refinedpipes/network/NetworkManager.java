@@ -130,30 +130,33 @@ public class NetworkManager extends WorldSavedData {
     }
 
     private void splitNetworks(Pipe originPipe) {
+        // Sanity checks
+        for (Pipe adjacent : findAdjacentPipes(originPipe.getPos())) {
+            if (adjacent.getNetwork() == null) {
+                throw new RuntimeException("Adjacent pipe has no network");
+            }
+
+            if (originPipe.getNetwork() != originPipe.getNetwork()) {
+                throw new RuntimeException("The origin pipe network is different than the adjacent pipe network");
+            }
+        }
+
         // We can assume all adjacent pipes shared the same network with the removed pipe.
         // That means it doesn't matter which pipe network we use for splitting, we'll take the first found one.
         Pipe otherPipeInNetwork = findFirstAdjacentPipe(originPipe.getPos());
 
         if (otherPipeInNetwork != null) {
-            if (otherPipeInNetwork.getNetwork() == null) {
-                throw new RuntimeException("Pipe network is null!");
-            }
-
-            if (otherPipeInNetwork.getNetwork() != originPipe.getNetwork()) {
-                throw new RuntimeException("The origin pipe network is different than the adjacent pipe network");
-            }
-
             NetworkGraphScannerResult result = otherPipeInNetwork.getNetwork().scanGraph(
                 otherPipeInNetwork.getWorld(),
                 otherPipeInNetwork.getPos()
             );
 
-            // Only for validation purposes.
+            // For sanity checking
             boolean foundRemovedPipe = false;
 
             for (Pipe removed : result.getRemovedPipes()) {
                 // It's obvious that our removed pipe is removed.
-                // We don't want to create a new network for this one.
+                // We don't want to create a new splitted network for this one.
                 if (removed.getPos().equals(originPipe.getPos())) {
                     foundRemovedPipe = true;
                     continue;
