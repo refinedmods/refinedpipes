@@ -39,58 +39,79 @@ public class NetworkManager extends WorldSavedData {
     }
 
     public void addNetwork(Network network) {
-        LOGGER.debug("Network created " + network.getId());
+        if (!networks.add(network)) {
+            throw new RuntimeException("Duplicate network " + network.getId());
+        }
 
-        networks.add(network);
+        LOGGER.debug("Network {} created", network.getId());
+
         markDirty();
+    }
+
+    public void removeNetwork(Network network) {
+        if (!networks.remove(network)) {
+            throw new RuntimeException("Network " + network.getId() + " not found");
+        }
+
+        LOGGER.debug("Network {} removed", network.getId());
+
+        markDirty();
+    }
+
+    private void formNetworkAt(World world, BlockPos pos) {
+        Network network = new Network();
+
+        addNetwork(network);
+
+        network.scanGraph(world, pos);
+    }
+
+    private void mergeNetworksIntoOneAt(Set<Pipe> candidates, World world, BlockPos pos) {
+        Set<Network> networkCandidates = new HashSet<>();
+
+        for (Pipe pipe : candidates) {
+            networkCandidates.add(pipe.getNetwork());
+        }
+
+        Iterator<Network> networks = networkCandidates.iterator();
+
+        Network mainNetwork = networks.next();
+
+        while (networks.hasNext()) {
+            removeNetwork(networks.next());
+        }
+
+        mainNetwork.scanGraph(world, pos);
     }
 
     public void addPipe(Pipe pipe) {
-        LOGGER.debug("Pipe added @ " + pipe.getPos());
+        if (pipes.containsKey(pipe.getPos())) {
+            throw new RuntimeException("Pipe at " + pipe.getPos() + " already exists");
+        }
 
         pipes.put(pipe.getPos(), pipe);
+
+        LOGGER.debug("Pipe added at {}", pipe.getPos());
+
         markDirty();
 
-        Set<Pipe> adjacent = findAdjacentPipes(pipe.getPos());
-        if (adjacent.isEmpty()) {
-            Network network = formNetwork();
-            network.scanGraph(pipe.getWorld(), pipe.getPos());
+        Set<Pipe> adjacentPipes = findAdjacentPipes(pipe.getPos());
+
+        if (adjacentPipes.isEmpty()) {
+            formNetworkAt(pipe.getWorld(), pipe.getPos());
         } else {
-            Network network = joinExistingNetwork(adjacent);
-            network.scanGraph(pipe.getWorld(), pipe.getPos());
+            mergeNetworksIntoOneAt(adjacentPipes, pipe.getWorld(), pipe.getPos());
         }
-    }
-
-    private Network joinExistingNetwork(Set<Pipe> pipes) {
-        Set<Network> adjacentNetworks = new HashSet<>();
-        for (Pipe pipe : pipes) {
-            adjacentNetworks.add(pipe.getNetwork());
-        }
-
-        Iterator<Network> nets = adjacentNetworks.iterator();
-        Network mainNetwork = nets.next();
-
-        while (nets.hasNext()) {
-            removeNetwork(nets.next());
-        }
-
-        return mainNetwork;
-    }
-
-    private Network formNetwork() {
-        Network network = new Network();
-        addNetwork(network);
-        return network;
     }
 
     private Set<Pipe> findAdjacentPipes(BlockPos pos) {
         Set<Pipe> pipes = new HashSet<>();
 
         for (Direction dir : Direction.values()) {
-            BlockPos newPos = pos.offset(dir);
+            Pipe pipe = getPipe(pos.offset(dir));
 
-            if (this.pipes.containsKey(newPos)) {
-                pipes.add(this.pipes.get(newPos));
+            if (pipe != null) {
+                pipes.add(pipe);
             }
         }
 
@@ -100,10 +121,10 @@ public class NetworkManager extends WorldSavedData {
     @Nullable
     private Pipe findFirstAdjacentPipe(BlockPos pos) {
         for (Direction dir : Direction.values()) {
-            BlockPos newPos = pos.offset(dir);
+            Pipe pipe = getPipe(pos.offset(dir));
 
-            if (this.pipes.containsKey(newPos)) {
-                return this.pipes.get(newPos);
+            if (pipe != null) {
+                return pipe;
             }
         }
 
@@ -111,32 +132,41 @@ public class NetworkManager extends WorldSavedData {
     }
 
     public void removePipe(Pipe pipe) {
-        LOGGER.debug("Pipe removed @ " + pipe.getPos());
+        if (!pipes.containsKey(pipe.getPos())) {
+            throw new RuntimeException("Pipe at " + pipe.getPos() + " was not found");
+        }
 
         pipes.remove(pipe.getPos());
+
+        LOGGER.debug("Pipe removed at {}", pipe.getPos());
+
         markDirty();
 
-        splitIntoMultipleNetworks(pipe.getPos());
+        splitNetworks(pipe.getPos());
     }
 
-    private void splitIntoMultipleNetworks(BlockPos pos) {
-        // we can assume all adjacent pipes share(d) the same network
-        // we can just use the first neighboring one.
-        Pipe otherPipeFromNetwork = findFirstAdjacentPipe(pos);
-        if (otherPipeFromNetwork != null) {
-            NetworkGraphScanner result = otherPipeFromNetwork.getNetwork().scanGraph(
-                otherPipeFromNetwork.getWorld(),
-                otherPipeFromNetwork.getPos()
+    private void splitNetworks(BlockPos pos) {
+        // We can assume all adjacent pipes shared the same network with the removed pipe.
+        // That means it doesn't matter which pipe network we use for splitting, we'll take the first found one.
+        Pipe otherPipeInNetwork = findFirstAdjacentPipe(pos);
+
+        if (otherPipeInNetwork != null) {
+            NetworkGraphScanner result = otherPipeInNetwork.getNetwork().scanGraph(
+                otherPipeInNetwork.getWorld(),
+                otherPipeInNetwork.getPos()
             );
 
             for (Pipe removed : result.getRemovedPipes()) {
-                // obviously the pipe we just removed has been removed - ignore it
-                if (!removed.getPos().equals(pos)) {
-                    // the scanGraph call below can let these removed pipes join a network again.
-                    // we only have to create a new network when necessary, hence the null check.
-                    if (removed.getNetwork() == null) {
-                        formNetwork().scanGraph(removed.getWorld(), removed.getPos());
-                    }
+                // It's obvious that our removed pipe is removed.
+                // We don't want to create a new network for this one.
+                if (removed.getPos().equals(pos)) {
+                    continue;
+                }
+
+                // The formNetworkAt call below can let these removed pipes join a network again.
+                // We only have to form a new network when necessary, hence the null check.
+                if (removed.getNetwork() == null) {
+                    formNetworkAt(removed.getWorld(), removed.getPos());
                 }
             }
         }
@@ -145,13 +175,6 @@ public class NetworkManager extends WorldSavedData {
     @Nullable
     public Pipe getPipe(BlockPos pos) {
         return pipes.get(pos);
-    }
-
-    public void removeNetwork(Network network) {
-        LOGGER.debug("Network removed " + network.getId());
-
-        networks.remove(network);
-        markDirty();
     }
 
     @Override
