@@ -2,24 +2,18 @@ package com.raoulvdberge.refinedpipes.network;
 
 import net.minecraft.util.Direction;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
 public class AttachmentManager {
     private final Map<Direction, Attachment> attachments = new HashMap<>();
 
-    public AttachmentManager() {
-        for (Direction dir : Direction.values()) {
-            setAttachment(dir, AttachmentType.NONE);
-        }
-    }
-
     public boolean hasAttachment(Direction dir) {
-        return getAttachment(dir).getType() != AttachmentType.NONE;
+        return attachments.containsKey(dir);
     }
 
-    @Nonnull
+    @Nullable
     public Attachment getAttachment(Direction dir) {
         return attachments.get(dir);
     }

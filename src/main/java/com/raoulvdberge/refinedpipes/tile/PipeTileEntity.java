@@ -1,16 +1,29 @@
 package com.raoulvdberge.refinedpipes.tile;
 
 import com.raoulvdberge.refinedpipes.RefinedPipesTileEntities;
+import com.raoulvdberge.refinedpipes.network.AttachmentType;
 import com.raoulvdberge.refinedpipes.network.NetworkManager;
 import com.raoulvdberge.refinedpipes.network.Pipe;
 import com.raoulvdberge.refinedpipes.render.Color;
+import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
+import net.minecraftforge.client.model.data.IModelData;
+import net.minecraftforge.client.model.data.ModelDataMap;
+import net.minecraftforge.client.model.data.ModelProperty;
+
+import javax.annotation.Nonnull;
+import java.util.HashMap;
+import java.util.Map;
 
 public class PipeTileEntity extends TileEntity implements ITickableTileEntity {
+    public static final ModelProperty<Map<Direction, AttachmentType>> ATTACHMENTS_PROPERTY = new ModelProperty<>();
+
     private Color color;
+    private Map<Direction, AttachmentType> attachments = new HashMap<>();
 
     public PipeTileEntity() {
         super(RefinedPipesTileEntities.PIPE);
@@ -25,6 +38,12 @@ public class PipeTileEntity extends TileEntity implements ITickableTileEntity {
         Pipe pipe = NetworkManager.get(world).getPipe(pos);
 
         if (pipe != null && pipe.getNetwork() != null) {
+            for (Direction dir : Direction.values()) {
+                if (pipe.getAttachmentManager().hasAttachment(dir)) {
+                    tag.putInt("attch_" + dir.ordinal(), pipe.getAttachmentManager().getAttachment(dir).getType().ordinal());
+                }
+            }
+
             pipe.getNetwork().getColor().writeToTag(tag);
         }
 
@@ -33,6 +52,19 @@ public class PipeTileEntity extends TileEntity implements ITickableTileEntity {
 
     public void readUpdate(CompoundNBT tag) {
         this.color = Color.fromNbt(tag);
+
+        this.attachments.clear();
+        for (Direction dir : Direction.values()) {
+            String key = "attch_" + dir.ordinal();
+            if (tag.contains(key)) {
+                this.attachments.put(dir, AttachmentType.values()[tag.getInt(key)]);
+            }
+        }
+
+        requestModelDataUpdate();
+
+        BlockState state = world.getBlockState(pos);
+        world.notifyBlockUpdate(pos, state, state, 1 | 2);
     }
 
     @Override
@@ -55,6 +87,12 @@ public class PipeTileEntity extends TileEntity implements ITickableTileEntity {
         super.read(tag);
 
         readUpdate(tag);
+    }
+
+    @Nonnull
+    @Override
+    public IModelData getModelData() {
+        return new ModelDataMap.Builder().withInitial(ATTACHMENTS_PROPERTY, attachments).build();
     }
 
     @Override

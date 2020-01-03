@@ -38,12 +38,6 @@ public class PipeBlock extends Block {
     private static final BooleanProperty WEST = BooleanProperty.create("west");
     private static final BooleanProperty UP = BooleanProperty.create("up");
     private static final BooleanProperty DOWN = BooleanProperty.create("down");
-    private static final EnumProperty<AttachmentType> ATTACHMENT_NORTH = EnumProperty.create("attachment_north", AttachmentType.class);
-    private static final EnumProperty<AttachmentType> ATTACHMENT_EAST = EnumProperty.create("attachment_east", AttachmentType.class);
-    private static final EnumProperty<AttachmentType> ATTACHMENT_SOUTH = EnumProperty.create("attachment_south", AttachmentType.class);
-    private static final EnumProperty<AttachmentType> ATTACHMENT_WEST = EnumProperty.create("attachment_west", AttachmentType.class);
-    private static final EnumProperty<AttachmentType> ATTACHMENT_UP = EnumProperty.create("attachment_up", AttachmentType.class);
-    private static final EnumProperty<AttachmentType> ATTACHMENT_DOWN = EnumProperty.create("attachment_down", AttachmentType.class);
 
     public static final VoxelShape CORE_SHAPE = makeCuboidShape(4, 4, 4, 12, 12, 12);
     public static final VoxelShape NORTH_EXTENSION_SHAPE = makeCuboidShape(4, 4, 0, 12, 12, 4);
@@ -64,12 +58,6 @@ public class PipeBlock extends Block {
             .with(WEST, false)
             .with(UP, false)
             .with(DOWN, false)
-            .with(ATTACHMENT_NORTH, AttachmentType.NONE)
-            .with(ATTACHMENT_EAST, AttachmentType.NONE)
-            .with(ATTACHMENT_SOUTH, AttachmentType.NONE)
-            .with(ATTACHMENT_WEST, AttachmentType.NONE)
-            .with(ATTACHMENT_UP, AttachmentType.NONE)
-            .with(ATTACHMENT_DOWN, AttachmentType.NONE)
         );
     }
 
@@ -86,36 +74,12 @@ public class PipeBlock extends Block {
                     AttachmentType type = ((AttachmentItem) held.getItem()).getType();
 
                     pipe.getAttachmentManager().setAttachment(hit.getFace(), type);
-
-                    setAttachment(world, pos, hit.getFace(), type);
+                    pipe.sendPipeUpdate();
                 }
             }
         }
 
         return true;
-    }
-
-    private static void setAttachment(World world, BlockPos pos, Direction dir, AttachmentType type) {
-        switch (dir) {
-            case DOWN:
-                world.setBlockState(pos, world.getBlockState(pos).with(ATTACHMENT_DOWN, type));
-                break;
-            case UP:
-                world.setBlockState(pos, world.getBlockState(pos).with(ATTACHMENT_UP, type));
-                break;
-            case NORTH:
-                world.setBlockState(pos, world.getBlockState(pos).with(ATTACHMENT_NORTH, type));
-                break;
-            case SOUTH:
-                world.setBlockState(pos, world.getBlockState(pos).with(ATTACHMENT_SOUTH, type));
-                break;
-            case WEST:
-                world.setBlockState(pos, world.getBlockState(pos).with(ATTACHMENT_WEST, type));
-                break;
-            case EAST:
-                world.setBlockState(pos, world.getBlockState(pos).with(ATTACHMENT_EAST, type));
-                break;
-        }
     }
 
     @Override
@@ -144,13 +108,7 @@ public class PipeBlock extends Block {
             SOUTH,
             WEST,
             UP,
-            DOWN,
-            ATTACHMENT_NORTH,
-            ATTACHMENT_EAST,
-            ATTACHMENT_SOUTH,
-            ATTACHMENT_WEST,
-            ATTACHMENT_UP,
-            ATTACHMENT_DOWN
+            DOWN
         );
     }
 

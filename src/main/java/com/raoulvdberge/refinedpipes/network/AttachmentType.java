@@ -3,7 +3,6 @@ package com.raoulvdberge.refinedpipes.network;
 import net.minecraft.util.IStringSerializable;
 
 public enum AttachmentType implements IStringSerializable {
-    NONE("none"),
     NORMAL("normal");
 
     private String name;

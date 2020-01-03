@@ -221,60 +221,6 @@
         "model": "refinedpipes:block/pipe_interior",
         "x": 90
       }
-    },
-
-    {
-      "when": {
-        "attachment_north": "normal"
-      },
-      "apply": {
-        "model": "refinedpipes:block/pipe_attachment"
-      }
-    },
-    {
-      "when": {
-        "attachment_east": "normal"
-      },
-      "apply": {
-        "model": "refinedpipes:block/pipe_attachment",
-        "y": 90
-      }
-    },
-    {
-      "when": {
-        "attachment_south": "normal"
-      },
-      "apply": {
-        "model": "refinedpipes:block/pipe_attachment",
-        "x": 180
-      }
-    },
-    {
-      "when": {
-        "attachment_west": "normal"
-      },
-      "apply": {
-        "model": "refinedpipes:block/pipe_attachment",
-        "y": 270
-      }
-    },
-    {
-      "when": {
-        "attachment_up": "normal"
-      },
-      "apply": {
-        "model": "refinedpipes:block/pipe_attachment",
-        "x": 270
-      }
-    },
-    {
-      "when": {
-        "attachment_down": "normal"
-      },
-      "apply": {
-        "model": "refinedpipes:block/pipe_attachment",
-        "x": 90
-      }
     }
   ]
 }
