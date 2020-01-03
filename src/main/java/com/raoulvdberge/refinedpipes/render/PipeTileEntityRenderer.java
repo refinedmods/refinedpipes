@@ -21,6 +21,8 @@ public class PipeTileEntityRenderer extends TileEntityRenderer<PipeTileEntity> {
         if (tile.getStack() != null) {
             GlStateManager.pushMatrix();
 
+            Direction dir = tile.getDirection();
+
             double pipeLength = 1D;
 
             if (tile.isFirstPipe()) {
@@ -43,11 +45,13 @@ public class PipeTileEntityRenderer extends TileEntityRenderer<PipeTileEntity> {
 
             double v = (((double) tile.getProgress() + partialTicks) / maxTicksInPipe) * pipeLength;
 
+            if (tile.isFirstPipe() && v < 0.5) {
+                dir = tile.getInitialDirection(); // Get the item out first
+            }
+
             if (tile.isFirstPipe()) {
                 v -= 0.5D; // Every transport starts in the center. For the first pipe, we want to start from the beginning. Remove the centering.
             }
-
-            Direction dir = tile.getDirection();
 
             GlStateManager.translated(
                 x + 0.5 + (dir.getXOffset() * v),
