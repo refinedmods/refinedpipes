@@ -7,6 +7,6 @@ import net.minecraftforge.registries.ObjectHolder;
 public class RefinedPipesItems {
     @ObjectHolder(RefinedPipes.ID + ":pipe")
     public static final BlockItemBase PIPE = null;
-    @ObjectHolder(RefinedPipes.ID + ":attachment")
-    public static final AttachmentItem ATTACHMENT = null;
+    @ObjectHolder(RefinedPipes.ID + ":extractor_attachment")
+    public static final AttachmentItem EXTRACTOR_ATTACHMENT = null;
 }

@@ -1,6 +1,6 @@
 package com.raoulvdberge.refinedpipes.network.graph;
 
-import com.raoulvdberge.refinedpipes.network.Pipe;
+import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
 
 import java.util.Set;
 

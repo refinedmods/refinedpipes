@@ -2,6 +2,7 @@ package com.raoulvdberge.refinedpipes.network;
 
 import com.raoulvdberge.refinedpipes.network.graph.NetworkGraph;
 import com.raoulvdberge.refinedpipes.network.graph.NetworkGraphScannerResult;
+import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
 import com.raoulvdberge.refinedpipes.render.Color;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;

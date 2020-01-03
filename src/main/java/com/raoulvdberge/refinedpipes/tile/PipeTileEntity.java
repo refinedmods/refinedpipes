@@ -1,9 +1,10 @@
 package com.raoulvdberge.refinedpipes.tile;
 
 import com.raoulvdberge.refinedpipes.RefinedPipesTileEntities;
-import com.raoulvdberge.refinedpipes.network.AttachmentType;
 import com.raoulvdberge.refinedpipes.network.NetworkManager;
-import com.raoulvdberge.refinedpipes.network.Pipe;
+import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
+import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentRegistry;
+import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
 import com.raoulvdberge.refinedpipes.render.Color;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
@@ -11,6 +12,7 @@ import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelDataMap;
 import net.minecraftforge.client.model.data.ModelProperty;
@@ -44,7 +46,7 @@ public class PipeTileEntity extends TileEntity implements ITickableTileEntity {
         if (pipe != null && pipe.getNetwork() != null) {
             for (Direction dir : Direction.values()) {
                 if (pipe.getAttachmentManager().hasAttachment(dir)) {
-                    tag.putInt("attch_" + dir.ordinal(), pipe.getAttachmentManager().getAttachment(dir).getType().ordinal());
+                    tag.putString("attch_" + dir.ordinal(), pipe.getAttachmentManager().getAttachment(dir).getType().getId().toString());
                 }
             }
 
@@ -61,7 +63,7 @@ public class PipeTileEntity extends TileEntity implements ITickableTileEntity {
         for (Direction dir : Direction.values()) {
             String key = "attch_" + dir.ordinal();
             if (tag.contains(key)) {
-                this.attachments.put(dir, AttachmentType.values()[tag.getInt(key)]);
+                this.attachments.put(dir, AttachmentRegistry.INSTANCE.getType(new ResourceLocation(tag.getString(key))));
             }
         }
 

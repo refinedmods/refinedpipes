@@ -1,11 +1,11 @@
 package com.raoulvdberge.refinedpipes.block;
 
 import com.raoulvdberge.refinedpipes.RefinedPipes;
-import com.raoulvdberge.refinedpipes.RefinedPipesItems;
 import com.raoulvdberge.refinedpipes.item.AttachmentItem;
-import com.raoulvdberge.refinedpipes.network.AttachmentType;
 import com.raoulvdberge.refinedpipes.network.NetworkManager;
-import com.raoulvdberge.refinedpipes.network.Pipe;
+import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
+import com.raoulvdberge.refinedpipes.network.pipe.attachment.Attachment;
+import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
 import com.raoulvdberge.refinedpipes.tile.PipeTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -85,6 +85,8 @@ public class PipeBlock extends Block {
                 pipe.getAttachmentManager().setAttachment(dir, type);
                 pipe.sendUpdate();
 
+                NetworkManager.get(world).markDirty();
+
                 if (!player.isCreative()) {
                     attachment.shrink(1);
                 }
@@ -99,10 +101,14 @@ public class PipeBlock extends Block {
             Pipe pipe = NetworkManager.get(world).getPipe(pos);
 
             if (pipe != null && pipe.getAttachmentManager().hasAttachment(dir)) {
+                Attachment attachment = pipe.getAttachmentManager().getAttachment(dir);
+
                 pipe.getAttachmentManager().removeAttachment(dir);
                 pipe.sendUpdate();
+                
+                NetworkManager.get(world).markDirty();
 
-                Block.spawnAsEntity(world, pos.offset(dir), new ItemStack(RefinedPipesItems.ATTACHMENT));
+                Block.spawnAsEntity(world, pos.offset(dir), attachment.getType().toStack());
             }
 
             return true;

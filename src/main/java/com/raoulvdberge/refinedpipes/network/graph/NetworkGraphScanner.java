@@ -1,7 +1,7 @@
 package com.raoulvdberge.refinedpipes.network.graph;
 
 import com.raoulvdberge.refinedpipes.network.NetworkManager;
-import com.raoulvdberge.refinedpipes.network.Pipe;
+import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;

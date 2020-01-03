@@ -1,9 +1,18 @@
-package com.raoulvdberge.refinedpipes.network;
+package com.raoulvdberge.refinedpipes.network.pipe;
 
+import com.raoulvdberge.refinedpipes.network.Network;
+import com.raoulvdberge.refinedpipes.network.pipe.attachment.Attachment;
+import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentManager;
+import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentRegistry;
+import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.INBT;
+import net.minecraft.nbt.ListNBT;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -66,13 +75,36 @@ public class Pipe {
     public CompoundNBT writeToNbt(CompoundNBT tag) {
         tag.putLong("pos", pos.toLong());
 
+        ListNBT attch = new ListNBT();
+        attachmentManager.getAttachments().forEach(a -> {
+            CompoundNBT attchTag = new CompoundNBT();
+            attchTag.putString("typ", a.getType().getId().toString());
+            attch.add(a.writeToNbt(attchTag));
+        });
+        tag.put("attch", attch);
+
         return tag;
     }
 
     public static Pipe fromNbt(World world, CompoundNBT tag) {
         BlockPos pos = BlockPos.fromLong(tag.getLong("pos"));
 
-        return new Pipe(world, pos);
+        Pipe pipe = new Pipe(world, pos);
+
+        ListNBT attch = tag.getList("attch", Constants.NBT.TAG_COMPOUND);
+        for (INBT item : attch) {
+            CompoundNBT attchTag = (CompoundNBT) item;
+
+            AttachmentType type = AttachmentRegistry.INSTANCE.getType(new ResourceLocation(attchTag.getString("typ")));
+            if (type != null) {
+                Attachment attachment = type.createFromNbt(attchTag);
+                pipe.attachmentManager.setAttachment(attachment.getDirection(), attachment);
+            } else {
+                LOGGER.warn("Attachment {} no longer exists", attchTag.getString("typ"));
+            }
+        }
+
+        return pipe;
     }
 
     @Override

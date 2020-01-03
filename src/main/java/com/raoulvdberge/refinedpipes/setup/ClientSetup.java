@@ -1,7 +1,8 @@
 package com.raoulvdberge.refinedpipes.setup;
 
 import com.raoulvdberge.refinedpipes.RefinedPipes;
-import com.raoulvdberge.refinedpipes.network.AttachmentType;
+import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentRegistry;
+import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
 import com.raoulvdberge.refinedpipes.render.PipeBakedModel;
 import com.raoulvdberge.refinedpipes.render.PipeTileEntityRenderer;
 import com.raoulvdberge.refinedpipes.tile.PipeTileEntity;
@@ -13,15 +14,23 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class ClientSetup {
+    private static final Logger LOGGER = LogManager.getLogger(ClientSetup.class);
+
     public ClientSetup() {
         ClientRegistry.bindTileEntitySpecialRenderer(PipeTileEntity.class, new PipeTileEntityRenderer());
 
-        ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe_attachment"));
+        for (AttachmentType type : AttachmentRegistry.INSTANCE.getTypes()) {
+            LOGGER.debug("Registering attachment model {} for {}", type.getModelLocation(), type.getId());
+
+            ModelLoader.addSpecialModel(type.getModelLocation());
+        }
 
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onModelBake);
     }
@@ -29,7 +38,10 @@ public class ClientSetup {
     @SubscribeEvent
     public void onModelBake(ModelBakeEvent e) {
         Map<AttachmentType, IBakedModel> attachmentModels = new HashMap<>();
-        attachmentModels.put(AttachmentType.NORMAL, e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe_attachment")));
+
+        for (AttachmentType type : AttachmentRegistry.INSTANCE.getTypes()) {
+            attachmentModels.put(type, e.getModelRegistry().get(type.getModelLocation()));
+        }
 
         for (ResourceLocation id : e.getModelRegistry().keySet()) {
             if (id instanceof ModelResourceLocation &&

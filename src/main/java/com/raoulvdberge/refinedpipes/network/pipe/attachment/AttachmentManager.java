@@ -1,8 +1,9 @@
-package com.raoulvdberge.refinedpipes.network;
+package com.raoulvdberge.refinedpipes.network.pipe.attachment;
 
 import net.minecraft.util.Direction;
 
 import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,7 +23,15 @@ public class AttachmentManager {
         return attachments.get(dir);
     }
 
+    public Collection<Attachment> getAttachments() {
+        return attachments.values();
+    }
+
     public void setAttachment(Direction dir, AttachmentType type) {
-        attachments.put(dir, new Attachment(type));
+        attachments.put(dir, type.createNew(dir));
+    }
+
+    public void setAttachment(Direction dir, Attachment attachment) {
+        attachments.put(dir, attachment);
     }
 }

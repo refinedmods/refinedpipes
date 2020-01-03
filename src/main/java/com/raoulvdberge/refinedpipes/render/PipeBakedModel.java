@@ -1,6 +1,6 @@
 package com.raoulvdberge.refinedpipes.render;
 
-import com.raoulvdberge.refinedpipes.network.AttachmentType;
+import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
 import com.raoulvdberge.refinedpipes.tile.PipeTileEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.model.BakedQuad;

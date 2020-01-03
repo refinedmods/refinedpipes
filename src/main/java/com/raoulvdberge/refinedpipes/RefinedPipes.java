@@ -18,10 +18,10 @@ public class RefinedPipes {
     public static final ItemGroup MAIN_GROUP = new MainItemGroup();
 
     public RefinedPipes() {
-        DistExecutor.runWhenOn(Dist.CLIENT, () -> ClientSetup::new);
-
         CommonSetup commonSetup = new CommonSetup();
 
+        DistExecutor.runWhenOn(Dist.CLIENT, () -> ClientSetup::new);
+        
         FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(Block.class, commonSetup::onRegisterBlocks);
         FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(Item.class, commonSetup::onRegisterItems);
         FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(TileEntityType.class, commonSetup::onRegisterTileEntities);
