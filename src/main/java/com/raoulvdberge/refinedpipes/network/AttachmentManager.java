@@ -13,6 +13,10 @@ public class AttachmentManager {
         return attachments.containsKey(dir);
     }
 
+    public void removeAttachment(Direction dir) {
+        attachments.remove(dir);
+    }
+
     @Nullable
     public Attachment getAttachment(Direction dir) {
         return attachments.get(dir);

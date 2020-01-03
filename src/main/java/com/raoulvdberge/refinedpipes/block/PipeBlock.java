@@ -1,6 +1,7 @@
 package com.raoulvdberge.refinedpipes.block;
 
 import com.raoulvdberge.refinedpipes.RefinedPipes;
+import com.raoulvdberge.refinedpipes.RefinedPipesItems;
 import com.raoulvdberge.refinedpipes.item.AttachmentItem;
 import com.raoulvdberge.refinedpipes.network.AttachmentType;
 import com.raoulvdberge.refinedpipes.network.NetworkManager;
@@ -13,7 +14,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.EnumProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.ChestTileEntity;
 import net.minecraft.tileentity.TileEntity;
@@ -64,22 +64,51 @@ public class PipeBlock extends Block {
     @Override
     @SuppressWarnings("deprecation")
     public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
+        ItemStack held = player.getHeldItemMainhand();
+
+        if (held.getItem() instanceof AttachmentItem) {
+            return addAttachment(player, world, pos, held, hit.getFace());
+        } else if (held.isEmpty() && player.isSneaking()) {
+            return removeAttachment(world, pos, hit.getFace());
+        }
+
+        return super.onBlockActivated(state, world, pos, player, hand, hit);
+    }
+
+    private boolean addAttachment(PlayerEntity player, World world, BlockPos pos, ItemStack attachment, Direction dir) {
         if (!world.isRemote) {
-            ItemStack held = player.getHeldItemMainhand();
+            Pipe pipe = NetworkManager.get(world).getPipe(pos);
 
-            if (held.getItem() instanceof AttachmentItem) {
-                Pipe pipe = NetworkManager.get(world).getPipe(pos);
+            if (pipe != null && !pipe.getAttachmentManager().hasAttachment(dir)) {
+                AttachmentType type = ((AttachmentItem) attachment.getItem()).getType();
 
-                if (pipe != null && !pipe.getAttachmentManager().hasAttachment(hit.getFace())) {
-                    AttachmentType type = ((AttachmentItem) held.getItem()).getType();
+                pipe.getAttachmentManager().setAttachment(dir, type);
+                pipe.sendUpdate();
 
-                    pipe.getAttachmentManager().setAttachment(hit.getFace(), type);
-                    pipe.sendPipeUpdate();
+                if (!player.isCreative()) {
+                    attachment.shrink(1);
                 }
             }
         }
 
         return true;
+    }
+
+    private boolean removeAttachment(World world, BlockPos pos, Direction dir) {
+        if (!world.isRemote) {
+            Pipe pipe = NetworkManager.get(world).getPipe(pos);
+
+            if (pipe != null && pipe.getAttachmentManager().hasAttachment(dir)) {
+                pipe.getAttachmentManager().removeAttachment(dir);
+                pipe.sendUpdate();
+
+                Block.spawnAsEntity(world, pos.offset(dir), new ItemStack(RefinedPipesItems.ATTACHMENT));
+            }
+
+            return true;
+        } else {
+            return ((PipeTileEntity) world.getTileEntity(pos)).hasAttachment(dir);
+        }
     }
 
     @Override
@@ -157,8 +186,8 @@ public class PipeBlock extends Block {
     }
 
     private static boolean hasConnection(IWorld world, BlockPos pos, Direction direction) {
-        return world.getBlockState(pos.offset(direction)).getBlock() instanceof PipeBlock ||
-            world.getTileEntity(pos.offset(direction)) instanceof ChestTileEntity;
+        return world.getBlockState(pos.offset(direction)).getBlock() instanceof PipeBlock
+            || world.getTileEntity(pos.offset(direction)) instanceof ChestTileEntity;
     }
 
     private static BlockState getState(BlockState currentState, IWorld world, BlockPos pos) {

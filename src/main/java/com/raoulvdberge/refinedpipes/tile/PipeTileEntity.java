@@ -34,6 +34,10 @@ public class PipeTileEntity extends TileEntity implements ITickableTileEntity {
 
     }
 
+    public boolean hasAttachment(Direction dir) {
+        return attachments.containsKey(dir);
+    }
+
     public CompoundNBT writeUpdate(CompoundNBT tag) {
         Pipe pipe = NetworkManager.get(world).getPipe(pos);
 

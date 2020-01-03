@@ -25,7 +25,6 @@ import java.util.Random;
 public class TrsrBakedModel implements IBakedModel {
     protected final IBakedModel original;
     protected TRSRTransformation transformation;
-    private final int faceOffset;
 
     public TrsrBakedModel(IBakedModel original, float x, float y, float z, float scale) {
         this(original, x, y, z, 0, 0, 0, scale, scale, scale);
@@ -47,17 +46,20 @@ public class TrsrBakedModel implements IBakedModel {
     public TrsrBakedModel(IBakedModel original, TRSRTransformation transform) {
         this.original = original;
         this.transformation = TRSRTransformation.blockCenterToCorner(transform);
-        this.faceOffset = 0;
     }
 
     public TrsrBakedModel(IBakedModel original, Direction facing) {
         this.original = original;
 
-        this.faceOffset = 4 + Direction.NORTH.getHorizontalIndex() - facing.getHorizontalIndex();
-
-        double r = Math.PI * (360 - facing.getOpposite().getHorizontalIndex() * 90) / 180d;
-        TRSRTransformation t = new TRSRTransformation(null, null, null, TRSRTransformation.quatFromXYZ(0, (float) r, 0));
-        this.transformation = TRSRTransformation.blockCenterToCorner(t);
+        if (facing.getHorizontalIndex() > -1) {
+            double r = Math.PI * (360 - facing.getOpposite().getHorizontalIndex() * 90) / 180d;
+            TRSRTransformation t = new TRSRTransformation(null, null, null, TRSRTransformation.quatFromXYZ(0, (float) r, 0));
+            this.transformation = TRSRTransformation.blockCenterToCorner(t);
+        } else {
+            double r = Math.PI * (360 - (facing == Direction.DOWN ? 90 : 270)) / 180d;
+            TRSRTransformation t = new TRSRTransformation(null, null, null, TRSRTransformation.quatFromXYZ((float) r, 0, 0));
+            this.transformation = TRSRTransformation.blockCenterToCorner(t);
+        }
     }
 
     @Nonnull
@@ -65,10 +67,6 @@ public class TrsrBakedModel implements IBakedModel {
     @SuppressWarnings("deprecation")
     public List<BakedQuad> getQuads(BlockState state, Direction side, Random rand) {
         ImmutableList.Builder<BakedQuad> builder = ImmutableList.builder();
-
-        if (side != null && side.getHorizontalIndex() > -1) {
-            side = Direction.byHorizontalIndex((side.getHorizontalIndex() + faceOffset) % 4);
-        }
 
         for (BakedQuad quad : original.getQuads(state, side, rand)) {
             Transformer transformer = new Transformer(transformation, quad.getFormat());

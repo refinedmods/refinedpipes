@@ -47,7 +47,7 @@ public class Pipe {
 
         LOGGER.debug(pos + " joined network " + network.getId());
 
-        sendPipeUpdate();
+        sendUpdate();
     }
 
     public void leaveNetwork() {
@@ -55,10 +55,10 @@ public class Pipe {
 
         this.network = null;
 
-        sendPipeUpdate();
+        sendUpdate();
     }
 
-    public void sendPipeUpdate() {
+    public void sendUpdate() {
         BlockState state = world.getBlockState(pos);
         world.notifyBlockUpdate(pos, state, state, 1 | 2);
     }
