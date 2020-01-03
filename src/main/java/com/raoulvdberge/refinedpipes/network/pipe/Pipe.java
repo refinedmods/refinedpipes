@@ -120,6 +120,10 @@ public class Pipe {
         return pipe;
     }
 
+    public byte getMaxTicksInPipe() {
+        return 20;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

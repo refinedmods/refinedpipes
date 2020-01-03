@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.util.Direction;
 import org.lwjgl.opengl.GL11;
 
 public class PipeTileEntityRenderer extends TileEntityRenderer<PipeTileEntity> {
@@ -20,9 +21,13 @@ public class PipeTileEntityRenderer extends TileEntityRenderer<PipeTileEntity> {
         if (tile.getStack() != null) {
             GlStateManager.pushMatrix();
 
-            GlStateManager.translated(x + 0.5, y + 0.5, z + 0.5);
+            double v = (((double) tile.getProgress() + partialTicks) / (double) tile.getMaxTicksInPipe());
+
+            Direction dir = tile.getDirection();
+
+            GlStateManager.translated(x + 0.5 + (dir.getXOffset() * v), y + 0.5 + (dir.getYOffset() * v), z + 0.5 + (dir.getZOffset() * v));
             GlStateManager.scaled(0.5D, 0.5D, 0.5D);
-            
+
             Minecraft.getInstance().getItemRenderer().renderItem(tile.getStack(), ItemCameraTransforms.TransformType.FIXED);
 
             GlStateManager.popMatrix();

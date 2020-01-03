@@ -1,6 +1,7 @@
 package com.raoulvdberge.refinedpipes.network.pipe;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Direction;
 
 import java.util.Deque;
 
@@ -10,7 +11,7 @@ public class Transport {
     private final Pipe destination;
     private final Deque<Pipe> pipesToGo;
 
-    private double progressInCurrentPipe;
+    private int progressInCurrentPipe;
     private Pipe currentPipe;
 
     public Transport(ItemStack value, Pipe source, Pipe destination, Deque<Pipe> pipesToGo) {
@@ -20,8 +21,17 @@ public class Transport {
         this.pipesToGo = pipesToGo;
     }
 
+    public Direction getDirection() {
+        // TODO
+        return Direction.NORTH;
+    }
+
     public ItemStack getValue() {
         return value;
+    }
+
+    public int getProgressInCurrentPipe() {
+        return progressInCurrentPipe;
     }
 
     public boolean update() {
@@ -30,17 +40,17 @@ public class Transport {
 
             if (currentPipe != null) {
                 currentPipe.setCurrentTransport(this);
+                progressInCurrentPipe = 0;
             } else {
                 return true;
             }
         }
 
-        progressInCurrentPipe += 0.1;
+        progressInCurrentPipe += 1;
 
-        if (progressInCurrentPipe >= 1) {
-            this.currentPipe.setCurrentTransport(null);
-            this.currentPipe = null;
-            this.progressInCurrentPipe = 0;
+        if (progressInCurrentPipe >= currentPipe.getMaxTicksInPipe()) {
+            currentPipe.setCurrentTransport(null);
+            currentPipe = null;
         }
 
         return false;

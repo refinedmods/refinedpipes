@@ -28,6 +28,9 @@ public class PipeTileEntity extends TileEntity implements ITickableTileEntity {
     private Color color;
     private Map<Direction, AttachmentType> attachments = new HashMap<>();
     private ItemStack stack;
+    private byte maxTicksInPipe;
+    private int progress;
+    private Direction direction = Direction.NORTH;
 
     public PipeTileEntity() {
         super(RefinedPipesTileEntities.PIPE);
@@ -35,7 +38,9 @@ public class PipeTileEntity extends TileEntity implements ITickableTileEntity {
 
     @Override
     public void tick() {
-
+        if (world.isRemote && stack != null) {
+            progress++;
+        }
     }
 
     public boolean hasAttachment(Direction dir) {
@@ -56,7 +61,11 @@ public class PipeTileEntity extends TileEntity implements ITickableTileEntity {
 
             if (pipe.getCurrentTransport() != null) {
                 tag.put("transport", pipe.getCurrentTransport().getValue().write(new CompoundNBT()));
+                tag.putInt("pr", pipe.getCurrentTransport().getProgressInCurrentPipe());
+                tag.putByte("dir", (byte)pipe.getCurrentTransport().getDirection().ordinal());
             }
+
+            tag.putByte("mt", pipe.getMaxTicksInPipe());
         }
 
         return tag;
@@ -73,6 +82,20 @@ public class PipeTileEntity extends TileEntity implements ITickableTileEntity {
             }
         }
 
+        if (tag.contains("mt")) {
+            this.maxTicksInPipe = tag.getByte("mt");
+        }
+
+        if (tag.contains("dir")) {
+            this.direction = Direction.values()[tag.getByte("dir")];
+        }
+
+        if (tag.contains("pr")) {
+            this.progress = tag.getInt("pr");
+        } else {
+            this.progress = 0;
+        }
+
         if (tag.contains("transport")) {
             this.stack = ItemStack.read(tag.getCompound("transport"));
         } else {
@@ -87,6 +110,18 @@ public class PipeTileEntity extends TileEntity implements ITickableTileEntity {
 
     public ItemStack getStack() {
         return stack;
+    }
+
+    public byte getMaxTicksInPipe() {
+        return maxTicksInPipe;
+    }
+
+    public int getProgress() {
+        return progress;
+    }
+
+    public Direction getDirection() {
+        return direction;
     }
 
     @Override
