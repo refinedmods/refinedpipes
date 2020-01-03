@@ -31,6 +31,8 @@ public class PipeTileEntity extends TileEntity implements ITickableTileEntity {
     private byte maxTicksInPipe;
     private int progress;
     private Direction direction = Direction.NORTH;
+    private boolean lastPipe = false;
+    private boolean firstPipe = false;
 
     public PipeTileEntity() {
         super(RefinedPipesTileEntities.PIPE);
@@ -63,6 +65,8 @@ public class PipeTileEntity extends TileEntity implements ITickableTileEntity {
                 tag.put("transport", pipe.getCurrentTransport().getValue().write(new CompoundNBT()));
                 tag.putInt("pr", pipe.getCurrentTransport().getProgressInCurrentPipe());
                 tag.putByte("dir", (byte)pipe.getCurrentTransport().getDirection().ordinal());
+                tag.putBoolean("lst", pipe.getCurrentTransport().isLastPipe());
+                tag.putBoolean("fst", pipe.getCurrentTransport().isFirstPipe());
             }
 
             tag.putByte("mt", pipe.getMaxTicksInPipe());
@@ -96,6 +100,18 @@ public class PipeTileEntity extends TileEntity implements ITickableTileEntity {
             this.progress = 0;
         }
 
+        if (tag.contains("lst")) {
+            this.lastPipe = tag.getBoolean("lst");
+        } else {
+            this.lastPipe = false;
+        }
+
+        if (tag.contains("fst")) {
+            this.firstPipe = tag.getBoolean("fst");
+        } else {
+            this.firstPipe = false;
+        }
+
         if (tag.contains("transport")) {
             this.stack = ItemStack.read(tag.getCompound("transport"));
         } else {
@@ -122,6 +138,14 @@ public class PipeTileEntity extends TileEntity implements ITickableTileEntity {
 
     public Direction getDirection() {
         return direction;
+    }
+
+    public boolean isFirstPipe() {
+        return firstPipe;
+    }
+
+    public boolean isLastPipe() {
+        return lastPipe;
     }
 
     @Override

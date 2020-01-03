@@ -27,6 +27,11 @@ public class AttachmentManager {
         return attachments.get(dir);
     }
 
+    @Nullable
+    public Attachment getAttachment(AttachmentType type) {
+        return attachments.values().stream().filter(a -> a.getType() == type).findFirst().orElse(null);
+    }
+
     public Collection<Attachment> getAttachments() {
         return attachments.values();
     }

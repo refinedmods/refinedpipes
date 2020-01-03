@@ -130,10 +130,13 @@ public class Network {
                         pipesToGo.add(pipe);
                     });
 
+                    BlockPos toPos = to.getPos().offset(to.getAttachmentManager().getAttachment(insertor).getDirection());
+
                     Transport t = new Transport(
                         new ItemStack(Blocks.DIRT),
                         from,
                         to,
+                        toPos,
                         pipesToGo
                     );
 

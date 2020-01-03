@@ -21,11 +21,39 @@ public class PipeTileEntityRenderer extends TileEntityRenderer<PipeTileEntity> {
         if (tile.getStack() != null) {
             GlStateManager.pushMatrix();
 
-            double v = (((double) tile.getProgress() + partialTicks) / (double) tile.getMaxTicksInPipe());
+            double pipeLength = 1D;
+
+            if (tile.isFirstPipe()) {
+                pipeLength = 1.5D; // Every transport starts in the center to go to the next center. But for the first pipe we start from the beginning, so it's a bit longer.
+                // [X][X][X]
+                // X = A center
+                // []= The pipe casing
+                // For the first pipe we start at [, not X. So hence the 1.5
+            }
+
+            if (tile.isLastPipe()) {
+                pipeLength = 0.5D; // Every transport starts in the center to go to the next center. But for the last pipe we only want to go to the end part, not the "next" center.
+                // [X][X][Y]</>
+                // X/Y= A center
+                // [] = The pipe casing
+                // For the last pipe we start at Y, and go to ]. We don't want to go to /.
+            }
+
+            double maxTicksInPipe = (double) tile.getMaxTicksInPipe() * pipeLength;
+
+            double v = (((double) tile.getProgress() + partialTicks) / maxTicksInPipe) * pipeLength;
+
+            if (tile.isFirstPipe()) {
+                v -= 0.5D; // Every transport starts in the center. For the first pipe, we want to start from the beginning. Remove the centering.
+            }
 
             Direction dir = tile.getDirection();
 
-            GlStateManager.translated(x + 0.5 + (dir.getXOffset() * v), y + 0.5 + (dir.getYOffset() * v), z + 0.5 + (dir.getZOffset() * v));
+            GlStateManager.translated(
+                x + 0.5 + (dir.getXOffset() * v),
+                y + 0.5 + (dir.getYOffset() * v),
+                z + 0.5 + (dir.getZOffset() * v)
+            );
             GlStateManager.scaled(0.5D, 0.5D, 0.5D);
 
             Minecraft.getInstance().getItemRenderer().renderItem(tile.getStack(), ItemCameraTransforms.TransformType.FIXED);
