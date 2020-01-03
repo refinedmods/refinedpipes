@@ -9,6 +9,10 @@ public class Node<T> {
         this.id = id;
     }
 
+    public T getId() {
+        return id;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

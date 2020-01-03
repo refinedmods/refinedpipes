@@ -7,6 +7,7 @@ import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentRegistry;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
 import com.raoulvdberge.refinedpipes.render.Color;
 import net.minecraft.block.BlockState;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
@@ -26,6 +27,7 @@ public class PipeTileEntity extends TileEntity implements ITickableTileEntity {
 
     private Color color;
     private Map<Direction, AttachmentType> attachments = new HashMap<>();
+    private ItemStack stack;
 
     public PipeTileEntity() {
         super(RefinedPipesTileEntities.PIPE);
@@ -51,6 +53,10 @@ public class PipeTileEntity extends TileEntity implements ITickableTileEntity {
             }
 
             pipe.getNetwork().getColor().writeToTag(tag);
+
+            if (pipe.getCurrentTransport() != null) {
+                tag.put("transport", pipe.getCurrentTransport().getValue().write(new CompoundNBT()));
+            }
         }
 
         return tag;
@@ -67,10 +73,20 @@ public class PipeTileEntity extends TileEntity implements ITickableTileEntity {
             }
         }
 
+        if (tag.contains("transport")) {
+            this.stack = ItemStack.read(tag.getCompound("transport"));
+        } else {
+            this.stack = null;
+        }
+
         requestModelDataUpdate();
 
         BlockState state = world.getBlockState(pos);
         world.notifyBlockUpdate(pos, state, state, 1 | 2);
+    }
+
+    public ItemStack getStack() {
+        return stack;
     }
 
     @Override

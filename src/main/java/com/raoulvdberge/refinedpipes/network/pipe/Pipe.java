@@ -16,6 +16,7 @@ import net.minecraftforge.common.util.Constants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.Nullable;
 import java.util.Objects;
 
 public class Pipe {
@@ -24,7 +25,9 @@ public class Pipe {
     private final World world;
     private final BlockPos pos;
     private final AttachmentManager attachmentManager = new AttachmentManager();
+
     private Network network;
+    private Transport currentTransport;
 
     public Pipe(World world, BlockPos pos) {
         this.world = world;
@@ -65,6 +68,16 @@ public class Pipe {
         this.network = null;
 
         sendUpdate();
+    }
+
+    public void setCurrentTransport(@Nullable Transport currentTransport) {
+        this.currentTransport = currentTransport;
+
+        sendUpdate();
+    }
+
+    public Transport getCurrentTransport() {
+        return currentTransport;
     }
 
     public void sendUpdate() {

@@ -2,7 +2,6 @@ package com.raoulvdberge.refinedpipes.network.graph;
 
 import com.raoulvdberge.refinedpipes.network.Network;
 import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
-import com.raoulvdberge.refinedpipes.network.route.DijkstraAlgorithm;
 import com.raoulvdberge.refinedpipes.network.route.Edge;
 import com.raoulvdberge.refinedpipes.network.route.Graph;
 import com.raoulvdberge.refinedpipes.network.route.Node;
@@ -19,7 +18,7 @@ public class NetworkGraph {
     private final Network network;
 
     private Set<Pipe> pipes = new HashSet<>();
-    private DijkstraAlgorithm<BlockPos> routing;
+    private Graph<BlockPos> routingGraph;
 
     public NetworkGraph(Network network) {
         this.network = network;
@@ -44,7 +43,7 @@ public class NetworkGraph {
         return result;
     }
 
-    public void updateRouting(List<NetworkGraphScannerRequest> allRequests) {
+    private void updateRouting(List<NetworkGraphScannerRequest> allRequests) {
         List<Node<BlockPos>> nodes = new ArrayList<>();
         Map<BlockPos, Node<BlockPos>> nodeMap = new HashMap<>();
 
@@ -60,7 +59,7 @@ public class NetworkGraph {
             if (request.isSuccessful() && request.getParent() != null) {
                 BlockPos origin = request.getParent().getPos();
                 BlockPos destination = request.getPos();
-                
+
                 LOGGER.debug("Connecting " + origin + " to " + destination);
 
                 edges.add(new Edge<>(
@@ -69,9 +68,20 @@ public class NetworkGraph {
                     nodeMap.get(destination),
                     1
                 ));
+
+                edges.add(new Edge<>(
+                    "Edge",
+                    nodeMap.get(destination),
+                    nodeMap.get(origin),
+                    1
+                ));
             }
         }
 
-        this.routing = new DijkstraAlgorithm<>(new Graph<>(nodes, edges));
+        this.routingGraph = new Graph<>(nodes, edges);
+    }
+
+    public Graph<BlockPos> getRoutingGraph() {
+        return routingGraph;
     }
 }

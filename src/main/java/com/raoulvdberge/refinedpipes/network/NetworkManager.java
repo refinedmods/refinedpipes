@@ -227,6 +227,10 @@ public class NetworkManager extends WorldSavedData {
         return networks.get(id);
     }
 
+    public Collection<Network> getNetworks() {
+        return networks.values();
+    }
+
     @Override
     public void read(CompoundNBT tag) {
         ListNBT pipes = tag.getList("pipes", Constants.NBT.TAG_COMPOUND);

@@ -1,21 +1,29 @@
 package com.raoulvdberge.refinedpipes.network;
 
+import com.raoulvdberge.refinedpipes.RefinedPipes;
 import com.raoulvdberge.refinedpipes.network.graph.NetworkGraph;
 import com.raoulvdberge.refinedpipes.network.graph.NetworkGraphScannerResult;
 import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
+import com.raoulvdberge.refinedpipes.network.pipe.Transport;
+import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentRegistry;
+import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
+import com.raoulvdberge.refinedpipes.network.route.DijkstraAlgorithm;
+import com.raoulvdberge.refinedpipes.network.route.Node;
 import com.raoulvdberge.refinedpipes.render.Color;
+import net.minecraft.block.Blocks;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.nbt.LongNBT;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 
 public class Network {
     private static final Logger LOGGER = LogManager.getLogger(Network.class);
@@ -23,6 +31,8 @@ public class Network {
     private final NetworkGraph graph = new NetworkGraph(this);
     private final String id;
     private final Color color;
+    private final List<Transport> transports = new ArrayList<>();
+    private final List<Transport> transportsToAdd = new ArrayList<>();
 
     public Network() {
         Random r = new Random();
@@ -83,6 +93,59 @@ public class Network {
         LOGGER.debug("Deserialized network " + network.id + " with " + graph.size() + " pipes");
 
         return network;
+    }
+
+    public void addTransport(Transport transport) {
+        transportsToAdd.add(transport);
+    }
+
+    public void update(World world) {
+        if (transports.isEmpty()) {
+            AttachmentType extractor = AttachmentRegistry.INSTANCE.getType(new ResourceLocation(RefinedPipes.ID, "extractor"));
+            AttachmentType insertor = AttachmentRegistry.INSTANCE.getType(new ResourceLocation(RefinedPipes.ID, "insertor"));
+
+            // Debug
+            Pipe from = this.graph.getPipes().stream()
+                .filter(p -> p.getAttachmentManager().hasAttachment(extractor))
+                .findFirst()
+                .orElse(null);
+
+            Pipe to = this.graph.getPipes().stream()
+                .filter(p -> p.getAttachmentManager().hasAttachment(insertor))
+                .findFirst()
+                .orElse(null);
+
+            if (from != null && to != null && graph.getRoutingGraph() != null) {
+                DijkstraAlgorithm<BlockPos> dijkstra = new DijkstraAlgorithm<>(graph.getRoutingGraph());
+
+                dijkstra.execute(graph.getRoutingGraph().getNode(from.getPos()));
+
+                List<Node<BlockPos>> path = dijkstra.getPath(graph.getRoutingGraph().getNode(to.getPos()));
+
+                if (path != null) {
+                    Deque<Pipe> pipesToGo = new ArrayDeque<>();
+                    path.forEach(p -> {
+                        BlockPos pos = p.getId();
+                        Pipe pipe = NetworkManager.get(world).getPipe(pos);
+                        pipesToGo.add(pipe);
+                    });
+
+                    Transport t = new Transport(
+                        new ItemStack(Blocks.DIRT),
+                        from,
+                        to,
+                        pipesToGo
+                    );
+
+                    addTransport(t);
+                }
+            }
+        }
+
+        transports.addAll(transportsToAdd);
+        transportsToAdd.clear();
+
+        transports.removeIf(Transport::update);
     }
 
     @Override

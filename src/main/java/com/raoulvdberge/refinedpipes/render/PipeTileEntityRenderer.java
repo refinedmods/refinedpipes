@@ -7,6 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import org.lwjgl.opengl.GL11;
@@ -15,6 +16,17 @@ public class PipeTileEntityRenderer extends TileEntityRenderer<PipeTileEntity> {
     @Override
     public void render(PipeTileEntity tile, double x, double y, double z, float partialTicks, int destroyStage) {
         super.render(tile, x, y, z, partialTicks, destroyStage);
+
+        if (tile.getStack() != null) {
+            GlStateManager.pushMatrix();
+
+            GlStateManager.translated(x + 0.5, y + 0.5, z + 0.5);
+            GlStateManager.scaled(0.5D, 0.5D, 0.5D);
+            
+            Minecraft.getInstance().getItemRenderer().renderItem(tile.getStack(), ItemCameraTransforms.TransformType.FIXED);
+
+            GlStateManager.popMatrix();
+        }
 
         if (tile.getColor() == null || !(Minecraft.getInstance().player.inventory.getCurrentItem().getItem() instanceof BlockItemBase)) {
             return;

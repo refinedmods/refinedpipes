@@ -14,6 +14,10 @@ public class AttachmentManager {
         return attachments.containsKey(dir);
     }
 
+    public boolean hasAttachment(AttachmentType type) {
+        return attachments.values().stream().anyMatch(a -> a.getType() == type);
+    }
+
     public void removeAttachment(Direction dir) {
         attachments.remove(dir);
     }
