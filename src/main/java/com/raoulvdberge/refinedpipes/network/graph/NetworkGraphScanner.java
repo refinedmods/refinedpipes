@@ -6,10 +6,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import java.util.ArrayDeque;
-import java.util.HashSet;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 
 public class NetworkGraphScanner {
     private final Set<Pipe> foundPipes = new HashSet<>();
@@ -17,6 +14,7 @@ public class NetworkGraphScanner {
     private final Set<Pipe> removedPipes = new HashSet<>();
     private final Set<Pipe> currentPipes;
 
+    private final List<NetworkGraphScannerRequest> allRequests = new ArrayList<>();
     private final Queue<NetworkGraphScannerRequest> requests = new ArrayDeque<>();
 
     public NetworkGraphScanner(Set<Pipe> currentPipes) {
@@ -25,22 +23,23 @@ public class NetworkGraphScanner {
     }
 
     public NetworkGraphScannerResult scanAt(World world, BlockPos pos) {
-        requests.add(new NetworkGraphScannerRequest(world, pos));
+        addRequest(new NetworkGraphScannerRequest(world, pos, null));
 
         NetworkGraphScannerRequest request;
         while ((request = requests.poll()) != null) {
-            singleScanAt(request.getWorld(), request.getPos());
+            singleScanAt(request);
         }
 
         return new NetworkGraphScannerResult(
             foundPipes,
             newPipes,
-            removedPipes
+            removedPipes,
+            allRequests
         );
     }
 
-    private void singleScanAt(World world, BlockPos pos) {
-        Pipe pipe = NetworkManager.get(world).getPipe(pos);
+    private void singleScanAt(NetworkGraphScannerRequest request) {
+        Pipe pipe = NetworkManager.get(request.getWorld()).getPipe(request.getPos());
 
         if (pipe != null) {
             if (foundPipes.add(pipe)) {
@@ -50,13 +49,21 @@ public class NetworkGraphScanner {
 
                 removedPipes.remove(pipe);
 
+                request.setSuccessful(true);
+
                 for (Direction dir : Direction.values()) {
-                    requests.add(new NetworkGraphScannerRequest(
-                        world,
-                        pos.offset(dir)
+                    addRequest(new NetworkGraphScannerRequest(
+                        request.getWorld(),
+                        request.getPos().offset(dir),
+                        request
                     ));
                 }
             }
         }
+    }
+
+    private void addRequest(NetworkGraphScannerRequest request) {
+        requests.add(request);
+        allRequests.add(request);
     }
 }
