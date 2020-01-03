@@ -1,5 +1,6 @@
 {
   "credit": "Made with Blockbench",
+  "parent": "block/block",
   "textures": {
     "0": "refinedpipes:blocks/glass",
     "1": "refinedpipes:blocks/pipe",

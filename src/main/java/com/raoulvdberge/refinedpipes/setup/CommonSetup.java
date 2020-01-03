@@ -3,6 +3,7 @@ package com.raoulvdberge.refinedpipes.setup;
 import com.raoulvdberge.refinedpipes.RefinedPipes;
 import com.raoulvdberge.refinedpipes.RefinedPipesBlocks;
 import com.raoulvdberge.refinedpipes.block.PipeBlock;
+import com.raoulvdberge.refinedpipes.item.AttachmentItem;
 import com.raoulvdberge.refinedpipes.item.BlockItemBase;
 import com.raoulvdberge.refinedpipes.tile.PipeTileEntity;
 import net.minecraft.block.Block;
@@ -20,6 +21,7 @@ public class CommonSetup {
     @SubscribeEvent
     public void onRegisterItems(RegistryEvent.Register<Item> e) {
         e.getRegistry().register(new BlockItemBase(RefinedPipesBlocks.PIPE));
+        e.getRegistry().register(new AttachmentItem());
     }
 
     @SubscribeEvent

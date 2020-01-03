@@ -1,4 +1,5 @@
 {
   "itemGroup.refinedpipes": "Refined Pipes",
-  "block.refinedpipes.pipe": "Pipe"
+  "block.refinedpipes.pipe": "Pipe",
+  "item.refinedpipes.attachment": "Attachment"
 }

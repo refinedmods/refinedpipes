@@ -14,11 +14,16 @@ public class Pipe {
 
     private final World world;
     private final BlockPos pos;
+    private final AttachmentManager attachmentManager = new AttachmentManager();
     private Network network;
 
     public Pipe(World world, BlockPos pos) {
         this.world = world;
         this.pos = pos;
+    }
+
+    public AttachmentManager getAttachmentManager() {
+        return attachmentManager;
     }
 
     public World getWorld() {

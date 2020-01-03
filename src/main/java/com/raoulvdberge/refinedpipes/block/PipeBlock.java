@@ -1,23 +1,33 @@
 package com.raoulvdberge.refinedpipes.block;
 
 import com.raoulvdberge.refinedpipes.RefinedPipes;
+import com.raoulvdberge.refinedpipes.item.AttachmentItem;
+import com.raoulvdberge.refinedpipes.network.AttachmentType;
+import com.raoulvdberge.refinedpipes.network.NetworkManager;
+import com.raoulvdberge.refinedpipes.network.Pipe;
 import com.raoulvdberge.refinedpipes.tile.PipeTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItemUseContext;
+import net.minecraft.item.ItemStack;
 import net.minecraft.state.BooleanProperty;
+import net.minecraft.state.EnumProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.ChestTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 
@@ -28,6 +38,12 @@ public class PipeBlock extends Block {
     private static final BooleanProperty WEST = BooleanProperty.create("west");
     private static final BooleanProperty UP = BooleanProperty.create("up");
     private static final BooleanProperty DOWN = BooleanProperty.create("down");
+    private static final EnumProperty<AttachmentType> ATTACHMENT_NORTH = EnumProperty.create("attachment_north", AttachmentType.class);
+    private static final EnumProperty<AttachmentType> ATTACHMENT_EAST = EnumProperty.create("attachment_east", AttachmentType.class);
+    private static final EnumProperty<AttachmentType> ATTACHMENT_SOUTH = EnumProperty.create("attachment_south", AttachmentType.class);
+    private static final EnumProperty<AttachmentType> ATTACHMENT_WEST = EnumProperty.create("attachment_west", AttachmentType.class);
+    private static final EnumProperty<AttachmentType> ATTACHMENT_UP = EnumProperty.create("attachment_up", AttachmentType.class);
+    private static final EnumProperty<AttachmentType> ATTACHMENT_DOWN = EnumProperty.create("attachment_down", AttachmentType.class);
 
     public static final VoxelShape CORE_SHAPE = makeCuboidShape(4, 4, 4, 12, 12, 12);
     public static final VoxelShape NORTH_EXTENSION_SHAPE = makeCuboidShape(4, 4, 0, 12, 12, 4);
@@ -41,7 +57,65 @@ public class PipeBlock extends Block {
         super(Block.Properties.create(Material.ROCK));
 
         this.setRegistryName(RefinedPipes.ID, "pipe");
-        this.setDefaultState(getDefaultState().with(NORTH, false).with(EAST, false).with(SOUTH, false).with(WEST, false).with(UP, false).with(DOWN, false));
+        this.setDefaultState(getDefaultState()
+            .with(NORTH, false)
+            .with(EAST, false)
+            .with(SOUTH, false)
+            .with(WEST, false)
+            .with(UP, false)
+            .with(DOWN, false)
+            .with(ATTACHMENT_NORTH, AttachmentType.NONE)
+            .with(ATTACHMENT_EAST, AttachmentType.NONE)
+            .with(ATTACHMENT_SOUTH, AttachmentType.NONE)
+            .with(ATTACHMENT_WEST, AttachmentType.NONE)
+            .with(ATTACHMENT_UP, AttachmentType.NONE)
+            .with(ATTACHMENT_DOWN, AttachmentType.NONE)
+        );
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
+        if (!world.isRemote) {
+            ItemStack held = player.getHeldItemMainhand();
+
+            if (held.getItem() instanceof AttachmentItem) {
+                Pipe pipe = NetworkManager.get(world).getPipe(pos);
+
+                if (pipe != null && !pipe.getAttachmentManager().hasAttachment(hit.getFace())) {
+                    AttachmentType type = ((AttachmentItem) held.getItem()).getType();
+
+                    pipe.getAttachmentManager().setAttachment(hit.getFace(), type);
+
+                    setAttachment(world, pos, hit.getFace(), type);
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private static void setAttachment(World world, BlockPos pos, Direction dir, AttachmentType type) {
+        switch (dir) {
+            case DOWN:
+                world.setBlockState(pos, world.getBlockState(pos).with(ATTACHMENT_DOWN, type));
+                break;
+            case UP:
+                world.setBlockState(pos, world.getBlockState(pos).with(ATTACHMENT_UP, type));
+                break;
+            case NORTH:
+                world.setBlockState(pos, world.getBlockState(pos).with(ATTACHMENT_NORTH, type));
+                break;
+            case SOUTH:
+                world.setBlockState(pos, world.getBlockState(pos).with(ATTACHMENT_SOUTH, type));
+                break;
+            case WEST:
+                world.setBlockState(pos, world.getBlockState(pos).with(ATTACHMENT_WEST, type));
+                break;
+            case EAST:
+                world.setBlockState(pos, world.getBlockState(pos).with(ATTACHMENT_EAST, type));
+                break;
+        }
     }
 
     @Override
@@ -64,7 +138,20 @@ public class PipeBlock extends Block {
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
         super.fillStateContainer(builder);
 
-        builder.add(NORTH, EAST, SOUTH, WEST, UP, DOWN);
+        builder.add(
+            NORTH,
+            EAST,
+            SOUTH,
+            WEST,
+            UP,
+            DOWN,
+            ATTACHMENT_NORTH,
+            ATTACHMENT_EAST,
+            ATTACHMENT_SOUTH,
+            ATTACHMENT_WEST,
+            ATTACHMENT_UP,
+            ATTACHMENT_DOWN
+        );
     }
 
     @Nullable
