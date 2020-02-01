@@ -115,7 +115,7 @@ public class Transport {
         }
 
         if (isLastPipe()) {
-            mt *= 0.5D;
+            mt *= 0.25D;
         }
 
         return (int) mt;

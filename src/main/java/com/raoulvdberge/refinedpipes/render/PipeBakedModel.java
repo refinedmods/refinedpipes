@@ -66,6 +66,11 @@ public class PipeBakedModel implements IBakedModel {
     }
 
     @Override
+    public boolean func_230044_c_() {
+        return true;
+    }
+
+    @Override
     public boolean isBuiltInRenderer() {
         return pipe.isBuiltInRenderer();
     }

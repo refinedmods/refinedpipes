@@ -67,7 +67,7 @@ public class Network {
         color.writeToTag(tag);
 
         ListNBT graph = new ListNBT();
-        this.graph.getPipes().forEach(p -> graph.add(new LongNBT(p.getPos().toLong())));
+        this.graph.getPipes().forEach(p -> graph.add(LongNBT.valueOf(p.getPos().toLong())));
         tag.put("graph", graph);
 
         return tag;

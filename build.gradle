@@ -24,7 +24,7 @@ archivesBaseName = 'refinedpipes'
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
 
 minecraft {
-    mappings channel: 'snapshot', version: '20190719-1.14.3'
+    mappings channel: 'snapshot', version: '20200124-1.15.1'
 
     runs {
         client {
@@ -36,6 +36,12 @@ minecraft {
                     source sourceSets.main
                 }
             }
+        }
+
+        intellijClient {
+            parent runs.client
+            ideaModule "${project.name}.main"
+            environment 'MOD_CLASSES', "${project.file("out/production/resources").canonicalPath};${project.file("out/production/classes").canonicalPath}"
         }
 
         server {
@@ -78,7 +84,7 @@ processResources {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.14.4-28.1.70'
+    minecraft 'net.minecraftforge:forge:1.15.2-31.0.14'
 }
 
 jar {

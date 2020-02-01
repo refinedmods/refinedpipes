@@ -1,11 +1,15 @@
 package com.raoulvdberge.refinedpipes.setup;
 
 import com.raoulvdberge.refinedpipes.RefinedPipes;
+import com.raoulvdberge.refinedpipes.RefinedPipesBlocks;
+import com.raoulvdberge.refinedpipes.RefinedPipesTileEntities;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentRegistry;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
 import com.raoulvdberge.refinedpipes.render.PipeBakedModel;
 import com.raoulvdberge.refinedpipes.render.PipeTileEntityRenderer;
 import com.raoulvdberge.refinedpipes.tile.PipeTileEntity;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.util.ResourceLocation;
@@ -13,6 +17,7 @@ import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,15 +29,22 @@ public class ClientSetup {
     private static final Logger LOGGER = LogManager.getLogger(ClientSetup.class);
 
     public ClientSetup() {
-        ClientRegistry.bindTileEntitySpecialRenderer(PipeTileEntity.class, new PipeTileEntityRenderer());
-
         for (AttachmentType type : AttachmentRegistry.INSTANCE.getTypes()) {
             LOGGER.debug("Registering attachment model {} for {}", type.getModelLocation(), type.getId());
 
             ModelLoader.addSpecialModel(type.getModelLocation());
         }
 
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onClientSetup);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onModelBake);
+    }
+
+
+    @SubscribeEvent
+    public void onClientSetup(FMLClientSetupEvent e) {
+        RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.PIPE, RenderType.cutout());
+
+        ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.PIPE, PipeTileEntityRenderer::new);
     }
 
     @SubscribeEvent

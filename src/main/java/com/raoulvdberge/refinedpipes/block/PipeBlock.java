@@ -17,7 +17,7 @@ import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.ChestTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -63,19 +63,19 @@ public class PipeBlock extends Block {
 
     @Override
     @SuppressWarnings("deprecation")
-    public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
+    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
         ItemStack held = player.getHeldItemMainhand();
 
         if (held.getItem() instanceof AttachmentItem) {
             return addAttachment(player, world, pos, held, hit.getFace());
-        } else if (held.isEmpty() && player.isSneaking()) {
+        } else if (held.isEmpty() && player.isCrouching()) {
             return removeAttachment(world, pos, hit.getFace());
         }
 
         return super.onBlockActivated(state, world, pos, player, hand, hit);
     }
 
-    private boolean addAttachment(PlayerEntity player, World world, BlockPos pos, ItemStack attachment, Direction dir) {
+    private ActionResultType addAttachment(PlayerEntity player, World world, BlockPos pos, ItemStack attachment, Direction dir) {
         if (!world.isRemote) {
             Pipe pipe = NetworkManager.get(world).getPipe(pos);
 
@@ -93,10 +93,10 @@ public class PipeBlock extends Block {
             }
         }
 
-        return true;
+        return ActionResultType.SUCCESS;
     }
 
-    private boolean removeAttachment(World world, BlockPos pos, Direction dir) {
+    private ActionResultType removeAttachment(World world, BlockPos pos, Direction dir) {
         if (!world.isRemote) {
             Pipe pipe = NetworkManager.get(world).getPipe(pos);
 
@@ -105,15 +105,15 @@ public class PipeBlock extends Block {
 
                 pipe.getAttachmentManager().removeAttachment(dir);
                 pipe.sendUpdate();
-                
+
                 NetworkManager.get(world).markDirty();
 
                 Block.spawnAsEntity(world, pos.offset(dir), attachment.getType().toStack());
             }
 
-            return true;
+            return ActionResultType.SUCCESS;
         } else {
-            return ((PipeTileEntity) world.getTileEntity(pos)).hasAttachment(dir);
+            return ((PipeTileEntity) world.getTileEntity(pos)).hasAttachment(dir) ? ActionResultType.SUCCESS : ActionResultType.FAIL;
         }
     }
 
@@ -126,11 +126,6 @@ public class PipeBlock extends Block {
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
         return new PipeTileEntity();
-    }
-
-    @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.CUTOUT;
     }
 
     @Override
