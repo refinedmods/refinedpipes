@@ -43,7 +43,7 @@ public class ItemTransport {
 
             if (currentPipe != null) {
                 progressInCurrentPipe = 0;
-                currentPipe.setCurrentTransport(this);
+                currentPipe.addTransport(this);
             } else {
                 return true;
             }
@@ -52,7 +52,7 @@ public class ItemTransport {
         progressInCurrentPipe += 1;
 
         if (progressInCurrentPipe >= getMaxTicksInPipe()) {
-            currentPipe.setCurrentTransport(null);
+            currentPipe.removeTransport(this);
             currentPipe = null;
             firstPipe = false;
         }

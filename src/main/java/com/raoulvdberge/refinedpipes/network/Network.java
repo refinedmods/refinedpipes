@@ -33,6 +33,7 @@ public class Network {
     private final Color color;
     private final List<ItemTransport> transports = new ArrayList<>();
     private final List<ItemTransport> transportsToAdd = new ArrayList<>();
+    private int ticksElapsed;
 
     public Network() {
         Random r = new Random();
@@ -100,7 +101,9 @@ public class Network {
     }
 
     public void update(World world) {
-        if (transports.isEmpty()) {
+        ticksElapsed++;
+
+        if (ticksElapsed % 5 == 0) {
             AttachmentType extractor = AttachmentRegistry.INSTANCE.getType(new ResourceLocation(RefinedPipes.ID, "extractor"));
             AttachmentType insertor = AttachmentRegistry.INSTANCE.getType(new ResourceLocation(RefinedPipes.ID, "insertor"));
 

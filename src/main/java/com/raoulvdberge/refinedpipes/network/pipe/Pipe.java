@@ -1,7 +1,6 @@
 package com.raoulvdberge.refinedpipes.network.pipe;
 
 import com.raoulvdberge.refinedpipes.RefinedPipes;
-import com.raoulvdberge.refinedpipes.RefinedPipesNetwork;
 import com.raoulvdberge.refinedpipes.message.TransportMessage;
 import com.raoulvdberge.refinedpipes.network.Network;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.Attachment;
@@ -21,10 +20,7 @@ import net.minecraftforge.common.util.Constants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class Pipe {
     private static final Logger LOGGER = LogManager.getLogger(Pipe.class);
@@ -34,7 +30,7 @@ public class Pipe {
     private final AttachmentManager attachmentManager = new AttachmentManager();
 
     private Network network;
-    private ItemTransport currentTransport;
+    private Set<ItemTransport> transports = new HashSet<>();
 
     public Pipe(World world, BlockPos pos) {
         this.world = world;
@@ -77,8 +73,14 @@ public class Pipe {
         sendBlockUpdate();
     }
 
-    public void setCurrentTransport(@Nullable ItemTransport currentTransport) {
-        this.currentTransport = currentTransport;
+    public void addTransport(ItemTransport currentTransport) {
+        this.transports.add(currentTransport);
+
+        sendTransportUpdate();
+    }
+
+    public void removeTransport(ItemTransport transport) {
+        this.transports.remove(transport);
 
         sendTransportUpdate();
     }
@@ -90,8 +92,8 @@ public class Pipe {
 
     public void sendTransportUpdate() {
         List<ItemTransportProps> props = new ArrayList<>();
-        if (currentTransport != null) {
-            props.add(currentTransport.createProps());
+        for (ItemTransport transport : transports) {
+            props.add(transport.createProps());
         }
 
         RefinedPipes.NETWORK.sendInArea(world, pos, 32, new TransportMessage(pos, props));
