@@ -4,7 +4,7 @@ import com.raoulvdberge.refinedpipes.RefinedPipes;
 import com.raoulvdberge.refinedpipes.network.graph.NetworkGraph;
 import com.raoulvdberge.refinedpipes.network.graph.NetworkGraphScannerResult;
 import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
-import com.raoulvdberge.refinedpipes.network.pipe.Transport;
+import com.raoulvdberge.refinedpipes.network.pipe.transport.ItemTransport;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentRegistry;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
 import com.raoulvdberge.refinedpipes.network.route.DijkstraAlgorithm;
@@ -31,8 +31,8 @@ public class Network {
     private final NetworkGraph graph = new NetworkGraph(this);
     private final String id;
     private final Color color;
-    private final List<Transport> transports = new ArrayList<>();
-    private final List<Transport> transportsToAdd = new ArrayList<>();
+    private final List<ItemTransport> transports = new ArrayList<>();
+    private final List<ItemTransport> transportsToAdd = new ArrayList<>();
 
     public Network() {
         Random r = new Random();
@@ -95,7 +95,7 @@ public class Network {
         return network;
     }
 
-    public void addTransport(Transport transport) {
+    public void addTransport(ItemTransport transport) {
         transportsToAdd.add(transport);
     }
 
@@ -133,7 +133,7 @@ public class Network {
                     BlockPos fromPos = from.getPos().offset(from.getAttachmentManager().getAttachment(extractor).getDirection());
                     BlockPos toPos = to.getPos().offset(to.getAttachmentManager().getAttachment(insertor).getDirection());
 
-                    Transport t = new Transport(
+                    ItemTransport t = new ItemTransport(
                         new ItemStack(Blocks.DIRT),
                         fromPos,
                         toPos,
@@ -148,7 +148,7 @@ public class Network {
         transports.addAll(transportsToAdd);
         transportsToAdd.clear();
 
-        transports.removeIf(Transport::update);
+        transports.removeIf(ItemTransport::update);
     }
 
     @Override

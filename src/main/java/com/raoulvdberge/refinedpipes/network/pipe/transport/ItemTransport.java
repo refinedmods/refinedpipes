@@ -1,12 +1,13 @@
-package com.raoulvdberge.refinedpipes.network.pipe;
+package com.raoulvdberge.refinedpipes.network.pipe.transport;
 
+import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.Deque;
 
-public class Transport {
+public class ItemTransport {
     private final ItemStack value;
     private final BlockPos source;
     private final BlockPos destination;
@@ -18,7 +19,7 @@ public class Transport {
     private int progressInCurrentPipe;
     private Pipe currentPipe;
 
-    public Transport(ItemStack value, BlockPos source, BlockPos destination, Deque<Pipe> pipesToGo) {
+    public ItemTransport(ItemStack value, BlockPos source, BlockPos destination, Deque<Pipe> pipesToGo) {
         this.value = value;
         this.source = source;
         this.destination = destination;
@@ -36,16 +37,31 @@ public class Transport {
         return getDirection(currentPipe.getPos(), nextPipe.getPos());
     }
 
-    public Direction getInitialDirection() {
-        return initialDirection;
+    public boolean update() {
+        if (currentPipe == null) {
+            currentPipe = pipesToGo.poll();
+
+            if (currentPipe != null) {
+                progressInCurrentPipe = 0;
+                currentPipe.setCurrentTransport(this);
+            } else {
+                return true;
+            }
+        }
+
+        progressInCurrentPipe += 1;
+
+        if (progressInCurrentPipe >= getMaxTicksInPipe()) {
+            currentPipe.setCurrentTransport(null);
+            currentPipe = null;
+            firstPipe = false;
+        }
+
+        return false;
     }
 
-    public boolean isLastPipe() {
+    private boolean isLastPipe() {
         return pipesToGo.isEmpty();
-    }
-
-    public boolean isFirstPipe() {
-        return firstPipe;
     }
 
     private static Direction getDirection(BlockPos a, BlockPos b) {
@@ -76,41 +92,10 @@ public class Transport {
         return Direction.NORTH;
     }
 
-    public ItemStack getValue() {
-        return value;
-    }
-
-    public int getProgressInCurrentPipe() {
-        return progressInCurrentPipe;
-    }
-
-    public boolean update() {
-        if (currentPipe == null) {
-            currentPipe = pipesToGo.poll();
-
-            if (currentPipe != null) {
-                currentPipe.setCurrentTransport(this);
-                progressInCurrentPipe = 0;
-            } else {
-                return true;
-            }
-        }
-
-        progressInCurrentPipe += 1;
-
-        if (progressInCurrentPipe >= getMaxTicksInPipe()) {
-            currentPipe.setCurrentTransport(null);
-            currentPipe = null;
-            firstPipe = false;
-        }
-
-        return false;
-    }
-
     private int getMaxTicksInPipe() {
         double mt = currentPipe.getMaxTicksInPipe();
 
-        if (isFirstPipe()) {
+        if (firstPipe) {
             mt *= 1.5D;
         }
 
@@ -119,5 +104,17 @@ public class Transport {
         }
 
         return (int) mt;
+    }
+
+    public ItemTransportProps createProps() {
+        return new ItemTransportProps(
+            value,
+            currentPipe.getMaxTicksInPipe(),
+            progressInCurrentPipe,
+            getDirection(),
+            initialDirection,
+            isLastPipe(),
+            firstPipe
+        );
     }
 }

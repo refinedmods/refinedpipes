@@ -5,9 +5,9 @@ import com.raoulvdberge.refinedpipes.network.NetworkManager;
 import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentRegistry;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
+import com.raoulvdberge.refinedpipes.network.pipe.transport.ItemTransportProps;
 import com.raoulvdberge.refinedpipes.render.Color;
 import net.minecraft.block.BlockState;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
@@ -19,7 +19,9 @@ import net.minecraftforge.client.model.data.ModelDataMap;
 import net.minecraftforge.client.model.data.ModelProperty;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class PipeTileEntity extends TileEntity implements ITickableTileEntity {
@@ -27,13 +29,7 @@ public class PipeTileEntity extends TileEntity implements ITickableTileEntity {
 
     private Color color;
     private Map<Direction, AttachmentType> attachments = new HashMap<>();
-    private ItemStack stack;
-    private byte maxTicksInPipe;
-    private int progress;
-    private Direction direction = Direction.NORTH;
-    private Direction initialDirection = Direction.NORTH;
-    private boolean lastPipe = false;
-    private boolean firstPipe = false;
+    private List<ItemTransportProps> props = new ArrayList<>();
 
     public PipeTileEntity() {
         super(RefinedPipesTileEntities.PIPE);
@@ -41,8 +37,8 @@ public class PipeTileEntity extends TileEntity implements ITickableTileEntity {
 
     @Override
     public void tick() {
-        if (world.isRemote && stack != null) {
-            progress++;
+        if (world.isRemote) {
+            props.forEach(ItemTransportProps::tick);
         }
     }
 
@@ -61,17 +57,6 @@ public class PipeTileEntity extends TileEntity implements ITickableTileEntity {
             }
 
             pipe.getNetwork().getColor().writeToTag(tag);
-
-            if (pipe.getCurrentTransport() != null) {
-                tag.put("transport", pipe.getCurrentTransport().getValue().write(new CompoundNBT()));
-                tag.putInt("pr", pipe.getCurrentTransport().getProgressInCurrentPipe());
-                tag.putByte("dir", (byte)pipe.getCurrentTransport().getDirection().ordinal());
-                tag.putByte("idir", (byte)pipe.getCurrentTransport().getInitialDirection().ordinal());
-                tag.putBoolean("lst", pipe.getCurrentTransport().isLastPipe());
-                tag.putBoolean("fst", pipe.getCurrentTransport().isFirstPipe());
-            }
-
-            tag.putByte("mt", pipe.getMaxTicksInPipe());
         }
 
         return tag;
@@ -83,45 +68,10 @@ public class PipeTileEntity extends TileEntity implements ITickableTileEntity {
         this.attachments.clear();
         for (Direction dir : Direction.values()) {
             String key = "attch_" + dir.ordinal();
+
             if (tag.contains(key)) {
                 this.attachments.put(dir, AttachmentRegistry.INSTANCE.getType(new ResourceLocation(tag.getString(key))));
             }
-        }
-
-        if (tag.contains("mt")) {
-            this.maxTicksInPipe = tag.getByte("mt");
-        }
-
-        if (tag.contains("dir")) {
-            this.direction = Direction.values()[tag.getByte("dir")];
-        }
-
-        if (tag.contains("idir")) {
-            this.initialDirection = Direction.values()[tag.getByte("idir")];
-        }
-
-        if (tag.contains("pr")) {
-            this.progress = tag.getInt("pr");
-        } else {
-            this.progress = 0;
-        }
-
-        if (tag.contains("lst")) {
-            this.lastPipe = tag.getBoolean("lst");
-        } else {
-            this.lastPipe = false;
-        }
-
-        if (tag.contains("fst")) {
-            this.firstPipe = tag.getBoolean("fst");
-        } else {
-            this.firstPipe = false;
-        }
-
-        if (tag.contains("transport")) {
-            this.stack = ItemStack.read(tag.getCompound("transport"));
-        } else {
-            this.stack = null;
         }
 
         requestModelDataUpdate();
@@ -130,32 +80,12 @@ public class PipeTileEntity extends TileEntity implements ITickableTileEntity {
         world.notifyBlockUpdate(pos, state, state, 1 | 2);
     }
 
-    public ItemStack getStack() {
-        return stack;
+    public List<ItemTransportProps> getProps() {
+        return props;
     }
 
-    public byte getMaxTicksInPipe() {
-        return maxTicksInPipe;
-    }
-
-    public int getProgress() {
-        return progress;
-    }
-
-    public Direction getDirection() {
-        return direction;
-    }
-
-    public Direction getInitialDirection() {
-        return initialDirection;
-    }
-
-    public boolean isFirstPipe() {
-        return firstPipe;
-    }
-
-    public boolean isLastPipe() {
-        return lastPipe;
+    public void setProps(List<ItemTransportProps> props) {
+        this.props = props;
     }
 
     @Override
@@ -206,9 +136,5 @@ public class PipeTileEntity extends TileEntity implements ITickableTileEntity {
         if (!world.isRemote) {
             NetworkManager.get(world).removePipe(pos);
         }
-    }
-
-    public Color getColor() {
-        return color;
     }
 }

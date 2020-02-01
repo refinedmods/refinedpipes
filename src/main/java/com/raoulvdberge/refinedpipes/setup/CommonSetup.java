@@ -22,6 +22,8 @@ public class CommonSetup {
     public CommonSetup() {
         AttachmentRegistry.INSTANCE.addType(new ExtractorAttachmentType());
         AttachmentRegistry.INSTANCE.addType(new InsertorAttachmentType());
+
+        RefinedPipes.NETWORK.register();
     }
 
     @SubscribeEvent

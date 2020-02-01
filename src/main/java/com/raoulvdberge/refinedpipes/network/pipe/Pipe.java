@@ -1,10 +1,15 @@
 package com.raoulvdberge.refinedpipes.network.pipe;
 
+import com.raoulvdberge.refinedpipes.RefinedPipes;
+import com.raoulvdberge.refinedpipes.RefinedPipesNetwork;
+import com.raoulvdberge.refinedpipes.message.TransportMessage;
 import com.raoulvdberge.refinedpipes.network.Network;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.Attachment;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentManager;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentRegistry;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
+import com.raoulvdberge.refinedpipes.network.pipe.transport.ItemTransport;
+import com.raoulvdberge.refinedpipes.network.pipe.transport.ItemTransportProps;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
@@ -17,6 +22,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class Pipe {
@@ -27,7 +34,7 @@ public class Pipe {
     private final AttachmentManager attachmentManager = new AttachmentManager();
 
     private Network network;
-    private Transport currentTransport;
+    private ItemTransport currentTransport;
 
     public Pipe(World world, BlockPos pos) {
         this.world = world;
@@ -59,7 +66,7 @@ public class Pipe {
 
         LOGGER.debug(pos + " joined network " + network.getId());
 
-        sendUpdate();
+        sendBlockUpdate();
     }
 
     public void leaveNetwork() {
@@ -67,22 +74,27 @@ public class Pipe {
 
         this.network = null;
 
-        sendUpdate();
+        sendBlockUpdate();
     }
 
-    public void setCurrentTransport(@Nullable Transport currentTransport) {
+    public void setCurrentTransport(@Nullable ItemTransport currentTransport) {
         this.currentTransport = currentTransport;
 
-        sendUpdate();
+        sendTransportUpdate();
     }
 
-    public Transport getCurrentTransport() {
-        return currentTransport;
-    }
-
-    public void sendUpdate() {
+    public void sendBlockUpdate() {
         BlockState state = world.getBlockState(pos);
         world.notifyBlockUpdate(pos, state, state, 1 | 2);
+    }
+
+    public void sendTransportUpdate() {
+        List<ItemTransportProps> props = new ArrayList<>();
+        if (currentTransport != null) {
+            props.add(currentTransport.createProps());
+        }
+
+        RefinedPipes.NETWORK.sendInArea(world, pos, 32, new TransportMessage(pos, props));
     }
 
     public CompoundNBT writeToNbt(CompoundNBT tag) {

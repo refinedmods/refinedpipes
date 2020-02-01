@@ -83,7 +83,7 @@ public class PipeBlock extends Block {
                 AttachmentType type = ((AttachmentItem) attachment.getItem()).getType();
 
                 pipe.getAttachmentManager().setAttachment(dir, type);
-                pipe.sendUpdate();
+                pipe.sendBlockUpdate();
 
                 NetworkManager.get(world).markDirty();
 
@@ -104,7 +104,7 @@ public class PipeBlock extends Block {
                 Attachment attachment = pipe.getAttachmentManager().getAttachment(dir);
 
                 pipe.getAttachmentManager().removeAttachment(dir);
-                pipe.sendUpdate();
+                pipe.sendBlockUpdate();
 
                 NetworkManager.get(world).markDirty();
 
