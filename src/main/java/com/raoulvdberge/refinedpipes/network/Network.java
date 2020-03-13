@@ -3,15 +3,15 @@ package com.raoulvdberge.refinedpipes.network;
 import com.raoulvdberge.refinedpipes.RefinedPipes;
 import com.raoulvdberge.refinedpipes.network.graph.NetworkGraph;
 import com.raoulvdberge.refinedpipes.network.graph.NetworkGraphScannerResult;
+import com.raoulvdberge.refinedpipes.network.pipe.Destination;
 import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
-import com.raoulvdberge.refinedpipes.network.pipe.transport.ItemTransport;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentRegistry;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
-import com.raoulvdberge.refinedpipes.network.route.DijkstraAlgorithm;
+import com.raoulvdberge.refinedpipes.network.pipe.transport.ItemTransport;
 import com.raoulvdberge.refinedpipes.network.route.Node;
 import com.raoulvdberge.refinedpipes.render.Color;
-import net.minecraft.block.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
@@ -20,6 +20,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.items.IItemHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -103,9 +104,8 @@ public class Network {
     public void update(World world) {
         ticksElapsed++;
 
-        if (ticksElapsed % 5 == 0) {
+        if (ticksElapsed % 5 == 0 && transports.isEmpty()) {
             AttachmentType extractor = AttachmentRegistry.INSTANCE.getType(new ResourceLocation(RefinedPipes.ID, "extractor"));
-            AttachmentType insertor = AttachmentRegistry.INSTANCE.getType(new ResourceLocation(RefinedPipes.ID, "insertor"));
 
             // Debug
             Pipe from = this.graph.getPipes().stream()
@@ -113,38 +113,65 @@ public class Network {
                 .findFirst()
                 .orElse(null);
 
-            Pipe to = this.graph.getPipes().stream()
-                .filter(p -> p.getAttachmentManager().hasAttachment(insertor))
-                .findFirst()
-                .orElse(null);
+            if (from != null) {
 
-            if (from != null && to != null && graph.getRoutingGraph() != null) {
-                DijkstraAlgorithm<BlockPos> dijkstra = new DijkstraAlgorithm<>(graph.getRoutingGraph());
+                // Step 1: get all paths
+                Map<BlockPos, Map<Destination<IItemHandler>, List<Node<BlockPos>>>> paths = graph.getNodeToDestinationPaths();
 
-                dijkstra.execute(graph.getRoutingGraph().getNode(from.getPos()));
-
-                List<Node<BlockPos>> path = dijkstra.getPath(graph.getRoutingGraph().getNode(to.getPos()));
-
-                if (path != null) {
-                    Deque<Pipe> pipesToGo = new ArrayDeque<>();
-                    path.forEach(p -> {
-                        BlockPos pos = p.getId();
-                        Pipe pipe = NetworkManager.get(world).getPipe(pos);
-                        pipesToGo.add(pipe);
-                    });
-
-                    BlockPos fromPos = from.getPos().offset(from.getAttachmentManager().getAttachment(extractor).getDirection());
-                    BlockPos toPos = to.getPos().offset(to.getAttachmentManager().getAttachment(insertor).getDirection());
-
-                    ItemTransport t = new ItemTransport(
-                        new ItemStack(Blocks.DIRT),
-                        fromPos,
-                        toPos,
-                        pipesToGo
-                    );
-
-                    addTransport(t);
+                if (paths == null) {
+                    return;
                 }
+
+                // Step 2: get the paths for our source
+                Map<Destination<IItemHandler>, List<Node<BlockPos>>> pathsFromSource = paths.get(from.getPos());
+
+                // Step 3: find the shortest distance
+                Destination<IItemHandler> destination = null;
+                List<Node<BlockPos>> path = null;
+                int shortestDistance = -1;
+
+                for (Map.Entry<Destination<IItemHandler>, List<Node<BlockPos>>> dest : pathsFromSource.entrySet()) {
+                    int distance = dest.getValue().size();
+
+                    if ((shortestDistance == -1 || distance < shortestDistance)) {
+                        shortestDistance = distance;
+                        destination = dest.getKey();
+                        path = dest.getValue();
+                    }
+                }
+
+                if (destination == null || path == null) {
+                    LOGGER.error("Destination pipe or path is null?");
+                    return;
+                }
+
+                // Step 4: transport the path to pipes to go queue
+                Deque<Pipe> pipesToGo = new ArrayDeque<>();
+
+                for (int i = path.size() - 1; i >= 0; --i) {
+                    Node<BlockPos> pathItem = path.get(i);
+
+                    Pipe pipe = NetworkManager.get(world).getPipe(pathItem.getId());
+                    if (pipe == null) {
+                        LOGGER.error("Pipe @ " + pathItem.getId() + " is null");
+                        return;
+                    }
+
+                    pipesToGo.push(pipe);
+                }
+
+                // Step 5: construct fromPos and toPos
+                BlockPos fromPos = from.getPos().offset(from.getAttachmentManager().getAttachment(extractor).getDirection());
+                BlockPos toPos = destination.getDestPos();
+
+                // Step 5: create a transport
+                transportsToAdd.add(new ItemTransport(
+                    new ItemStack(Items.DIAMOND),
+                    fromPos,
+                    toPos,
+                    pipesToGo
+                ));
+
             }
         }
 

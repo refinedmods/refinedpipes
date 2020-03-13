@@ -1,10 +1,14 @@
 package com.raoulvdberge.refinedpipes.network.graph;
 
 import com.raoulvdberge.refinedpipes.network.NetworkManager;
+import com.raoulvdberge.refinedpipes.network.pipe.Destination;
 import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
 
 import java.util.*;
 
@@ -12,6 +16,7 @@ public class NetworkGraphScanner {
     private final Set<Pipe> foundPipes = new HashSet<>();
     private final Set<Pipe> newPipes = new HashSet<>();
     private final Set<Pipe> removedPipes = new HashSet<>();
+    private final Set<Destination<IItemHandler>> destinations = new HashSet<>();
     private final Set<Pipe> currentPipes;
 
     private final List<NetworkGraphScannerRequest> allRequests = new ArrayList<>();
@@ -34,6 +39,7 @@ public class NetworkGraphScanner {
             foundPipes,
             newPipes,
             removedPipes,
+            destinations,
             allRequests
         );
     }
@@ -58,6 +64,17 @@ public class NetworkGraphScanner {
                         request
                     ));
                 }
+            }
+        } else if (request.getParent() != null) {
+            Pipe connectedPipe = NetworkManager.get(request.getWorld()).getPipe(request.getParent().getPos());
+
+            TileEntity tile = request.getWorld().getTileEntity(request.getPos());
+
+            if (tile != null) {
+                tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)
+                    .ifPresent(itemHandler -> destinations.add(
+                        new Destination<>(itemHandler, request.getPos(), connectedPipe)
+                    ));
             }
         }
     }

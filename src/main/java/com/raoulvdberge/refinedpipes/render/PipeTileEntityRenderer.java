@@ -49,7 +49,7 @@ public class PipeTileEntityRenderer extends TileEntityRenderer<PipeTileEntity> {
             }
 
             if (prop.isFirstPipe()) {
-                v -= 0.25D; // Every transport starts in the center. For the first pipe, we want to start from the beginning. Remove the centering.
+                v -= 0.50D; // Every transport starts in the center. For the first pipe, we want to start from the beginning. Remove the centering.
             }
 
             matrixStack.translate(
