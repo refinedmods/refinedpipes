@@ -67,7 +67,7 @@ public class NetworkManager extends WorldSavedData {
     }
 
     private void formNetworkAt(World world, BlockPos pos) {
-        Network network = new Network();
+        Network network = new Network(pos);
 
         addNetwork(network);
 
@@ -242,7 +242,7 @@ public class NetworkManager extends WorldSavedData {
 
         ListNBT nets = tag.getList("networks", Constants.NBT.TAG_COMPOUND);
         for (INBT item : nets) {
-            Network network = Network.fromNbt(this, (CompoundNBT) item);
+            Network network = Network.fromNbt((CompoundNBT) item);
 
             networks.put(network.getId(), network);
         }

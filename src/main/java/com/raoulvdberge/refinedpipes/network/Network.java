@@ -2,15 +2,10 @@ package com.raoulvdberge.refinedpipes.network;
 
 import com.raoulvdberge.refinedpipes.network.graph.NetworkGraph;
 import com.raoulvdberge.refinedpipes.network.graph.scanner.NetworkGraphScannerResult;
-import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.ItemTransport;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.nbt.LongNBT;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.Constants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -19,7 +14,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
-// TODO: serialization
+// TODO: serialization of pipe data
 public class Network {
     private static final Logger LOGGER = LogManager.getLogger(Network.class);
 
@@ -27,15 +22,16 @@ public class Network {
     private final String id;
     private final List<ItemTransport> transports = new ArrayList<>();
     private final List<ItemTransport> transportsToAdd = new ArrayList<>();
+    private final BlockPos originPos;
+    private boolean didDoInitialScan;
 
-    public Network() {
-        Random r = new Random();
-
-        this.id = generateRandomString(r, 8);
+    public Network(BlockPos originPos) {
+        this(originPos, generateRandomString(new Random(), 8));
     }
 
-    public Network(String id) {
+    public Network(BlockPos originPos, String id) {
         this.id = id;
+        this.originPos = originPos;
     }
 
     public String getId() {
@@ -48,32 +44,15 @@ public class Network {
 
     public CompoundNBT writeToNbt(CompoundNBT tag) {
         tag.putString("id", id);
-
-        ListNBT graph = new ListNBT();
-        this.graph.getPipes().forEach(p -> graph.add(LongNBT.valueOf(p.getPos().toLong())));
-        tag.put("graph", graph);
+        tag.putLong("origin", originPos.toLong());
 
         return tag;
     }
 
-    public static Network fromNbt(NetworkManager manager, CompoundNBT tag) {
-        Network network = new Network(tag.getString("id"));
+    public static Network fromNbt(CompoundNBT tag) {
+        Network network = new Network(BlockPos.fromLong(tag.getLong("origin")), tag.getString("id"));
 
-        ListNBT graph = tag.getList("graph", Constants.NBT.TAG_LONG);
-        for (INBT item : graph) {
-            BlockPos pos = BlockPos.fromLong(((LongNBT) item).getLong());
-
-            Pipe pipe = manager.getPipe(pos);
-            if (pipe == null) {
-                throw new RuntimeException("Pipe at " + pos + " not found");
-            }
-
-            pipe.setNetwork(network);
-
-            network.graph.getPipes().add(pipe);
-        }
-
-        LOGGER.debug("Deserialized network " + network.id + " with " + graph.size() + " pipes");
+        LOGGER.debug("Deserialized network " + network.id);
 
         return network;
     }
@@ -83,6 +62,12 @@ public class Network {
     }
 
     public void update(World world) {
+        if (!didDoInitialScan) {
+            didDoInitialScan = true;
+
+            scanGraph(world, originPos);
+        }
+
         graph.getPipes().forEach(p -> p.update(world));
 
         transports.addAll(transportsToAdd);

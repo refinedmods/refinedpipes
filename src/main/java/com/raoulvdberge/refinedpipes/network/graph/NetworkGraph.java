@@ -21,7 +21,6 @@ public class NetworkGraph {
     private final Network network;
 
     private Set<Pipe> pipes = new HashSet<>();
-    private Graph<BlockPos> routingGraph;
     private DestinationPathCache<IItemHandler> destinationPathCache;
 
     public NetworkGraph(Network network) {
@@ -56,7 +55,6 @@ public class NetworkGraph {
         DestinationPathCacheFactory<IItemHandler> destinationPathCacheFactory = new DestinationPathCacheFactory<>(graph, nodeIndex, result.getDestinations());
 
         this.destinationPathCache = destinationPathCacheFactory.create();
-        this.routingGraph = graph;
     }
 
     private List<Node<BlockPos>> buildNodes() {
@@ -69,9 +67,5 @@ public class NetworkGraph {
 
     public DestinationPathCache<IItemHandler> getDestinationPathCache() {
         return destinationPathCache;
-    }
-
-    public Graph<BlockPos> getRoutingGraph() {
-        return routingGraph;
     }
 }

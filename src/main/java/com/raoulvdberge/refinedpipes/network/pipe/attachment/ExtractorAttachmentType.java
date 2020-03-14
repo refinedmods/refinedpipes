@@ -70,7 +70,6 @@ public class ExtractorAttachmentType implements AttachmentType {
                     return;
                 }
 
-                // TODO paths for A->B same
                 Path<BlockPos> path = network
                     .getGraph()
                     .getDestinationPathCache()

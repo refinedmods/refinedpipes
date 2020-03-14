@@ -7,6 +7,7 @@ import net.minecraft.util.math.BlockPos;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -32,6 +33,14 @@ public class DestinationPathCacheFactory<T> {
             dijkstra.execute(node);
 
             for (Destination<T> destination : destinations) {
+                if (destination.getConnectedPipe().getPos().equals(node.getId())) {
+                    List<Node<BlockPos>> nodes = new ArrayList<>();
+                    nodes.add(node);
+
+                    cache.addPath(node.getId(), destination, new Path<>(nodes));
+                    continue;
+                }
+
                 Pipe connectedPipe = destination.getConnectedPipe();
                 Node<BlockPos> connectedPipeNode = nodeIndex.getNode(connectedPipe.getPos());
 
