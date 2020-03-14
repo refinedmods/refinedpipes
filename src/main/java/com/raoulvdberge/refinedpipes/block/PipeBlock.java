@@ -142,7 +142,20 @@ public class PipeBlock extends Block {
         );
     }
 
-    // TODO: notify network when chest is placed.
+    @Override
+    @SuppressWarnings("deprecation")
+    public void neighborChanged(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
+        super.neighborChanged(state, world, pos, block, fromPos, isMoving);
+
+        if (!world.isRemote) {
+            Pipe pipe = NetworkManager.get(world).getPipe(pos);
+
+            if (pipe != null && pipe.getNetwork() != null) {
+                pipe.getNetwork().scanGraph(world, pos);
+            }
+        }
+    }
+
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockItemUseContext ctx) {
