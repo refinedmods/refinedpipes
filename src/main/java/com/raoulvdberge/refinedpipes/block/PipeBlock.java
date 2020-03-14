@@ -142,6 +142,7 @@ public class PipeBlock extends Block {
         );
     }
 
+    // TODO: notify network when chest is placed.
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockItemUseContext ctx) {

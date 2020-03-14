@@ -1,65 +1,45 @@
 package com.raoulvdberge.refinedpipes.network;
 
-import com.raoulvdberge.refinedpipes.RefinedPipes;
-import com.raoulvdberge.refinedpipes.network.graph.DestinationPathCache;
 import com.raoulvdberge.refinedpipes.network.graph.NetworkGraph;
 import com.raoulvdberge.refinedpipes.network.graph.scanner.NetworkGraphScannerResult;
-import com.raoulvdberge.refinedpipes.network.pipe.Destination;
 import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
-import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentRegistry;
-import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.ItemTransport;
-import com.raoulvdberge.refinedpipes.network.route.Node;
-import com.raoulvdberge.refinedpipes.network.route.Path;
-import com.raoulvdberge.refinedpipes.render.Color;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.nbt.LongNBT;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.items.IItemHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Random;
 
+// TODO: serialization
 public class Network {
     private static final Logger LOGGER = LogManager.getLogger(Network.class);
 
     private final NetworkGraph graph = new NetworkGraph(this);
     private final String id;
-    private final Color color;
     private final List<ItemTransport> transports = new ArrayList<>();
     private final List<ItemTransport> transportsToAdd = new ArrayList<>();
-    private int ticksElapsed;
 
     public Network() {
         Random r = new Random();
 
         this.id = generateRandomString(r, 8);
-        this.color = new Color(
-            r.nextInt(255) + 1,
-            r.nextInt(255) + 1,
-            r.nextInt(255) + 1
-        );
     }
 
-    public Network(String id, Color color) {
+    public Network(String id) {
         this.id = id;
-        this.color = color;
     }
 
     public String getId() {
         return id;
-    }
-
-    public Color getColor() {
-        return color;
     }
 
     public NetworkGraphScannerResult scanGraph(World originWorld, BlockPos originPos) {
@@ -68,7 +48,6 @@ public class Network {
 
     public CompoundNBT writeToNbt(CompoundNBT tag) {
         tag.putString("id", id);
-        color.writeToTag(tag);
 
         ListNBT graph = new ListNBT();
         this.graph.getPipes().forEach(p -> graph.add(LongNBT.valueOf(p.getPos().toLong())));
@@ -78,7 +57,7 @@ public class Network {
     }
 
     public static Network fromNbt(NetworkManager manager, CompoundNBT tag) {
-        Network network = new Network(tag.getString("id"), Color.fromNbt(tag));
+        Network network = new Network(tag.getString("id"));
 
         ListNBT graph = tag.getList("graph", Constants.NBT.TAG_LONG);
         for (INBT item : graph) {
@@ -104,75 +83,16 @@ public class Network {
     }
 
     public void update(World world) {
-        ticksElapsed++;
-
-        if (ticksElapsed % 5 == 0 && transports.isEmpty()) {
-            AttachmentType extractor = AttachmentRegistry.INSTANCE.getType(new ResourceLocation(RefinedPipes.ID, "extractor"));
-
-            // Debug
-            Pipe from = this.graph.getPipes().stream()
-                .filter(p -> p.getAttachmentManager().hasAttachment(extractor))
-                .findFirst()
-                .orElse(null);
-
-            if (from != null) {
-                // Step 1: get the destination path cache
-                DestinationPathCache<IItemHandler> pathCache = graph.getDestinationPathCache();
-
-                // the network isn't fully built yet
-                if (pathCache == null) {
-                    return;
-                }
-
-                // Step 2: find the nearest destination
-                Destination<IItemHandler> destination = pathCache.findNearestDestination(from.getPos());
-
-                if (destination == null) {
-                    LOGGER.error("Destination is null?");
-                    return;
-                }
-
-                // Step 3: find the path to that destination
-                Path<BlockPos> path = pathCache.getPath(from.getPos(), destination);
-
-                if (path == null) {
-                    LOGGER.error("Path is null?");
-                    return;
-                }
-
-                // Step 4: transport the path to pipes to go queue
-                Deque<Pipe> pipesToGo = new ArrayDeque<>();
-
-                for (int i = path.length() - 1; i >= 0; --i) {
-                    Node<BlockPos> pathItem = path.at(i);
-
-                    Pipe pipe = NetworkManager.get(world).getPipe(pathItem.getId());
-                    if (pipe == null) {
-                        LOGGER.error("Pipe @ " + pathItem.getId() + " is null");
-                        return;
-                    }
-
-                    pipesToGo.push(pipe);
-                }
-
-                // Step 5: construct fromPos and toPos
-                BlockPos fromPos = from.getPos().offset(from.getAttachmentManager().getAttachment(extractor).getDirection());
-                BlockPos toPos = destination.getDestPos();
-
-                // Step 5: create a transport
-                addTransport(new ItemTransport(
-                    new ItemStack(Items.DIAMOND),
-                    fromPos,
-                    toPos,
-                    pipesToGo
-                ));
-            }
-        }
+        graph.getPipes().forEach(p -> p.update(world));
 
         transports.addAll(transportsToAdd);
         transportsToAdd.clear();
 
         transports.removeIf(ItemTransport::update);
+    }
+
+    public NetworkGraph getGraph() {
+        return graph;
     }
 
     @Override

@@ -1,7 +1,10 @@
 package com.raoulvdberge.refinedpipes.network.pipe.attachment;
 
+import com.raoulvdberge.refinedpipes.network.Network;
+import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
+import net.minecraft.world.World;
 
 public class Attachment {
     private final AttachmentType type;
@@ -24,5 +27,9 @@ public class Attachment {
         tag.putInt("dir", direction.ordinal());
 
         return tag;
+    }
+
+    public void update(World world, Network network, Pipe pipe) {
+        type.update(world, network, pipe, this);
     }
 }

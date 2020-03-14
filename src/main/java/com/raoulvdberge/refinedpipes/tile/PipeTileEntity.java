@@ -6,7 +6,6 @@ import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentRegistry;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.ItemTransportProps;
-import com.raoulvdberge.refinedpipes.render.Color;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
@@ -27,7 +26,6 @@ import java.util.Map;
 public class PipeTileEntity extends TileEntity implements ITickableTileEntity {
     public static final ModelProperty<Map<Direction, AttachmentType>> ATTACHMENTS_PROPERTY = new ModelProperty<>();
 
-    private Color color;
     private Map<Direction, AttachmentType> attachments = new HashMap<>();
     private List<ItemTransportProps> props = new ArrayList<>();
 
@@ -65,16 +63,12 @@ public class PipeTileEntity extends TileEntity implements ITickableTileEntity {
                     tag.putString("attch_" + dir.ordinal(), pipe.getAttachmentManager().getAttachment(dir).getType().getId().toString());
                 }
             }
-
-            pipe.getNetwork().getColor().writeToTag(tag);
         }
 
         return tag;
     }
 
     public void readUpdate(CompoundNBT tag) {
-        this.color = Color.fromNbt(tag);
-
         this.attachments.clear();
         for (Direction dir : Direction.values()) {
             String key = "attch_" + dir.ordinal();

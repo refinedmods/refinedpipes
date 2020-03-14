@@ -37,6 +37,12 @@ public class Pipe {
         this.pos = pos;
     }
 
+    public void update(World world) {
+        for (Attachment attachment : attachmentManager.getAttachments()) {
+            attachment.update(world, network, this);
+        }
+    }
+
     public AttachmentManager getAttachmentManager() {
         return attachmentManager;
     }

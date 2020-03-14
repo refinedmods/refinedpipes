@@ -2,12 +2,32 @@ package com.raoulvdberge.refinedpipes.network.pipe.attachment;
 
 import com.raoulvdberge.refinedpipes.RefinedPipes;
 import com.raoulvdberge.refinedpipes.RefinedPipesItems;
+import com.raoulvdberge.refinedpipes.network.Network;
+import com.raoulvdberge.refinedpipes.network.NetworkManager;
+import com.raoulvdberge.refinedpipes.network.pipe.Destination;
+import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
+import com.raoulvdberge.refinedpipes.network.pipe.transport.ItemTransport;
+import com.raoulvdberge.refinedpipes.network.route.Node;
+import com.raoulvdberge.refinedpipes.network.route.Path;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 public class ExtractorAttachmentType implements AttachmentType {
+    private static final Logger LOGGER = LogManager.getLogger(ExtractorAttachmentType.class);
+
     private static final ResourceLocation MODEL_LOCATION = new ResourceLocation(RefinedPipes.ID, "block/pipe/attachment/extractor_attachment");
     private static final ResourceLocation ID = new ResourceLocation(RefinedPipes.ID, "extractor");
     private static final ResourceLocation ITEM_ID = new ResourceLocation(RefinedPipes.ID, "extractor_attachment");
@@ -15,6 +35,96 @@ public class ExtractorAttachmentType implements AttachmentType {
     @Override
     public ResourceLocation getModelLocation() {
         return MODEL_LOCATION;
+    }
+
+    @Override
+    public void update(World world, Network network, Pipe pipe, Attachment attachment) {
+        TileEntity tile = world.getTileEntity(pipe.getPos().offset(attachment.getDirection()));
+
+        if (tile == null) {
+            return;
+        }
+
+        tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, attachment.getDirection())
+            .ifPresent(itemHandler -> {
+                int firstSlot = getFirstSlot(itemHandler);
+                if (firstSlot == -1) {
+                    return;
+                }
+
+                ItemStack extracted = itemHandler.extractItem(firstSlot, 1, true);
+                if (extracted.isEmpty()) {
+                    return;
+                }
+
+                Destination<IItemHandler> destination = network
+                    .getGraph()
+                    .getDestinationPathCache()
+                    .findNearestDestination(
+                        pipe.getPos(),
+                        dest -> dest.getDest() != itemHandler && ItemHandlerHelper.insertItem(dest.getDest(), extracted, true).isEmpty()
+                    );
+
+                if (destination == null) {
+                    LOGGER.error("No destination found from " + pipe.getPos());
+                    return;
+                }
+
+                // TODO paths for A->B same
+                Path<BlockPos> path = network
+                    .getGraph()
+                    .getDestinationPathCache()
+                    .getPath(pipe.getPos(), destination);
+
+                if (path == null) {
+                    LOGGER.error("No path found from " + pipe.getPos() + " to " + destination);
+                    return;
+                }
+
+                Deque<Pipe> pipesToGo = new ArrayDeque<>();
+
+                for (int i = path.length() - 1; i >= 0; --i) {
+                    Node<BlockPos> pathItem = path.at(i);
+
+                    Pipe pipeOnPath = NetworkManager.get(world).getPipe(pathItem.getId());
+                    if (pipeOnPath == null) {
+                        LOGGER.error("Pipe @ " + pathItem.getId() + " is null");
+                        return;
+                    }
+
+                    pipesToGo.push(pipeOnPath);
+                }
+
+                ItemStack extracted2 = itemHandler.extractItem(firstSlot, 1, false);
+                if (extracted2.isEmpty()) {
+                    return;
+                }
+
+                BlockPos fromPos = pipe.getPos().offset(attachment.getDirection());
+                BlockPos toPos = destination.getDestPos();
+
+                network.addTransport(new ItemTransport(
+                    extracted2.copy(),
+                    fromPos,
+                    toPos,
+                    pipesToGo,
+                    () -> {
+                        // TODO: what if the item handler is removed?
+                        // TODO: what if the item handler doesn't accept the item?
+                        ItemHandlerHelper.insertItem(destination.getDest(), extracted2, false);
+                    }
+                ));
+            });
+    }
+
+    private int getFirstSlot(IItemHandler handler) {
+        for (int i = 0; i < handler.getSlots(); ++i) {
+            if (!handler.getStackInSlot(i).isEmpty()) {
+                return i;
+            }
+        }
+
+        return -1;
     }
 
     @Override

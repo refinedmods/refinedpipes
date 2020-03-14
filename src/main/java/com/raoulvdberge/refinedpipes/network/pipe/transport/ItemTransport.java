@@ -13,18 +13,20 @@ public class ItemTransport {
     private final BlockPos destination;
     private final Deque<Pipe> pipesToGo;
     private final Direction initialDirection;
+    private final Runnable onDone;
 
     private boolean firstPipe = true;
 
     private int progressInCurrentPipe;
     private Pipe currentPipe;
 
-    public ItemTransport(ItemStack value, BlockPos source, BlockPos destination, Deque<Pipe> pipesToGo) {
+    public ItemTransport(ItemStack value, BlockPos source, BlockPos destination, Deque<Pipe> pipesToGo, Runnable onDone) {
         this.value = value;
         this.source = source;
         this.destination = destination;
         this.pipesToGo = pipesToGo;
         this.initialDirection = getDirection(source, pipesToGo.peek().getPos());
+        this.onDone = onDone;
     }
 
     public Direction getDirection() {
@@ -45,6 +47,7 @@ public class ItemTransport {
                 progressInCurrentPipe = 0;
                 currentPipe.addTransport(this);
             } else {
+                onDone.run();
                 return true;
             }
         }
