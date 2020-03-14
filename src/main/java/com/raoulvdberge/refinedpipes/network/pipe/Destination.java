@@ -1,6 +1,5 @@
 package com.raoulvdberge.refinedpipes.network.pipe;
 
-import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
 import net.minecraft.util.math.BlockPos;
 
 public class Destination<T> {

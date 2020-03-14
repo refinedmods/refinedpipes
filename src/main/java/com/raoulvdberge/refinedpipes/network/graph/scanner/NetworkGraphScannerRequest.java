@@ -1,4 +1,4 @@
-package com.raoulvdberge.refinedpipes.network.graph;
+package com.raoulvdberge.refinedpipes.network.graph.scanner;
 
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;

@@ -43,6 +43,16 @@ public class PipeTileEntity extends TileEntity implements ITickableTileEntity {
     }
 
     public boolean hasAttachment(Direction dir) {
+        if (!world.isRemote) {
+            Pipe pipe = NetworkManager.get(world).getPipe(pos);
+
+            if (pipe != null && pipe.getNetwork() != null) {
+                return pipe.getAttachmentManager().hasAttachment(dir);
+            }
+
+            return false;
+        }
+
         return attachments.containsKey(dir);
     }
 

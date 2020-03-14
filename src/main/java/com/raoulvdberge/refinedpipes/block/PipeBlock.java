@@ -187,6 +187,15 @@ public class PipeBlock extends Block {
     }
 
     private static boolean hasConnection(IWorld world, BlockPos pos, Direction direction) {
+        TileEntity tile = world.getTileEntity(pos);
+        if (!(tile instanceof PipeTileEntity)) {
+            return false;
+        }
+
+        if (((PipeTileEntity) tile).hasAttachment(direction)) {
+            return false;
+        }
+
         return world.getBlockState(pos.offset(direction)).getBlock() instanceof PipeBlock
             || world.getTileEntity(pos.offset(direction)) instanceof ChestTileEntity;
     }

@@ -1,4 +1,4 @@
-package com.raoulvdberge.refinedpipes.network.graph;
+package com.raoulvdberge.refinedpipes.network.graph.scanner;
 
 import com.raoulvdberge.refinedpipes.network.NetworkManager;
 import com.raoulvdberge.refinedpipes.network.pipe.Destination;
