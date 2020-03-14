@@ -44,7 +44,7 @@ public class PipeTileEntityRenderer extends TileEntityRenderer<PipeTileEntity> {
 
             double v = (((double) prop.getProgress() + partialTicks) / maxTicksInPipe) * pipeLength;
 
-            if (prop.isFirstPipe() && v < 0.25) {
+            if (prop.isFirstPipe() && v < 0.5) {
                 dir = prop.getInitialDirection(); // Get the item out first
             }
 
