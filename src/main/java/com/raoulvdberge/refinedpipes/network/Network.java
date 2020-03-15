@@ -2,26 +2,20 @@ package com.raoulvdberge.refinedpipes.network;
 
 import com.raoulvdberge.refinedpipes.network.graph.NetworkGraph;
 import com.raoulvdberge.refinedpipes.network.graph.scanner.NetworkGraphScannerResult;
-import com.raoulvdberge.refinedpipes.network.pipe.transport.ItemTransport;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
-// TODO: serialization of pipe data
 public class Network {
     private static final Logger LOGGER = LogManager.getLogger(Network.class);
 
     private final NetworkGraph graph = new NetworkGraph(this);
     private final String id;
-    private final List<ItemTransport> transports = new ArrayList<>();
-    private final List<ItemTransport> transportsToAdd = new ArrayList<>();
     private final BlockPos originPos;
     private boolean didDoInitialScan;
 
@@ -57,10 +51,6 @@ public class Network {
         return network;
     }
 
-    public void addTransport(ItemTransport transport) {
-        transportsToAdd.add(transport);
-    }
-
     public void update(World world) {
         if (!didDoInitialScan) {
             didDoInitialScan = true;
@@ -69,11 +59,6 @@ public class Network {
         }
 
         graph.getPipes().forEach(p -> p.update(world));
-
-        transports.addAll(transportsToAdd);
-        transportsToAdd.clear();
-
-        transports.removeIf(t -> t.update(this));
     }
 
     public NetworkGraph getGraph() {

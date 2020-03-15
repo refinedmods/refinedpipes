@@ -88,7 +88,7 @@ public class ExtractorAttachmentType implements AttachmentType {
 
         BlockPos fromPos = pipe.getPos().offset(attachment.getDirection());
 
-        network.addTransport(new ItemTransport(
+        pipe.addTransport(new ItemTransport(
             extractedActual.copy(),
             fromPos,
             destination.getDestPos(),

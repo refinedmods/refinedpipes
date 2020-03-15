@@ -3,6 +3,7 @@ package com.raoulvdberge.refinedpipes.network.pipe;
 import com.raoulvdberge.refinedpipes.RefinedPipes;
 import com.raoulvdberge.refinedpipes.message.TransportMessage;
 import com.raoulvdberge.refinedpipes.network.Network;
+import com.raoulvdberge.refinedpipes.network.NetworkManager;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.Attachment;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentManager;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentRegistry;
@@ -20,7 +21,9 @@ import net.minecraftforge.common.util.Constants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class Pipe {
     private static final Logger LOGGER = LogManager.getLogger(Pipe.class);
@@ -30,7 +33,9 @@ public class Pipe {
     private final AttachmentManager attachmentManager = new AttachmentManager();
 
     private Network network;
-    private Set<ItemTransport> transports = new HashSet<>();
+    private final List<ItemTransport> transports = new ArrayList<>();
+    private final List<ItemTransport> transportsToAdd = new ArrayList<>();
+    private final List<ItemTransport> transportsToRemove = new ArrayList<>();
 
     public Pipe(World world, BlockPos pos) {
         this.world = world;
@@ -40,6 +45,25 @@ public class Pipe {
     public void update(World world) {
         for (Attachment attachment : attachmentManager.getAttachments()) {
             attachment.update(world, network, this);
+        }
+
+        transports.addAll(transportsToAdd);
+        transports.removeAll(transportsToRemove);
+
+        if (!transportsToAdd.isEmpty() || !transportsToRemove.isEmpty()) {
+            NetworkManager.get(world).markDirty();
+            sendTransportUpdate();
+        }
+
+        if (!transports.isEmpty()) {
+            NetworkManager.get(world).markDirty();
+        }
+
+        transportsToAdd.clear();
+        transportsToRemove.clear();
+
+        if (transports.removeIf(t -> t.update(network, this))) {
+            NetworkManager.get(world).markDirty();
         }
     }
 
@@ -79,16 +103,12 @@ public class Pipe {
         sendBlockUpdate();
     }
 
-    public void addTransport(ItemTransport currentTransport) {
-        this.transports.add(currentTransport);
-
-        sendTransportUpdate();
+    public void addTransport(ItemTransport transport) {
+        transportsToAdd.add(transport);
     }
 
     public void removeTransport(ItemTransport transport) {
-        this.transports.remove(transport);
-
-        sendTransportUpdate();
+        transportsToRemove.add(transport);
     }
 
     public void sendBlockUpdate() {
@@ -99,7 +119,7 @@ public class Pipe {
     public void sendTransportUpdate() {
         List<ItemTransportProps> props = new ArrayList<>();
         for (ItemTransport transport : transports) {
-            props.add(transport.createProps());
+            props.add(transport.createProps(this));
         }
 
         RefinedPipes.NETWORK.sendInArea(world, pos, 32, new TransportMessage(pos, props));
@@ -115,6 +135,12 @@ public class Pipe {
             attch.add(a.writeToNbt(attchTag));
         });
         tag.put("attch", attch);
+
+        ListNBT transports = new ListNBT();
+        for (ItemTransport transport : this.transports) {
+            transports.add(transport.writeToNbt(new CompoundNBT()));
+        }
+        tag.put("transports", transports);
 
         return tag;
     }
@@ -134,6 +160,16 @@ public class Pipe {
                 pipe.attachmentManager.setAttachment(attachment.getDirection(), attachment);
             } else {
                 LOGGER.warn("Attachment {} no longer exists", attchTag.getString("typ"));
+            }
+        }
+
+        ListNBT transports = tag.getList("transports", Constants.NBT.TAG_COMPOUND);
+        for (int i = 0; i < transports.size(); ++i) {
+            CompoundNBT transportTag = transports.getCompound(i);
+
+            ItemTransport itemTransport = ItemTransport.of(transportTag);
+            if (itemTransport != null) {
+                pipe.transports.add(itemTransport);
             }
         }
 
