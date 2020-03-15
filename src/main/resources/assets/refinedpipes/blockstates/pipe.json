@@ -221,6 +221,123 @@
         "model": "refinedpipes:block/pipe/interior",
         "x": 90
       }
+    },
+    {
+      "when": {
+        "north": true,
+        "west": false
+      },
+      "apply": {
+        "model": "refinedpipes:block/pipe/corner/down",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "north": false,
+        "west": true
+      },
+      "apply": {
+        "model": "refinedpipes:block/pipe/corner/down",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "north": true,
+        "west": true
+      },
+      "apply": {
+        "model": "refinedpipes:block/pipe/corner/down",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "north": true,
+        "east": false
+      },
+      "apply": {
+        "model": "refinedpipes:block/pipe/corner/down"
+      }
+    },
+    {
+      "when": {
+        "north": false,
+        "east": true
+      },
+      "apply": {
+        "model": "refinedpipes:block/pipe/corner/down"
+      }
+    },
+    {
+      "when": {
+        "north": true,
+        "east": true
+      },
+      "apply": {
+        "model": "refinedpipes:block/pipe/corner/down"
+      }
+    },
+    {
+      "when": {
+        "south": true,
+        "east": false
+      },
+      "apply": {
+        "model": "refinedpipes:block/pipe/corner/down",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": false,
+        "east": true
+      },
+      "apply": {
+        "model": "refinedpipes:block/pipe/corner/down",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": true,
+        "east": true
+      },
+      "apply": {
+        "model": "refinedpipes:block/pipe/corner/down",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": true,
+        "west": false
+      },
+      "apply": {
+        "model": "refinedpipes:block/pipe/corner/down",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "south": false,
+        "west": true
+      },
+      "apply": {
+        "model": "refinedpipes:block/pipe/corner/down",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "south": true,
+        "west": true
+      },
+      "apply": {
+        "model": "refinedpipes:block/pipe/corner/down",
+        "y": 180
+      }
     }
   ]
 }
