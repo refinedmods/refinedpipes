@@ -146,11 +146,11 @@ public class ItemTransport {
         double mt = currentPipe.getMaxTicksInPipe();
 
         if (firstPipe) {
-            mt *= 1.5D;
+            mt *= 1.25D;
         }
 
         if (isLastPipe()) {
-            mt *= 0.50D;
+            mt *= 0.25D;
         }
 
         return (int) mt;

@@ -2,13 +2,13 @@
   "credit": "Made with Blockbench",
   "parent": "block/block",
   "textures": {
-    "1": "refinedpipes:blocks/pipe",
+    "1": "refinedpipes:blocks/pipe ",
     "particle": "refinedpipes:blocks/pipe"
   },
   "elements": [
     {
       "from": [
-        4,
+        5,
         11,
         4
       ],
