@@ -1,9 +1,12 @@
 package com.raoulvdberge.refinedpipes.network.pipe.transport;
 
+import com.raoulvdberge.refinedpipes.network.Network;
 import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
+import com.raoulvdberge.refinedpipes.network.pipe.transport.callback.TransportCallback;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 import java.util.Deque;
 
@@ -11,60 +14,83 @@ public class ItemTransport {
     private final ItemStack value;
     private final BlockPos source;
     private final BlockPos destination;
-    private final Deque<Pipe> pipesToGo;
+    private final Deque<BlockPos> path;
     private final Direction initialDirection;
-    private final Runnable onDone;
+    private final TransportCallback finishedCallback;
+    private final TransportCallback cancelCallback;
 
     private boolean firstPipe = true;
 
     private int progressInCurrentPipe;
     private Pipe currentPipe;
 
-    public ItemTransport(ItemStack value, BlockPos source, BlockPos destination, Deque<Pipe> pipesToGo, Runnable onDone) {
+    public ItemTransport(ItemStack value, BlockPos source, BlockPos destination, Deque<BlockPos> path, TransportCallback finishedCallback, TransportCallback cancelCallback) {
         this.value = value;
         this.source = source;
         this.destination = destination;
-        this.pipesToGo = pipesToGo;
-        this.initialDirection = getDirection(source, pipesToGo.peek().getPos());
-        this.onDone = onDone;
+        this.path = path;
+        this.initialDirection = getDirection(source, path.peek());
+        this.finishedCallback = finishedCallback;
+        this.cancelCallback = cancelCallback;
     }
 
     public Direction getDirection() {
-        Pipe nextPipe = pipesToGo.peek();
+        BlockPos nextPipe = path.peek();
 
         if (nextPipe == null) {
             return getDirection(currentPipe.getPos(), destination);
         }
 
-        return getDirection(currentPipe.getPos(), nextPipe.getPos());
+        return getDirection(currentPipe.getPos(), nextPipe);
     }
 
-    public boolean update() {
-        if (currentPipe == null) {
-            currentPipe = pipesToGo.poll();
+    private boolean onDone(Network network, World world) {
+        finishedCallback.call(network, world, cancelCallback);
+        return true;
+    }
 
-            if (currentPipe != null) {
-                progressInCurrentPipe = 0;
-                currentPipe.addTransport(this);
-            } else {
-                onDone.run();
-                return true;
-            }
+    private boolean onPipeGone() {
+        return true;
+    }
+
+
+    public boolean update(Network network) {
+        // Initial tick
+        if (currentPipe == null) {
+            setCurrentPipe(network, path.poll());
+            currentPipe.addTransport(this);
         }
 
         progressInCurrentPipe += 1;
 
         if (progressInCurrentPipe >= getMaxTicksInPipe()) {
             currentPipe.removeTransport(this);
-            currentPipe = null;
             firstPipe = false;
+
+            BlockPos nextPipePos = path.poll();
+            if (nextPipePos == null) {
+                return onDone(network, currentPipe.getWorld());
+            }
+
+            if (!setCurrentPipe(network, nextPipePos)) {
+                return onPipeGone();
+            }
+
+            progressInCurrentPipe = 0;
+            currentPipe.addTransport(this);
         }
 
         return false;
     }
 
+    private boolean setCurrentPipe(Network network, BlockPos pos) {
+        this.currentPipe = network.getGraph().getPipes().stream().filter(p -> p.getPos().equals(pos)).findFirst().orElse(null);
+
+        return currentPipe != null;
+    }
+
     private boolean isLastPipe() {
-        return pipesToGo.isEmpty();
+        return path.isEmpty();
     }
 
     private static Direction getDirection(BlockPos a, BlockPos b) {

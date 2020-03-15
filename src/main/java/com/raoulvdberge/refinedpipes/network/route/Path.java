@@ -1,5 +1,7 @@
 package com.raoulvdberge.refinedpipes.network.route;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.List;
 
 public class Path<T> {
@@ -15,5 +17,15 @@ public class Path<T> {
 
     public int length() {
         return path.size();
+    }
+
+    public Deque<T> toQueue() {
+        Deque<T> path = new ArrayDeque<>();
+
+        for (int i = length() - 1; i >= 0; --i) {
+            path.push(at(i).getId());
+        }
+
+        return path;
     }
 }

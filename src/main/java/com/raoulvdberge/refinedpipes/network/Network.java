@@ -73,7 +73,7 @@ public class Network {
         transports.addAll(transportsToAdd);
         transportsToAdd.clear();
 
-        transports.removeIf(ItemTransport::update);
+        transports.removeIf(t -> t.update(this));
     }
 
     public NetworkGraph getGraph() {

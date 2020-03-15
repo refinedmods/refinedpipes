@@ -3,11 +3,11 @@ package com.raoulvdberge.refinedpipes.network.pipe.attachment;
 import com.raoulvdberge.refinedpipes.RefinedPipes;
 import com.raoulvdberge.refinedpipes.RefinedPipesItems;
 import com.raoulvdberge.refinedpipes.network.Network;
-import com.raoulvdberge.refinedpipes.network.NetworkManager;
 import com.raoulvdberge.refinedpipes.network.pipe.Destination;
 import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.ItemTransport;
-import com.raoulvdberge.refinedpipes.network.route.Node;
+import com.raoulvdberge.refinedpipes.network.pipe.transport.callback.ItemBounceBackTransportCallback;
+import com.raoulvdberge.refinedpipes.network.pipe.transport.callback.ItemInsertTransportCallback;
 import com.raoulvdberge.refinedpipes.network.route.Path;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -21,9 +21,6 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.ArrayDeque;
-import java.util.Deque;
 
 public class ExtractorAttachmentType implements AttachmentType {
     private static final Logger LOGGER = LogManager.getLogger(ExtractorAttachmentType.class);
@@ -39,81 +36,66 @@ public class ExtractorAttachmentType implements AttachmentType {
 
     @Override
     public void update(World world, Network network, Pipe pipe, Attachment attachment) {
-        TileEntity tile = world.getTileEntity(pipe.getPos().offset(attachment.getDirection()));
+        BlockPos itemHandlerPos = pipe.getPos().offset(attachment.getDirection());
 
+        TileEntity tile = world.getTileEntity(itemHandlerPos);
         if (tile == null) {
             return;
         }
 
         tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, attachment.getDirection())
-            .ifPresent(itemHandler -> {
-                int firstSlot = getFirstSlot(itemHandler);
-                if (firstSlot == -1) {
-                    return;
-                }
+            .ifPresent(itemHandler -> update(network, pipe, attachment, itemHandlerPos, itemHandler));
+    }
 
-                ItemStack extracted = itemHandler.extractItem(firstSlot, 1, true);
-                if (extracted.isEmpty()) {
-                    return;
-                }
+    private void update(Network network, Pipe pipe, Attachment attachment, BlockPos itemHandlerPos, IItemHandler itemHandler) {
+        int firstSlot = getFirstSlot(itemHandler);
+        if (firstSlot == -1) {
+            return;
+        }
 
-                Destination<IItemHandler> destination = network
-                    .getGraph()
-                    .getDestinationPathCache()
-                    .findNearestDestination(
-                        pipe.getPos(),
-                        dest -> dest.getDest() != itemHandler && ItemHandlerHelper.insertItem(dest.getDest(), extracted, true).isEmpty()
-                    );
+        ItemStack extracted = itemHandler.extractItem(firstSlot, 1, true);
+        if (extracted.isEmpty()) {
+            return;
+        }
 
-                if (destination == null) {
-                    LOGGER.error("No destination found from " + pipe.getPos());
-                    return;
-                }
+        Destination<IItemHandler> destination = network
+            .getGraph()
+            .getDestinationPathCache()
+            .findNearestDestination(
+                pipe.getPos(),
+                dest -> dest.getDest() != itemHandler && ItemHandlerHelper.insertItem(dest.getDest(), extracted, true).isEmpty()
+            );
 
-                Path<BlockPos> path = network
-                    .getGraph()
-                    .getDestinationPathCache()
-                    .getPath(pipe.getPos(), destination);
+        if (destination == null) {
+            LOGGER.error("No destination found from " + pipe.getPos());
+            return;
+        }
 
-                if (path == null) {
-                    LOGGER.error("No path found from " + pipe.getPos() + " to " + destination);
-                    return;
-                }
+        Path<BlockPos> path = network
+            .getGraph()
+            .getDestinationPathCache()
+            .getPath(pipe.getPos(), destination);
 
-                Deque<Pipe> pipesToGo = new ArrayDeque<>();
+        if (path == null) {
+            LOGGER.error("No path found from " + pipe.getPos() + " to " + destination);
+            return;
+        }
 
-                for (int i = path.length() - 1; i >= 0; --i) {
-                    Node<BlockPos> pathItem = path.at(i);
+        ItemStack extractedActual = itemHandler.extractItem(firstSlot, 1, false);
+        if (extractedActual.isEmpty()) {
+            return;
+        }
 
-                    Pipe pipeOnPath = NetworkManager.get(world).getPipe(pathItem.getId());
-                    if (pipeOnPath == null) {
-                        LOGGER.error("Pipe @ " + pathItem.getId() + " is null");
-                        return;
-                    }
+        BlockPos fromPos = pipe.getPos().offset(attachment.getDirection());
 
-                    pipesToGo.push(pipeOnPath);
-                }
-
-                ItemStack extracted2 = itemHandler.extractItem(firstSlot, 1, false);
-                if (extracted2.isEmpty()) {
-                    return;
-                }
-
-                BlockPos fromPos = pipe.getPos().offset(attachment.getDirection());
-                BlockPos toPos = destination.getDestPos();
-
-                network.addTransport(new ItemTransport(
-                    extracted2.copy(),
-                    fromPos,
-                    toPos,
-                    pipesToGo,
-                    () -> {
-                        // TODO: what if the item handler is removed?
-                        // TODO: what if the item handler doesn't accept the item?
-                        ItemHandlerHelper.insertItem(destination.getDest(), extracted2, false);
-                    }
-                ));
-            });
+        network.addTransport(new ItemTransport(
+            extractedActual.copy(),
+            fromPos,
+            destination.getDestPos(),
+            path.toQueue(),
+            new ItemInsertTransportCallback(destination.getDestPos(), extractedActual),
+            new ItemBounceBackTransportCallback(destination.getDestPos(), itemHandlerPos, extractedActual)
+        ));
     }
 
     private int getFirstSlot(IItemHandler handler) {
