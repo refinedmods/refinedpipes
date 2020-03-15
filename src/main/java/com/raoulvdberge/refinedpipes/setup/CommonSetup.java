@@ -11,6 +11,7 @@ import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.ExtractorAttachmentType;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.callback.ItemBounceBackTransportCallback;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.callback.ItemInsertTransportCallback;
+import com.raoulvdberge.refinedpipes.network.pipe.transport.callback.ItemPipeGoneTransportCallback;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.callback.TransportCallbackFactoryRegistry;
 import com.raoulvdberge.refinedpipes.tile.PipeTileEntity;
 import net.minecraft.block.Block;
@@ -26,6 +27,7 @@ public class CommonSetup {
 
         TransportCallbackFactoryRegistry.INSTANCE.addFactory(ItemInsertTransportCallback.ID, ItemInsertTransportCallback::of);
         TransportCallbackFactoryRegistry.INSTANCE.addFactory(ItemBounceBackTransportCallback.ID, ItemBounceBackTransportCallback::of);
+        TransportCallbackFactoryRegistry.INSTANCE.addFactory(ItemPipeGoneTransportCallback.ID, ItemPipeGoneTransportCallback::of);
 
         RefinedPipes.NETWORK.register();
     }

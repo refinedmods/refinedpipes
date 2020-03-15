@@ -18,8 +18,6 @@ public class PipeTileEntityRenderer extends TileEntityRenderer<PipeTileEntity> {
     @Override
     public void render(PipeTileEntity tile, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer bufferType, int combinedLight, int combinedOverlay) {
         for (ItemTransportProps prop : tile.getProps()) {
-            matrixStack.push();
-
             Direction dir = prop.getDirection();
 
             double pipeLength = 1D;
@@ -51,6 +49,13 @@ public class PipeTileEntityRenderer extends TileEntityRenderer<PipeTileEntity> {
             if (prop.isFirstPipe()) {
                 v -= 0.25D; // Every transport starts in the center. For the first pipe, we want to start from the beginning. Remove the centering.
             }
+
+            // If the next pipe is gone..
+            if (v > 0.25 && tile.getWorld().isAirBlock(tile.getPos().offset(prop.getDirection()))) {
+                continue;
+            }
+
+            matrixStack.push();
 
             matrixStack.translate(
                 0.5 + (dir.getXOffset() * v),

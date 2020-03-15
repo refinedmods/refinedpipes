@@ -30,18 +30,18 @@ public class ItemInsertTransportCallback implements TransportCallback {
     }
 
     @Override
-    public void call(Network network, World world, TransportCallback cancelCallback) {
+    public void call(Network network, World world, BlockPos currentPos, TransportCallback cancelCallback) {
         TileEntity tile = world.getTileEntity(itemHandlerPosition);
         if (tile == null) {
             LOGGER.warn("Destination item handler is gone at " + itemHandlerPosition);
-            cancelCallback.call(network, world, cancelCallback);
+            cancelCallback.call(network, world, currentPos, cancelCallback);
             return;
         }
 
         IItemHandler itemHandler = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).orElse(null);
         if (itemHandler == null) {
             LOGGER.warn("Destination item handler is no longer exposing a capability at " + itemHandlerPosition);
-            cancelCallback.call(network, world, cancelCallback);
+            cancelCallback.call(network, world, currentPos, cancelCallback);
             return;
         }
 
@@ -49,7 +49,7 @@ public class ItemInsertTransportCallback implements TransportCallback {
             ItemHandlerHelper.insertItem(itemHandler, toInsert, false);
         } else {
             LOGGER.warn("Destination item handler is full at " + itemHandlerPosition);
-            cancelCallback.call(network, world, cancelCallback);
+            cancelCallback.call(network, world, currentPos, cancelCallback);
         }
     }
 

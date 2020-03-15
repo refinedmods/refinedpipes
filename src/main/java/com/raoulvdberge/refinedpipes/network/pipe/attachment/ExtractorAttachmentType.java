@@ -8,6 +8,7 @@ import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.ItemTransport;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.callback.ItemBounceBackTransportCallback;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.callback.ItemInsertTransportCallback;
+import com.raoulvdberge.refinedpipes.network.pipe.transport.callback.ItemPipeGoneTransportCallback;
 import com.raoulvdberge.refinedpipes.network.route.Path;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -94,7 +95,8 @@ public class ExtractorAttachmentType implements AttachmentType {
             destination.getDestPos(),
             path.toQueue(),
             new ItemInsertTransportCallback(destination.getDestPos(), extractedActual),
-            new ItemBounceBackTransportCallback(destination.getDestPos(), itemHandlerPos, extractedActual)
+            new ItemBounceBackTransportCallback(destination.getDestPos(), itemHandlerPos, extractedActual),
+            new ItemPipeGoneTransportCallback(extractedActual)
         ));
     }
 

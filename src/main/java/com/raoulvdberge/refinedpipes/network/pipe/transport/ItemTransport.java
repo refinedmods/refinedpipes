@@ -32,10 +32,11 @@ public class ItemTransport {
     private final Direction initialDirection;
     private final TransportCallback finishedCallback;
     private final TransportCallback cancelCallback;
+    private final TransportCallback pipeGoneCallback;
     private boolean firstPipe = true;
     private int progressInCurrentPipe;
 
-    public ItemTransport(ItemStack value, BlockPos source, BlockPos destination, Deque<BlockPos> path, TransportCallback finishedCallback, TransportCallback cancelCallback) {
+    public ItemTransport(ItemStack value, BlockPos source, BlockPos destination, Deque<BlockPos> path, TransportCallback finishedCallback, TransportCallback cancelCallback, TransportCallback pipeGoneCallback) {
         this.value = value;
         this.source = source;
         this.destination = destination;
@@ -44,9 +45,10 @@ public class ItemTransport {
         this.initialDirection = getDirection(source, path.peek());
         this.finishedCallback = finishedCallback;
         this.cancelCallback = cancelCallback;
+        this.pipeGoneCallback = pipeGoneCallback;
     }
 
-    public ItemTransport(ItemStack value, BlockPos source, BlockPos destination, Deque<BlockPos> path, Direction initialDirection, TransportCallback finishedCallback, TransportCallback cancelCallback, boolean firstPipe, int progressInCurrentPipe) {
+    public ItemTransport(ItemStack value, BlockPos source, BlockPos destination, Deque<BlockPos> path, Direction initialDirection, TransportCallback finishedCallback, TransportCallback cancelCallback, TransportCallback pipeGoneCallback, boolean firstPipe, int progressInCurrentPipe) {
         this.value = value;
         this.source = source;
         this.destination = destination;
@@ -54,6 +56,7 @@ public class ItemTransport {
         this.initialDirection = initialDirection;
         this.finishedCallback = finishedCallback;
         this.cancelCallback = cancelCallback;
+        this.pipeGoneCallback = pipeGoneCallback;
         this.firstPipe = firstPipe;
         this.progressInCurrentPipe = progressInCurrentPipe;
     }
@@ -68,13 +71,14 @@ public class ItemTransport {
         return getDirection(currentPipe.getPos(), nextPipe);
     }
 
-    private boolean onDone(Network network, World world) {
-        finishedCallback.call(network, world, cancelCallback);
+    private boolean onDone(Network network, World world, Pipe currentPipe) {
+        finishedCallback.call(network, world, currentPipe.getPos(), cancelCallback);
         return true;
     }
 
-    private boolean onPipeGone() {
-        LOGGER.error("Pipe on path is gone");
+    private boolean onPipeGone(Network network, World world, BlockPos posWherePipeIsGone) {
+        LOGGER.warn("Pipe on path is gone");
+        pipeGoneCallback.call(network, world, posWherePipeIsGone, cancelCallback);
         return true;
     }
 
@@ -87,12 +91,12 @@ public class ItemTransport {
 
             BlockPos nextPipePos = path.poll();
             if (nextPipePos == null) {
-                return onDone(network, currentPipe.getWorld());
+                return onDone(network, currentPipe.getWorld(), currentPipe);
             }
 
             Pipe nextPipe = getPipe(network, nextPipePos);
             if (nextPipe == null) {
-                return onPipeGone();
+                return onPipeGone(network, currentPipe.getWorld(), nextPipePos);
             }
 
             progressInCurrentPipe = 0;
@@ -181,6 +185,8 @@ public class ItemTransport {
         tag.putString("fcid", finishedCallback.getId().toString());
         tag.put("cc", cancelCallback.writeToNbt(new CompoundNBT()));
         tag.putString("ccid", cancelCallback.getId().toString());
+        tag.put("pgc", pipeGoneCallback.writeToNbt(new CompoundNBT()));
+        tag.putString("pgcid", pipeGoneCallback.getId().toString());
 
         tag.putBoolean("fp", firstPipe);
         tag.putInt("p", progressInCurrentPipe);
@@ -227,7 +233,19 @@ public class ItemTransport {
         }
         TransportCallback cancelCallback = cancelCallbackFactory.create(tag.getCompound("cc"));
         if (cancelCallback == null) {
-            LOGGER.warn("Callback callback factory " + cancelCallbackId + " returned null!");
+            LOGGER.warn("Cancel callback factory " + cancelCallbackId + " returned null!");
+            return null;
+        }
+
+        ResourceLocation pipeGoneCallbackId = new ResourceLocation(tag.getString("pgcid"));
+        TransportCallbackFactory pipeGoneCallbackFactory = TransportCallbackFactoryRegistry.INSTANCE.getFactory(pipeGoneCallbackId);
+        if (pipeGoneCallbackFactory == null) {
+            LOGGER.warn("Pipe gone callback factory " + pipeGoneCallbackId + " no longer exists");
+            return null;
+        }
+        TransportCallback pipeGoneCallback = pipeGoneCallbackFactory.create(tag.getCompound("pgc"));
+        if (pipeGoneCallback == null) {
+            LOGGER.warn("Pipe gone callback factory " + pipeGoneCallbackId + " returned null!");
             return null;
         }
 
@@ -242,6 +260,7 @@ public class ItemTransport {
             initialDirection,
             finishedCallback,
             cancelCallback,
+            pipeGoneCallback,
             firstPipe,
             progressInCurrentPipe
         );
