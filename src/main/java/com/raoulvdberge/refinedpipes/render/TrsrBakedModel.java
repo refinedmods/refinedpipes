@@ -2,6 +2,7 @@ package com.raoulvdberge.refinedpipes.render;
 
 import com.google.common.collect.ImmutableList;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.renderer.Quaternion;
 import net.minecraft.client.renderer.TransformationMatrix;
 import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.model.BakedQuad;
@@ -50,9 +51,18 @@ public class TrsrBakedModel implements IBakedModel {
     public TrsrBakedModel(IBakedModel original, Direction facing, @Nullable Vector3f translation) {
         this.original = original;
 
-        double r = Math.PI * (360 - facing.getOpposite().getHorizontalIndex() * 90) / 180d;
+        Quaternion quaternion;
+        if (facing == Direction.UP) {
+            quaternion = TransformationHelper.quatFromXYZ(new Vector3f(90, 0, 0), true);
+        } else if (facing == Direction.DOWN) {
+            quaternion = TransformationHelper.quatFromXYZ(new Vector3f(270, 0, 0), true);
+        } else {
+            double r = Math.PI * (360 - facing.getOpposite().getHorizontalIndex() * 90) / 180d;
 
-        this.transformation = new TransformationMatrix(translation, TransformationHelper.quatFromXYZ(new Vector3f(0, (float) r, 0), false), null, null);
+            quaternion = TransformationHelper.quatFromXYZ(new Vector3f(0, (float) r, 0), false);
+        }
+
+        this.transformation = new TransformationMatrix(translation, quaternion, null, null);
         this.faceOffset = 4 + Direction.NORTH.getHorizontalIndex() - facing.getHorizontalIndex();
     }
 

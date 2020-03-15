@@ -44,7 +44,7 @@ public class PipeTileEntity extends TileEntity implements ITickableTileEntity {
         if (!world.isRemote) {
             Pipe pipe = NetworkManager.get(world).getPipe(pos);
 
-            if (pipe != null && pipe.getNetwork() != null) {
+            if (pipe != null) {
                 return pipe.getAttachmentManager().hasAttachment(dir);
             }
 

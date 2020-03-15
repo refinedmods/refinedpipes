@@ -44,12 +44,12 @@ public class PipeTileEntityRenderer extends TileEntityRenderer<PipeTileEntity> {
 
             double v = (((double) prop.getProgress() + partialTicks) / maxTicksInPipe) * pipeLength;
 
-            if (prop.isFirstPipe() && v < 0.5) {
+            if (prop.isFirstPipe() && v < 0.25) {
                 dir = prop.getInitialDirection(); // Get the item out first
             }
 
             if (prop.isFirstPipe()) {
-                v -= 0.50D; // Every transport starts in the center. For the first pipe, we want to start from the beginning. Remove the centering.
+                v -= 0.25D; // Every transport starts in the center. For the first pipe, we want to start from the beginning. Remove the centering.
             }
 
             matrixStack.translate(
