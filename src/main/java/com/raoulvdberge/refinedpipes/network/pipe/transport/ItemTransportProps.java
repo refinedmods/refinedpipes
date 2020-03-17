@@ -6,14 +6,14 @@ import net.minecraft.util.Direction;
 
 public class ItemTransportProps {
     private final ItemStack stack;
-    private final byte maxTicksInPipe;
+    private final int maxTicksInPipe;
     private int progress;
     private final Direction direction;
     private final Direction initialDirection;
     private final boolean lastPipe;
     private final boolean firstPipe;
 
-    public ItemTransportProps(ItemStack stack, byte maxTicksInPipe, int progress, Direction direction, Direction initialDirection, boolean lastPipe, boolean firstPipe) {
+    public ItemTransportProps(ItemStack stack, int maxTicksInPipe, int progress, Direction direction, Direction initialDirection, boolean lastPipe, boolean firstPipe) {
         this.stack = stack;
         this.maxTicksInPipe = maxTicksInPipe;
         this.progress = progress;
@@ -25,7 +25,7 @@ public class ItemTransportProps {
 
     public void writeToBuffer(PacketBuffer buf) {
         buf.writeItemStack(stack);
-        buf.writeByte(maxTicksInPipe);
+        buf.writeInt(maxTicksInPipe);
         buf.writeInt(progress);
         buf.writeInt(direction.ordinal());
         buf.writeInt(initialDirection.ordinal());
@@ -36,7 +36,7 @@ public class ItemTransportProps {
     public static ItemTransportProps create(PacketBuffer buf) {
         return new ItemTransportProps(
             buf.readItemStack(),
-            buf.readByte(),
+            buf.readInt(),
             buf.readInt(),
             Direction.values()[buf.readInt()],
             Direction.values()[buf.readInt()],
@@ -53,7 +53,7 @@ public class ItemTransportProps {
         return stack;
     }
 
-    public byte getMaxTicksInPipe() {
+    public int getMaxTicksInPipe() {
         return maxTicksInPipe;
     }
 

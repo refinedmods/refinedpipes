@@ -36,10 +36,12 @@ public class Pipe {
     private final List<ItemTransport> transports = new ArrayList<>();
     private final List<ItemTransport> transportsToAdd = new ArrayList<>();
     private final List<ItemTransport> transportsToRemove = new ArrayList<>();
+    private final PipeType type;
 
-    public Pipe(World world, BlockPos pos) {
+    public Pipe(World world, BlockPos pos, PipeType type) {
         this.world = world;
         this.pos = pos;
+        this.type = type;
     }
 
     public void update(World world) {
@@ -128,6 +130,8 @@ public class Pipe {
     public CompoundNBT writeToNbt(CompoundNBT tag) {
         tag.putLong("pos", pos.toLong());
 
+        tag.putInt("type", type.ordinal());
+
         ListNBT attch = new ListNBT();
         attachmentManager.getAttachments().forEach(a -> {
             CompoundNBT attchTag = new CompoundNBT();
@@ -148,7 +152,9 @@ public class Pipe {
     public static Pipe fromNbt(World world, CompoundNBT tag) {
         BlockPos pos = BlockPos.fromLong(tag.getLong("pos"));
 
-        Pipe pipe = new Pipe(world, pos);
+        PipeType pipeType = PipeType.values()[tag.getInt("type")];
+
+        Pipe pipe = new Pipe(world, pos, pipeType);
 
         ListNBT attch = tag.getList("attch", Constants.NBT.TAG_COMPOUND);
         for (INBT item : attch) {
@@ -176,8 +182,8 @@ public class Pipe {
         return pipe;
     }
 
-    public byte getMaxTicksInPipe() {
-        return 20;
+    public int getMaxTicksInPipe() {
+        return type.getMaxTicksInPipe();
     }
 
     @Override

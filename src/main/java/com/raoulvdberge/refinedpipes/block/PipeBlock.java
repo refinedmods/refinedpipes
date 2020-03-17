@@ -1,9 +1,9 @@
 package com.raoulvdberge.refinedpipes.block;
 
-import com.raoulvdberge.refinedpipes.RefinedPipes;
 import com.raoulvdberge.refinedpipes.item.AttachmentItem;
 import com.raoulvdberge.refinedpipes.network.NetworkManager;
 import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
+import com.raoulvdberge.refinedpipes.network.pipe.PipeType;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.Attachment;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
 import com.raoulvdberge.refinedpipes.tile.PipeTileEntity;
@@ -47,10 +47,14 @@ public class PipeBlock extends Block {
     public static final VoxelShape UP_EXTENSION_SHAPE = makeCuboidShape(4, 12, 4, 12, 16, 12);
     public static final VoxelShape DOWN_EXTENSION_SHAPE = makeCuboidShape(4, 0, 4, 12, 4, 12);
 
-    public PipeBlock() {
+    private final PipeType type;
+
+    public PipeBlock(PipeType type) {
         super(Block.Properties.create(Material.ROCK));
 
-        this.setRegistryName(RefinedPipes.ID, "pipe");
+        this.type = type;
+
+        this.setRegistryName(type.getId());
         this.setDefaultState(getDefaultState()
             .with(NORTH, false)
             .with(EAST, false)
@@ -125,7 +129,7 @@ public class PipeBlock extends Block {
     @Nullable
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return new PipeTileEntity();
+        return new PipeTileEntity(type);
     }
 
     @Override

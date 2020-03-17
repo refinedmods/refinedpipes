@@ -40,9 +40,15 @@ public class ClientSetup {
 
     @SubscribeEvent
     public void onClientSetup(FMLClientSetupEvent e) {
-        RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.PIPE, RenderType.getCutout());
+        RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.SIMPLE_PIPE, RenderType.getCutout());
+        RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.BASIC_PIPE, RenderType.getCutout());
+        RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.IMPROVED_PIPE, RenderType.getCutout());
+        RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.ADVANCED_PIPE, RenderType.getCutout());
 
-        ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.PIPE, PipeTileEntityRenderer::new);
+        ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.SIMPLE_PIPE, PipeTileEntityRenderer::new);
+        ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.BASIC_PIPE, PipeTileEntityRenderer::new);
+        ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.IMPROVED_PIPE, PipeTileEntityRenderer::new);
+        ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.ADVANCED_PIPE, PipeTileEntityRenderer::new);
 
         ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/core"));
         ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/extension"));
@@ -60,7 +66,7 @@ public class ClientSetup {
         for (ResourceLocation id : e.getModelRegistry().keySet()) {
             if (id instanceof ModelResourceLocation &&
                 id.getNamespace().equals(RefinedPipes.ID) &&
-                id.getPath().equals("pipe") &&
+                id.getPath().contains("pipe") &&
                 !((ModelResourceLocation) id).getVariant().equals("inventory")) {
 
                 e.getModelRegistry().put(id, new PipeBakedModel(

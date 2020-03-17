@@ -6,6 +6,7 @@ import com.raoulvdberge.refinedpipes.block.PipeBlock;
 import com.raoulvdberge.refinedpipes.item.AttachmentItem;
 import com.raoulvdberge.refinedpipes.item.BlockItemBase;
 import com.raoulvdberge.refinedpipes.network.NetworkManager;
+import com.raoulvdberge.refinedpipes.network.pipe.PipeType;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentRegistry;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.ExtractorAttachmentType;
@@ -34,12 +35,18 @@ public class CommonSetup {
 
     @SubscribeEvent
     public void onRegisterBlocks(RegistryEvent.Register<Block> e) {
-        e.getRegistry().register(new PipeBlock());
+        e.getRegistry().register(new PipeBlock(PipeType.SIMPLE));
+        e.getRegistry().register(new PipeBlock(PipeType.BASIC));
+        e.getRegistry().register(new PipeBlock(PipeType.IMPROVED));
+        e.getRegistry().register(new PipeBlock(PipeType.ADVANCED));
     }
 
     @SubscribeEvent
     public void onRegisterItems(RegistryEvent.Register<Item> e) {
-        e.getRegistry().register(new BlockItemBase(RefinedPipesBlocks.PIPE));
+        e.getRegistry().register(new BlockItemBase(RefinedPipesBlocks.SIMPLE_PIPE));
+        e.getRegistry().register(new BlockItemBase(RefinedPipesBlocks.BASIC_PIPE));
+        e.getRegistry().register(new BlockItemBase(RefinedPipesBlocks.IMPROVED_PIPE));
+        e.getRegistry().register(new BlockItemBase(RefinedPipesBlocks.ADVANCED_PIPE));
 
         for (AttachmentType type : AttachmentRegistry.INSTANCE.getTypes()) {
             e.getRegistry().register(new AttachmentItem(type));
@@ -48,7 +55,10 @@ public class CommonSetup {
 
     @SubscribeEvent
     public void onRegisterTileEntities(RegistryEvent.Register<TileEntityType<?>> e) {
-        e.getRegistry().register(TileEntityType.Builder.create(() -> new PipeTileEntity(), RefinedPipesBlocks.PIPE).build(null).setRegistryName(RefinedPipes.ID, "pipe"));
+        e.getRegistry().register(TileEntityType.Builder.create(() -> new PipeTileEntity(PipeType.SIMPLE), RefinedPipesBlocks.SIMPLE_PIPE).build(null).setRegistryName(PipeType.SIMPLE.getId()));
+        e.getRegistry().register(TileEntityType.Builder.create(() -> new PipeTileEntity(PipeType.BASIC), RefinedPipesBlocks.BASIC_PIPE).build(null).setRegistryName(PipeType.BASIC.getId()));
+        e.getRegistry().register(TileEntityType.Builder.create(() -> new PipeTileEntity(PipeType.IMPROVED), RefinedPipesBlocks.IMPROVED_PIPE).build(null).setRegistryName(PipeType.IMPROVED.getId()));
+        e.getRegistry().register(TileEntityType.Builder.create(() -> new PipeTileEntity(PipeType.ADVANCED), RefinedPipesBlocks.ADVANCED_PIPE).build(null).setRegistryName(PipeType.ADVANCED.getId()));
     }
 
     @SubscribeEvent

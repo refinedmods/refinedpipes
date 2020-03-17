@@ -1,8 +1,8 @@
 package com.raoulvdberge.refinedpipes.tile;
 
-import com.raoulvdberge.refinedpipes.RefinedPipesTileEntities;
 import com.raoulvdberge.refinedpipes.network.NetworkManager;
 import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
+import com.raoulvdberge.refinedpipes.network.pipe.PipeType;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentRegistry;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.ItemTransportProps;
@@ -29,8 +29,12 @@ public class PipeTileEntity extends TileEntity implements ITickableTileEntity {
     private Map<Direction, AttachmentType> attachments = new HashMap<>();
     private List<ItemTransportProps> props = new ArrayList<>();
 
-    public PipeTileEntity() {
-        super(RefinedPipesTileEntities.PIPE);
+    private final PipeType type;
+
+    public PipeTileEntity(PipeType type) {
+        super(type.getTileType());
+
+        this.type = type;
     }
 
     @Override
@@ -128,7 +132,7 @@ public class PipeTileEntity extends TileEntity implements ITickableTileEntity {
             NetworkManager mgr = NetworkManager.get(world);
 
             if (mgr.getPipe(pos) == null) {
-                mgr.addPipe(new Pipe(world, pos));
+                mgr.addPipe(new Pipe(world, pos, type));
             }
         }
     }
