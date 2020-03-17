@@ -16,6 +16,7 @@ public class PipeTileEntityRenderer extends TileEntityRenderer<PipeTileEntity> {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public void render(PipeTileEntity tile, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer bufferType, int combinedLight, int combinedOverlay) {
         for (ItemTransportProps prop : tile.getProps()) {
             Direction dir = prop.getDirection();

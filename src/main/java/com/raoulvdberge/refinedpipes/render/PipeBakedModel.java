@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Direction;
+import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.data.IModelData;
 
 import javax.annotation.Nonnull;
@@ -37,7 +38,7 @@ public class PipeBakedModel implements IBakedModel {
 
     @Override
     public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, Random rand) {
-        return pipe.getQuads(state, side, rand);
+        return pipe.getQuads(state, side, rand, EmptyModelData.INSTANCE);
     }
 
     @Nonnull
@@ -76,6 +77,7 @@ public class PipeBakedModel implements IBakedModel {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public TextureAtlasSprite getParticleTexture() {
         return pipe.getParticleTexture();
     }
