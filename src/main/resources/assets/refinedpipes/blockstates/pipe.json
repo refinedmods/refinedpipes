@@ -2,341 +2,44 @@
   "multipart": [
     {
       "when": {
-        "north": true
-      },
-      "apply": {
-        "model": "refinedpipes:block/pipe/extension"
-      }
-    },
-    {
-      "when": {
         "north": false,
-        "down": false
-      },
-      "apply": {
-        "model": "refinedpipes:block/pipe/frame/horizontal_down"
-      }
-    },
-    {
-      "when": {
-        "north": false,
-        "up": false
-      },
-      "apply": {
-        "model": "refinedpipes:block/pipe/frame/horizontal_up"
-      }
-    },
-    {
-      "when": {
-        "north": false,
-        "east": false
-      },
-      "apply": {
-        "model": "refinedpipes:block/pipe/frame/vertical_right"
-      }
-    },
-    {
-      "when": {
-        "north": false
-      },
-      "apply": {
-        "model": "refinedpipes:block/pipe/interior"
-      }
-    },
-    {
-      "when": {
-        "east": true
-      },
-      "apply": {
-        "model": "refinedpipes:block/pipe/extension",
-        "y": 90
-      }
-    },
-    {
-      "when": {
+        "south": false,
         "east": false,
-        "down": false
-      },
-      "apply": {
-        "model": "refinedpipes:block/pipe/frame/horizontal_down",
-        "y": 90
-      }
-    },
-    {
-      "when": {
-        "east": false,
-        "up": false
-      },
-      "apply": {
-        "model": "refinedpipes:block/pipe/frame/horizontal_up",
-        "y": 90
-      }
-    },
-    {
-      "when": {
-        "east": false,
-        "south": false
-      },
-      "apply": {
-        "model": "refinedpipes:block/pipe/frame/vertical_right",
-        "x": 180
-      }
-    },
-    {
-      "when": {
-        "east": false
-      },
-      "apply": {
-        "model": "refinedpipes:block/pipe/interior",
-        "y": 90
-      }
-    },
-    {
-      "when": {
-        "south": true
-      },
-      "apply": {
-        "model": "refinedpipes:block/pipe/extension",
-        "x": 180
-      }
-    },
-    {
-      "when": {
-        "south": false,
-        "down": false
-      },
-      "apply": {
-        "model": "refinedpipes:block/pipe/frame/horizontal_down",
-        "x": 90
-      }
-    },
-    {
-      "when": {
-        "south": false,
-        "up": false
-      },
-      "apply": {
-        "model": "refinedpipes:block/pipe/frame/horizontal_up",
-        "y": 180
-      }
-    },
-    {
-      "when": {
-        "south": false,
-        "west": false
-      },
-      "apply": {
-        "model": "refinedpipes:block/pipe/frame/vertical_left",
-        "x": 180
-      }
-    },
-    {
-      "when": {
-        "south": false
-      },
-      "apply": {
-        "model": "refinedpipes:block/pipe/interior",
-        "x": 180
-      }
-    },
-    {
-      "when": {
-        "west": true
-      },
-      "apply": {
-        "model": "refinedpipes:block/pipe/extension",
-        "y": 270
-      }
-    },
-    {
-      "when": {
         "west": false,
+        "up": false,
         "down": false
       },
       "apply": {
-        "model": "refinedpipes:block/pipe/frame/horizontal_down",
-        "y": 270
+        "model": "refinedpipes:block/pipe/new/core"
       }
     },
-    {
-      "when": {
-        "west": false,
-        "up": false
-      },
-      "apply": {
-        "model": "refinedpipes:block/pipe/frame/horizontal_up",
-        "y": 270
-      }
-    },
-    {
-      "when": {
-        "west": false,
-        "north": false
-      },
-      "apply": {
-        "model": "refinedpipes:block/pipe/frame/vertical_left"
-      }
-    },
-    {
-      "when": {
-        "west": false
-      },
-      "apply": {
-        "model": "refinedpipes:block/pipe/interior",
-        "y": 270
-      }
-    },
-    {
-      "when": {
-        "up": true
-      },
-      "apply": {
-        "model": "refinedpipes:block/pipe/extension",
-        "x": 270
-      }
-    },
-    {
-      "when": {
-        "up": false
-      },
-      "apply": {
-        "model": "refinedpipes:block/pipe/interior",
-        "x": 270
-      }
-    },
-    {
-      "when": {
-        "down": true
-      },
-      "apply": {
-        "model": "refinedpipes:block/pipe/extension",
-        "x": 90
-      }
-    },
-    {
-      "when": {
-        "down": false
-      },
-      "apply": {
-        "model": "refinedpipes:block/pipe/interior",
-        "x": 90
-      }
-    },
+
     {
       "when": {
         "north": true,
-        "west": false
+        "south": true,
+        "east": false,
+        "west": false,
+        "up": false,
+        "down": false
       },
       "apply": {
-        "model": "refinedpipes:block/pipe/corner/down",
-        "y": 270
+        "model": "refinedpipes:block/pipe/new/straight"
       }
     },
+
     {
       "when": {
         "north": false,
-        "west": true
-      },
-      "apply": {
-        "model": "refinedpipes:block/pipe/corner/down",
-        "y": 270
-      }
-    },
-    {
-      "when": {
-        "north": true,
-        "west": true
-      },
-      "apply": {
-        "model": "refinedpipes:block/pipe/corner/down",
-        "y": 270
-      }
-    },
-    {
-      "when": {
-        "north": true,
-        "east": false
-      },
-      "apply": {
-        "model": "refinedpipes:block/pipe/corner/down"
-      }
-    },
-    {
-      "when": {
-        "north": false,
-        "east": true
-      },
-      "apply": {
-        "model": "refinedpipes:block/pipe/corner/down"
-      }
-    },
-    {
-      "when": {
-        "north": true,
-        "east": true
-      },
-      "apply": {
-        "model": "refinedpipes:block/pipe/corner/down"
-      }
-    },
-    {
-      "when": {
-        "south": true,
-        "east": false
-      },
-      "apply": {
-        "model": "refinedpipes:block/pipe/corner/down",
-        "y": 90
-      }
-    },
-    {
-      "when": {
         "south": false,
-        "east": true
+        "east": true,
+        "west": true,
+        "up": false,
+        "down": false
       },
       "apply": {
-        "model": "refinedpipes:block/pipe/corner/down",
+        "model": "refinedpipes:block/pipe/new/straight",
         "y": 90
-      }
-    },
-    {
-      "when": {
-        "south": true,
-        "east": true
-      },
-      "apply": {
-        "model": "refinedpipes:block/pipe/corner/down",
-        "y": 90
-      }
-    },
-    {
-      "when": {
-        "south": true,
-        "west": false
-      },
-      "apply": {
-        "model": "refinedpipes:block/pipe/corner/down",
-        "y": 180
-      }
-    },
-    {
-      "when": {
-        "south": false,
-        "west": true
-      },
-      "apply": {
-        "model": "refinedpipes:block/pipe/corner/down",
-        "y": 180
-      }
-    },
-    {
-      "when": {
-        "south": true,
-        "west": true
-      },
-      "apply": {
-        "model": "refinedpipes:block/pipe/corner/down",
-        "y": 180
       }
     }
   ]

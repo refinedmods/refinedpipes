@@ -1,5 +1,6 @@
 package com.raoulvdberge.refinedpipes.render;
 
+import com.raoulvdberge.refinedpipes.block.PipeBlock;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
 import com.raoulvdberge.refinedpipes.tile.PipeTileEntity;
 import net.minecraft.block.BlockState;
@@ -16,11 +17,15 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 public class PipeBakedModel implements IBakedModel {
-    private final IBakedModel pipe;
+    private final IBakedModel core;
+    private final IBakedModel extension;
+    private final IBakedModel straight;
     private final Map<AttachmentType, Map<Direction, IBakedModel>> attachmentModels = new HashMap<>();
 
-    public PipeBakedModel(IBakedModel pipe, Map<AttachmentType, IBakedModel> attachmentModels) {
-        this.pipe = pipe;
+    public PipeBakedModel(IBakedModel core, IBakedModel extension, IBakedModel straight, Map<AttachmentType, IBakedModel> attachmentModels) {
+        this.core = core;
+        this.extension = extension;
+        this.straight = straight;
 
         for (Map.Entry<AttachmentType, IBakedModel> entry : attachmentModels.entrySet()) {
             Map<Direction, IBakedModel> dirToModel = new HashMap<>();
@@ -38,13 +43,58 @@ public class PipeBakedModel implements IBakedModel {
 
     @Override
     public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, Random rand) {
-        return pipe.getQuads(state, side, rand, EmptyModelData.INSTANCE);
+        return getQuads(state, side, rand, EmptyModelData.INSTANCE);
     }
 
     @Nonnull
     @Override
     public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
-        List<BakedQuad> quads = new ArrayList<>(pipe.getQuads(state, side, rand, extraData));
+        List<BakedQuad> quads = new ArrayList<>();
+
+        if (state != null) {
+            boolean north = state.get(PipeBlock.NORTH);
+            boolean east = state.get(PipeBlock.EAST);
+            boolean south = state.get(PipeBlock.SOUTH);
+            boolean west = state.get(PipeBlock.WEST);
+            boolean up = state.get(PipeBlock.UP);
+            boolean down = state.get(PipeBlock.DOWN);
+
+            if (north && south && !east && !west && !up && !down) {
+                quads.addAll(straight.getQuads(state, side, rand, EmptyModelData.INSTANCE));
+            } else if (!north && !south && east && west && !up && !down) {
+                quads.addAll(new TrsrBakedModel(straight, Direction.EAST).getQuads(state, side, rand, EmptyModelData.INSTANCE));
+            } else if (!north && !south && !east && !west && up && down) {
+                quads.addAll(new TrsrBakedModel(straight, Direction.UP).getQuads(state, side, rand, EmptyModelData.INSTANCE));
+            } else if (!north && !south && !east && !west && !up && !down) {
+                quads.addAll(core.getQuads(state, side, rand, EmptyModelData.INSTANCE));
+            } else {
+                quads.addAll(core.getQuads(state, side, rand, EmptyModelData.INSTANCE));
+
+                if (north) {
+                    quads.addAll(extension.getQuads(state, side, rand, EmptyModelData.INSTANCE));
+                }
+
+                if (east) {
+                    quads.addAll(new TrsrBakedModel(extension, Direction.EAST).getQuads(state, side, rand, EmptyModelData.INSTANCE));
+                }
+
+                if (south) {
+                    quads.addAll(new TrsrBakedModel(extension, Direction.SOUTH).getQuads(state, side, rand, EmptyModelData.INSTANCE));
+                }
+
+                if (west) {
+                    quads.addAll(new TrsrBakedModel(extension, Direction.WEST).getQuads(state, side, rand, EmptyModelData.INSTANCE));
+                }
+
+                if (up) {
+                    quads.addAll(new TrsrBakedModel(extension, Direction.UP).getQuads(state, side, rand, EmptyModelData.INSTANCE));
+                }
+
+                if (down) {
+                    quads.addAll(new TrsrBakedModel(extension, Direction.DOWN).getQuads(state, side, rand, EmptyModelData.INSTANCE));
+                }
+            }
+        }
 
         Map<Direction, AttachmentType> attachments = extraData.getData(PipeTileEntity.ATTACHMENTS_PROPERTY);
         if (attachments != null) {
@@ -58,12 +108,12 @@ public class PipeBakedModel implements IBakedModel {
 
     @Override
     public boolean isAmbientOcclusion() {
-        return pipe.isAmbientOcclusion();
+        return core.isAmbientOcclusion();
     }
 
     @Override
     public boolean isGui3d() {
-        return pipe.isGui3d();
+        return core.isGui3d();
     }
 
     @Override
@@ -73,17 +123,17 @@ public class PipeBakedModel implements IBakedModel {
 
     @Override
     public boolean isBuiltInRenderer() {
-        return pipe.isBuiltInRenderer();
+        return core.isBuiltInRenderer();
     }
 
     @Override
     @SuppressWarnings("deprecation")
     public TextureAtlasSprite getParticleTexture() {
-        return pipe.getParticleTexture();
+        return core.getParticleTexture();
     }
 
     @Override
     public ItemOverrideList getOverrides() {
-        return pipe.getOverrides();
+        return core.getOverrides();
     }
 }

@@ -1,37 +1,54 @@
 {
-  "credit": "Made with Blockbench",
   "textures": {
     "0": "refinedpipes:blocks/pipe",
     "particle": "refinedpipes:blocks/pipe"
   },
   "elements": [
     {
-      "name": "North",
+      "name": "Core",
       "from": [
         4,
         4,
-        0
+        4
       ],
       "to": [
         12,
         12,
-        4
+        12
       ],
       "faces": {
+        "north": {
+          "uv": [
+            4,
+            4,
+            12,
+            12
+          ],
+          "texture": "#0"
+        },
         "east": {
           "uv": [
-            12,
             4,
-            16,
+            4,
+            12,
+            12
+          ],
+          "texture": "#0"
+        },
+        "south": {
+          "uv": [
+            4,
+            4,
+            12,
             12
           ],
           "texture": "#0"
         },
         "west": {
           "uv": [
-            0,
             4,
             4,
+            12,
             12
           ],
           "texture": "#0"
@@ -39,18 +56,18 @@
         "up": {
           "uv": [
             4,
+            4,
             12,
-            12,
-            16
+            12
           ],
           "texture": "#0"
         },
         "down": {
           "uv": [
             4,
-            0,
+            4,
             12,
-            4
+            12
           ],
           "texture": "#0"
         }

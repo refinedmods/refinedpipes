@@ -7,7 +7,6 @@ import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentRegistry;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
 import com.raoulvdberge.refinedpipes.render.PipeBakedModel;
 import com.raoulvdberge.refinedpipes.render.PipeTileEntityRenderer;
-import com.raoulvdberge.refinedpipes.tile.PipeTileEntity;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.model.IBakedModel;
@@ -39,12 +38,15 @@ public class ClientSetup {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onModelBake);
     }
 
-
     @SubscribeEvent
     public void onClientSetup(FMLClientSetupEvent e) {
-        RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.PIPE, RenderType.cutout());
+        RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.PIPE, RenderType.getCutout());
 
         ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.PIPE, PipeTileEntityRenderer::new);
+
+        ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/core"));
+        ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/extension"));
+        ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/straight"));
     }
 
     @SubscribeEvent
@@ -60,8 +62,11 @@ public class ClientSetup {
                 id.getNamespace().equals(RefinedPipes.ID) &&
                 id.getPath().equals("pipe") &&
                 !((ModelResourceLocation) id).getVariant().equals("inventory")) {
+
                 e.getModelRegistry().put(id, new PipeBakedModel(
-                    e.getModelRegistry().get(id),
+                    e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/core")),
+                    e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/extension")),
+                    e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/straight")),
                     attachmentModels
                 ));
             }

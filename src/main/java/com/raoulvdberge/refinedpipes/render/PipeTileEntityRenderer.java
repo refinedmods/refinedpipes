@@ -5,6 +5,7 @@ import com.raoulvdberge.refinedpipes.network.pipe.transport.ItemTransportProps;
 import com.raoulvdberge.refinedpipes.tile.PipeTileEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.Quaternion;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
@@ -63,6 +64,7 @@ public class PipeTileEntityRenderer extends TileEntityRenderer<PipeTileEntity> {
                 0.5 + (dir.getYOffset() * v),
                 0.5 + (dir.getZOffset() * v)
             );
+            matrixStack.rotate(new Quaternion(0, (float) ((Minecraft.getInstance().world.getGameTime() / 25D) % (Math.PI * 2) + (partialTicks / 25D)), 0, false));
             matrixStack.scale(0.5F, 0.5F, 0.5F);
 
             Minecraft.getInstance().getItemRenderer().renderItem(

@@ -41,8 +41,8 @@ public class ItemTransport {
         this.source = source;
         this.destination = destination;
         this.path = path;
-        this.path.poll(); // Pop first pipe.
         this.initialDirection = getDirection(source, path.peek());
+        this.path.poll(); // Pop first pipe.
         this.finishedCallback = finishedCallback;
         this.cancelCallback = cancelCallback;
         this.pipeGoneCallback = pipeGoneCallback;
@@ -84,6 +84,14 @@ public class ItemTransport {
 
     public boolean update(Network network, Pipe currentPipe) {
         progressInCurrentPipe += 1;
+
+        double progress = (double) progressInCurrentPipe / (double) getMaxTicksInPipe(currentPipe);
+
+        BlockPos nextPos = currentPipe.getPos().offset(getDirection(currentPipe));
+        if (progress > 0.25 && currentPipe.getWorld().isAirBlock(nextPos)) {
+            currentPipe.removeTransport(this);
+            return onPipeGone(network, currentPipe.getWorld(), nextPos);
+        }
 
         if (progressInCurrentPipe >= getMaxTicksInPipe(currentPipe)) {
             currentPipe.removeTransport(this);
