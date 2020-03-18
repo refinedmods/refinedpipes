@@ -1,8 +1,4 @@
 {
-  "textures": {
-    "0": "refinedpipes:blocks/pipe",
-    "particle": "refinedpipes:blocks/pipe"
-  },
   "elements": [
     {
       "name": "Core",

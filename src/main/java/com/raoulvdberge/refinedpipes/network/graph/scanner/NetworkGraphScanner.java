@@ -39,9 +39,10 @@ public class NetworkGraphScanner {
             foundPipes,
             newPipes,
             removedPipes,
-            destinations,
+            destinations, // TODO: both with extractor and none doesn't work, loop
             allRequests
         );
+        // TODO placing chest + pipe doesn't immediatally connect
     }
 
     private void singleScanAt(NetworkGraphScannerRequest request) {

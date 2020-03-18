@@ -3,6 +3,7 @@ package com.raoulvdberge.refinedpipes.setup;
 import com.raoulvdberge.refinedpipes.RefinedPipes;
 import com.raoulvdberge.refinedpipes.RefinedPipesBlocks;
 import com.raoulvdberge.refinedpipes.RefinedPipesTileEntities;
+import com.raoulvdberge.refinedpipes.network.pipe.PipeType;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentRegistry;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
 import com.raoulvdberge.refinedpipes.render.PipeBakedModel;
@@ -50,9 +51,21 @@ public class ClientSetup {
         ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.IMPROVED_PIPE, PipeTileEntityRenderer::new);
         ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.ADVANCED_PIPE, PipeTileEntityRenderer::new);
 
-        ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/core"));
-        ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/extension"));
-        ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/straight"));
+        ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/simple/core"));
+        ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/simple/extension"));
+        ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/simple/straight"));
+
+        ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/basic/core"));
+        ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/basic/extension"));
+        ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/basic/straight"));
+
+        ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/improved/core"));
+        ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/improved/extension"));
+        ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/improved/straight"));
+
+        ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/advanced/core"));
+        ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/advanced/extension"));
+        ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/advanced/straight"));
     }
 
     @SubscribeEvent
@@ -64,18 +77,42 @@ public class ClientSetup {
         }
 
         for (ResourceLocation id : e.getModelRegistry().keySet()) {
-            if (id instanceof ModelResourceLocation &&
-                id.getNamespace().equals(RefinedPipes.ID) &&
-                id.getPath().contains("pipe") &&
-                !((ModelResourceLocation) id).getVariant().equals("inventory")) {
-
+            if (isPipeModel(id, PipeType.SIMPLE)) {
                 e.getModelRegistry().put(id, new PipeBakedModel(
-                    e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/core")),
-                    e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/extension")),
-                    e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/straight")),
+                    e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/simple/core")),
+                    e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/simple/extension")),
+                    e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/simple/straight")),
+                    attachmentModels
+                ));
+            } else if (isPipeModel(id, PipeType.BASIC)) {
+                e.getModelRegistry().put(id, new PipeBakedModel(
+                    e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/basic/core")),
+                    e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/basic/extension")),
+                    e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/basic/straight")),
+                    attachmentModels
+                ));
+            } else if (isPipeModel(id, PipeType.IMPROVED)) {
+                e.getModelRegistry().put(id, new PipeBakedModel(
+                    e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/improved/core")),
+                    e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/improved/extension")),
+                    e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/improved/straight")),
+                    attachmentModels
+                ));
+            } else if (isPipeModel(id, PipeType.ADVANCED)) {
+                e.getModelRegistry().put(id, new PipeBakedModel(
+                    e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/advanced/core")),
+                    e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/advanced/extension")),
+                    e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/advanced/straight")),
                     attachmentModels
                 ));
             }
         }
+    }
+
+    private boolean isPipeModel(ResourceLocation id, PipeType pipeType) {
+        return id instanceof ModelResourceLocation
+            && id.getNamespace().equals(RefinedPipes.ID)
+            && id.getPath().equals(pipeType.getId().getPath())
+            && !((ModelResourceLocation) id).getVariant().equals("inventory");
     }
 }
