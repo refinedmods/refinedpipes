@@ -15,7 +15,6 @@ import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
-import net.minecraft.tileentity.ChestTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
@@ -28,6 +27,7 @@ import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraftforge.items.CapabilityItemHandler;
 
 import javax.annotation.Nullable;
 
@@ -89,6 +89,8 @@ public class PipeBlock extends Block {
                 pipe.getAttachmentManager().setAttachment(dir, type);
                 pipe.sendBlockUpdate();
 
+                world.setBlockState(pos, getState(world.getBlockState(pos), world, pos));
+
                 NetworkManager.get(world).markDirty();
 
                 if (!player.isCreative()) {
@@ -109,6 +111,8 @@ public class PipeBlock extends Block {
 
                 pipe.getAttachmentManager().removeAttachment(dir);
                 pipe.sendBlockUpdate();
+
+                world.setBlockState(pos, getState(world.getBlockState(pos), world, pos));
 
                 NetworkManager.get(world).markDirty();
 
@@ -205,17 +209,20 @@ public class PipeBlock extends Block {
     }
 
     private static boolean hasConnection(IWorld world, BlockPos pos, Direction direction) {
-        TileEntity tile = world.getTileEntity(pos);
-        if (!(tile instanceof PipeTileEntity)) {
+        TileEntity currentTile = world.getTileEntity(pos);
+        if (currentTile instanceof PipeTileEntity && ((PipeTileEntity) currentTile).hasAttachment(direction)) {
             return false;
         }
 
-        if (((PipeTileEntity) tile).hasAttachment(direction)) {
+        BlockState facingState = world.getBlockState(pos.offset(direction));
+        TileEntity facingTile = world.getTileEntity(pos.offset(direction));
+
+        if (facingTile instanceof PipeTileEntity && ((PipeTileEntity) facingTile).hasAttachment(direction.getOpposite())) {
             return false;
         }
 
-        return world.getBlockState(pos.offset(direction)).getBlock() instanceof PipeBlock
-            || world.getTileEntity(pos.offset(direction)) instanceof ChestTileEntity;
+        return facingState.getBlock() instanceof PipeBlock
+            || (facingTile != null && facingTile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent());
     }
 
     private static BlockState getState(BlockState currentState, IWorld world, BlockPos pos) {
