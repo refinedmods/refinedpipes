@@ -11,28 +11,28 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class DestinationPathCacheFactory<T> {
+public class DestinationPathCacheFactory {
     private static final Logger LOGGER = LogManager.getLogger(DestinationPathCacheFactory.class);
 
     private final Graph<BlockPos> graph;
     private final NodeIndex<BlockPos> nodeIndex;
-    private final Set<Destination<T>> destinations;
+    private final Set<Destination> destinations;
 
-    public DestinationPathCacheFactory(Graph<BlockPos> graph, NodeIndex<BlockPos> nodeIndex, Set<Destination<T>> destinations) {
+    public DestinationPathCacheFactory(Graph<BlockPos> graph, NodeIndex<BlockPos> nodeIndex, Set<Destination> destinations) {
         this.graph = graph;
         this.nodeIndex = nodeIndex;
         this.destinations = destinations;
     }
 
-    public DestinationPathCache<T> create() {
-        DestinationPathCache<T> cache = new DestinationPathCache<>();
+    public DestinationPathCache create() {
+        DestinationPathCache cache = new DestinationPathCache();
 
         for (Node<BlockPos> node : graph.getNodes()) {
             DijkstraAlgorithm<BlockPos> dijkstra = new DijkstraAlgorithm<>(graph);
 
             dijkstra.execute(node);
 
-            for (Destination<T> destination : destinations) {
+            for (Destination destination : destinations) {
                 if (destination.getConnectedPipe().getPos().equals(node.getId())) {
                     List<Node<BlockPos>> nodes = new ArrayList<>();
                     nodes.add(node);

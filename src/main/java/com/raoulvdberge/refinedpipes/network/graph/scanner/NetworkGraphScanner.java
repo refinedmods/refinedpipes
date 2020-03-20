@@ -8,7 +8,6 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
 
 import java.util.*;
 
@@ -16,7 +15,7 @@ public class NetworkGraphScanner {
     private final Set<Pipe> foundPipes = new HashSet<>();
     private final Set<Pipe> newPipes = new HashSet<>();
     private final Set<Pipe> removedPipes = new HashSet<>();
-    private final Set<Destination<IItemHandler>> destinations = new HashSet<>();
+    private final Set<Destination> destinations = new HashSet<>();
     private final Set<Pipe> currentPipes;
 
     private final List<NetworkGraphScannerRequest> allRequests = new ArrayList<>();
@@ -28,7 +27,7 @@ public class NetworkGraphScanner {
     }
 
     public NetworkGraphScannerResult scanAt(World world, BlockPos pos) {
-        addRequest(new NetworkGraphScannerRequest(world, pos, null));
+        addRequest(new NetworkGraphScannerRequest(world, pos, null, null));
 
         NetworkGraphScannerRequest request;
         while ((request = requests.poll()) != null) {
@@ -39,7 +38,7 @@ public class NetworkGraphScanner {
             foundPipes,
             newPipes,
             removedPipes,
-            destinations, // TODO: both with extractor and none doesn't work, loop
+            destinations,
             allRequests
         );
     }
@@ -61,6 +60,7 @@ public class NetworkGraphScanner {
                     addRequest(new NetworkGraphScannerRequest(
                         request.getWorld(),
                         request.getPos().offset(dir),
+                        dir,
                         request
                     ));
                 }
@@ -71,10 +71,8 @@ public class NetworkGraphScanner {
             TileEntity tile = request.getWorld().getTileEntity(request.getPos());
 
             if (tile != null) {
-                tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)
-                    .ifPresent(itemHandler -> destinations.add(
-                        new Destination<>(itemHandler, request.getPos(), connectedPipe)
-                    ));
+                tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, request.getDirection())
+                    .ifPresent(itemHandler -> destinations.add(new Destination(request.getPos(), request.getDirection(), connectedPipe)));
             }
         }
     }

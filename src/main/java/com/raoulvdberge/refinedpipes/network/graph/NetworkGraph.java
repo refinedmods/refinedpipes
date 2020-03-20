@@ -10,7 +10,6 @@ import com.raoulvdberge.refinedpipes.network.route.Node;
 import com.raoulvdberge.refinedpipes.network.route.NodeIndex;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.items.IItemHandler;
 
 import java.util.HashSet;
 import java.util.List;
@@ -21,7 +20,7 @@ public class NetworkGraph {
     private final Network network;
 
     private Set<Pipe> pipes = new HashSet<>();
-    private DestinationPathCache<IItemHandler> destinationPathCache;
+    private DestinationPathCache destinationPathCache;
 
     public NetworkGraph(Network network) {
         this.network = network;
@@ -52,7 +51,7 @@ public class NetworkGraph {
 
         Graph<BlockPos> graph = new Graph<>(nodes, edges);
 
-        DestinationPathCacheFactory<IItemHandler> destinationPathCacheFactory = new DestinationPathCacheFactory<>(graph, nodeIndex, result.getDestinations());
+        DestinationPathCacheFactory destinationPathCacheFactory = new DestinationPathCacheFactory(graph, nodeIndex, result.getDestinations());
 
         this.destinationPathCache = destinationPathCacheFactory.create();
     }
@@ -65,7 +64,7 @@ public class NetworkGraph {
         return pipes;
     }
 
-    public DestinationPathCache<IItemHandler> getDestinationPathCache() {
+    public DestinationPathCache getDestinationPathCache() {
         return destinationPathCache;
     }
 }

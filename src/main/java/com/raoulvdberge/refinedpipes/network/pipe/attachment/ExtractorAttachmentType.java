@@ -48,23 +48,41 @@ public class ExtractorAttachmentType implements AttachmentType {
             .ifPresent(itemHandler -> update(network, pipe, attachment, itemHandlerPos, itemHandler));
     }
 
-    private void update(Network network, Pipe pipe, Attachment attachment, BlockPos itemHandlerPos, IItemHandler itemHandler) {
-        int firstSlot = getFirstSlot(itemHandler);
+    private void update(Network network, Pipe pipe, Attachment attachment, BlockPos sourcePos, IItemHandler source) {
+        int firstSlot = getFirstSlot(source);
         if (firstSlot == -1) {
             return;
         }
 
-        ItemStack extracted = itemHandler.extractItem(firstSlot, 1, true);
+        ItemStack extracted = source.extractItem(firstSlot, 1, true);
         if (extracted.isEmpty()) {
             return;
         }
 
-        Destination<IItemHandler> destination = network
+        Destination destination = network
             .getGraph()
             .getDestinationPathCache()
             .findNearestDestination(
                 pipe.getPos(),
-                dest -> dest.getDest() != itemHandler && ItemHandlerHelper.insertItem(dest.getDest(), extracted, true).isEmpty()
+                d -> {
+                    TileEntity tile = d.getConnectedPipe().getWorld().getTileEntity(d.getReceiver());
+                    if (tile == null) {
+                        return false;
+                    }
+
+                    IItemHandler handler = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, d.getIncomingDirection()).orElse(null);
+                    if (handler == null) {
+                        return false;
+                    }
+
+                    // Avoid extractions that lead back to the source pos through the same pipe.
+                    // Only if the incoming direction is different, then we'll allow it.
+                    if (d.getReceiver().equals(sourcePos) && d.getIncomingDirection() == attachment.getDirection()) {
+                        return false;
+                    }
+
+                    return ItemHandlerHelper.insertItem(handler, extracted, true).isEmpty();
+                }
             );
 
         if (destination == null) {
@@ -82,7 +100,7 @@ public class ExtractorAttachmentType implements AttachmentType {
             return;
         }
 
-        ItemStack extractedActual = itemHandler.extractItem(firstSlot, 1, false);
+        ItemStack extractedActual = source.extractItem(firstSlot, 1, false);
         if (extractedActual.isEmpty()) {
             return;
         }
@@ -92,10 +110,10 @@ public class ExtractorAttachmentType implements AttachmentType {
         pipe.addTransport(new ItemTransport(
             extractedActual.copy(),
             fromPos,
-            destination.getDestPos(),
+            destination.getReceiver(),
             path.toQueue(),
-            new ItemInsertTransportCallback(destination.getDestPos(), extractedActual),
-            new ItemBounceBackTransportCallback(destination.getDestPos(), itemHandlerPos, extractedActual),
+            new ItemInsertTransportCallback(destination.getReceiver(), destination.getIncomingDirection(), extractedActual),
+            new ItemBounceBackTransportCallback(destination.getReceiver(), sourcePos, extractedActual),
             new ItemPipeGoneTransportCallback(extractedActual)
         ));
     }

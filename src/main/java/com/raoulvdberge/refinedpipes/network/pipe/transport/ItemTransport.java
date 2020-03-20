@@ -158,7 +158,7 @@ public class ItemTransport {
         }
 
         if (isLastPipe()) {
-            mt *= 0.25D;
+            mt *= 0.50D;
         }
 
         return (int) mt;

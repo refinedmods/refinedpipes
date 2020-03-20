@@ -5,6 +5,7 @@ import com.raoulvdberge.refinedpipes.network.Network;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -22,10 +23,12 @@ public class ItemInsertTransportCallback implements TransportCallback {
     public static final ResourceLocation ID = new ResourceLocation(RefinedPipes.ID, "item_insert");
 
     private final BlockPos itemHandlerPosition;
+    private final Direction incomingDirection;
     private final ItemStack toInsert;
 
-    public ItemInsertTransportCallback(BlockPos itemHandlerPosition, ItemStack toInsert) {
+    public ItemInsertTransportCallback(BlockPos itemHandlerPosition, Direction incomingDirection, ItemStack toInsert) {
         this.itemHandlerPosition = itemHandlerPosition;
+        this.incomingDirection = incomingDirection;
         this.toInsert = toInsert;
     }
 
@@ -38,7 +41,7 @@ public class ItemInsertTransportCallback implements TransportCallback {
             return;
         }
 
-        IItemHandler itemHandler = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).orElse(null);
+        IItemHandler itemHandler = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, incomingDirection).orElse(null);
         if (itemHandler == null) {
             LOGGER.warn("Destination item handler is no longer exposing a capability at " + itemHandlerPosition);
             cancelCallback.call(network, world, currentPos, cancelCallback);
@@ -62,19 +65,21 @@ public class ItemInsertTransportCallback implements TransportCallback {
     public static ItemInsertTransportCallback of(CompoundNBT tag) {
         BlockPos itemHandlerPosition = BlockPos.fromLong(tag.getLong("ihpos"));
         ItemStack toInsert = ItemStack.read(tag.getCompound("s"));
+        Direction incomingDirection = Direction.values()[tag.getInt("incdir")];
 
         if (toInsert.isEmpty()) {
             LOGGER.warn("Item no longer exists");
             return null;
         }
 
-        return new ItemInsertTransportCallback(itemHandlerPosition, toInsert);
+        return new ItemInsertTransportCallback(itemHandlerPosition, incomingDirection, toInsert);
     }
 
     @Override
     public CompoundNBT writeToNbt(CompoundNBT tag) {
         tag.putLong("ihpos", itemHandlerPosition.toLong());
         tag.put("s", toInsert.write(new CompoundNBT()));
+        tag.putInt("incdir", incomingDirection.ordinal());
 
         return tag;
     }
