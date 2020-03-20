@@ -61,6 +61,10 @@ public class ItemTransport {
         this.progressInCurrentPipe = progressInCurrentPipe;
     }
 
+    public ItemStack getValue() {
+        return value;
+    }
+
     public Direction getDirection(Pipe currentPipe) {
         BlockPos nextPipe = path.peek();
 

@@ -5,8 +5,10 @@ import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
 import com.raoulvdberge.refinedpipes.network.pipe.PipeType;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentRegistry;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
+import com.raoulvdberge.refinedpipes.network.pipe.transport.ItemTransport;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.ItemTransportProps;
 import net.minecraft.block.BlockState;
+import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.ITickableTileEntity;
@@ -142,7 +144,16 @@ public class PipeTileEntity extends TileEntity implements ITickableTileEntity {
         super.remove();
 
         if (!world.isRemote) {
-            NetworkManager.get(world).removePipe(pos);
+            NetworkManager mgr = NetworkManager.get(world);
+
+            Pipe pipe = mgr.getPipe(pos);
+            if (pipe != null) {
+                for (ItemTransport transport : pipe.getTransports()) {
+                    InventoryHelper.spawnItemStack(world, pos.getX(), pos.getY(), pos.getZ(), transport.getValue());
+                }
+            }
+
+            mgr.removePipe(pos);
         }
     }
 }

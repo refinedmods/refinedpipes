@@ -69,6 +69,10 @@ public class Pipe {
         }
     }
 
+    public List<ItemTransport> getTransports() {
+        return transports;
+    }
+
     public AttachmentManager getAttachmentManager() {
         return attachmentManager;
     }
