@@ -128,7 +128,7 @@ public class NetworkManager extends WorldSavedData {
         }
 
         if (pipe.getNetwork() == null) {
-            throw new RuntimeException("Pipe has no network"); // TODO java.lang.RuntimeException: Pipe has no network
+            throw new RuntimeException("Pipe has no network");
         }
 
         pipes.remove(pipe.getPos());
@@ -157,6 +157,9 @@ public class NetworkManager extends WorldSavedData {
         Pipe otherPipeInNetwork = findFirstAdjacentPipe(originPipe.getPos());
 
         if (otherPipeInNetwork != null) {
+            otherPipeInNetwork.getNetwork().setOriginPos(otherPipeInNetwork.getPos());
+            markDirty();
+
             NetworkGraphScannerResult result = otherPipeInNetwork.getNetwork().scanGraph(
                 otherPipeInNetwork.getWorld(),
                 otherPipeInNetwork.getPos()

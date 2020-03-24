@@ -16,7 +16,7 @@ public class Network {
 
     private final NetworkGraph graph = new NetworkGraph(this);
     private final String id;
-    private final BlockPos originPos;
+    private BlockPos originPos;
     private boolean didDoInitialScan;
 
     public Network(BlockPos originPos) {
@@ -25,6 +25,10 @@ public class Network {
 
     public Network(BlockPos originPos, String id) {
         this.id = id;
+        this.originPos = originPos;
+    }
+
+    public void setOriginPos(BlockPos originPos) {
         this.originPos = originPos;
     }
 
