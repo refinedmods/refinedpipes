@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "CCC",
+    "GGG",
+    "CCC"
+  ],
+  "key": {
+    "C": {
+      "item": "minecraft:cobblestone"
+    },
+    "G": {
+      "item": "minecraft:glass"
+    }
+  },
+  "result": {
+    "item": "refinedpipes:simple_pipe",
+    "count": 2
+  }
+}
