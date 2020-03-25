@@ -51,7 +51,7 @@ public class ItemPipeBlock extends Block {
     private final ItemPipeType type;
 
     public ItemPipeBlock(ItemPipeType type) {
-        super(Block.Properties.create(Material.ROCK));
+        super(Block.Properties.create(Material.ROCK).hardnessAndResistance(0.35F));
 
         this.type = type;
 

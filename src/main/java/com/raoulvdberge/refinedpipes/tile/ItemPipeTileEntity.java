@@ -3,6 +3,7 @@ package com.raoulvdberge.refinedpipes.tile;
 import com.raoulvdberge.refinedpipes.network.NetworkManager;
 import com.raoulvdberge.refinedpipes.network.pipe.ItemPipe;
 import com.raoulvdberge.refinedpipes.network.pipe.ItemPipeType;
+import com.raoulvdberge.refinedpipes.network.pipe.attachment.Attachment;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentRegistry;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.ItemTransport;
@@ -150,6 +151,10 @@ public class ItemPipeTileEntity extends TileEntity implements ITickableTileEntit
             if (pipe != null) {
                 for (ItemTransport transport : pipe.getTransports()) {
                     InventoryHelper.spawnItemStack(world, pos.getX(), pos.getY(), pos.getZ(), transport.getValue());
+                }
+
+                for (Attachment attachment : pipe.getAttachmentManager().getAttachments()) {
+                    InventoryHelper.spawnItemStack(world, pos.getX(), pos.getY(), pos.getZ(), attachment.getType().toStack());
                 }
             }
 
