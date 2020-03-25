@@ -7,13 +7,13 @@
   ],
   "key": {
     "I": {
-      "item": "minecraft:iron_ingot"
+      "item": "minecraft:gold_ingot"
     },
     "P": {
       "item": "minecraft:piston"
     }
   },
   "result": {
-    "item": "refinedpipes:extractor_attachment"
+    "item": "refinedpipes:improved_extractor_attachment"
   }
 }

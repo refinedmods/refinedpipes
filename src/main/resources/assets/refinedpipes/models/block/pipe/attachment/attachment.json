@@ -1,9 +1,5 @@
 {
-  "credit": "Made with Blockbench",
   "parent": "block/block",
-  "textures": {
-    "particle": "refinedpipes:blocks/pipe"
-  },
   "elements": [
     {
       "name": "Attachment",
