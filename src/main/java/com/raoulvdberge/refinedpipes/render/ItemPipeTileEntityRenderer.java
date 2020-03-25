@@ -58,6 +58,8 @@ public class ItemPipeTileEntityRenderer extends TileEntityRenderer<ItemPipeTileE
                 continue;
             }
 
+            v = Math.min(1F, v);
+
             matrixStack.push();
 
             matrixStack.translate(
