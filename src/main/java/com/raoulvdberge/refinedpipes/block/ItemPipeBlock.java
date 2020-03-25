@@ -32,13 +32,19 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import javax.annotation.Nullable;
 
 public class ItemPipeBlock extends Block {
-    // TODO: different connection for chests
     public static final BooleanProperty NORTH = BooleanProperty.create("north");
     public static final BooleanProperty EAST = BooleanProperty.create("east");
     public static final BooleanProperty SOUTH = BooleanProperty.create("south");
     public static final BooleanProperty WEST = BooleanProperty.create("west");
     public static final BooleanProperty UP = BooleanProperty.create("up");
     public static final BooleanProperty DOWN = BooleanProperty.create("down");
+
+    public static final BooleanProperty INV_NORTH = BooleanProperty.create("inv_north");
+    public static final BooleanProperty INV_EAST = BooleanProperty.create("inv_east");
+    public static final BooleanProperty INV_SOUTH = BooleanProperty.create("inv_south");
+    public static final BooleanProperty INV_WEST = BooleanProperty.create("inv_west");
+    public static final BooleanProperty INV_UP = BooleanProperty.create("inv_up");
+    public static final BooleanProperty INV_DOWN = BooleanProperty.create("inv_down");
 
     public static final VoxelShape CORE_SHAPE = makeCuboidShape(4, 4, 4, 12, 12, 12);
     public static final VoxelShape NORTH_EXTENSION_SHAPE = makeCuboidShape(4, 4, 0, 12, 12, 4);
@@ -57,12 +63,8 @@ public class ItemPipeBlock extends Block {
 
         this.setRegistryName(type.getId());
         this.setDefaultState(getDefaultState()
-            .with(NORTH, false)
-            .with(EAST, false)
-            .with(SOUTH, false)
-            .with(WEST, false)
-            .with(UP, false)
-            .with(DOWN, false)
+            .with(NORTH, false).with(EAST, false).with(SOUTH, false).with(WEST, false).with(UP, false).with(DOWN, false)
+            .with(INV_NORTH, false).with(INV_EAST, false).with(INV_SOUTH, false).with(INV_WEST, false).with(INV_UP, false).with(INV_DOWN, false)
         );
     }
 
@@ -141,7 +143,10 @@ public class ItemPipeBlock extends Block {
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
         super.fillStateContainer(builder);
 
-        builder.add(NORTH, EAST, SOUTH, WEST, UP, DOWN);
+        builder.add(
+            NORTH, EAST, SOUTH, WEST, UP, DOWN,
+            INV_NORTH, INV_EAST, INV_SOUTH, INV_WEST, INV_UP, INV_DOWN
+        );
     }
 
     @Override
@@ -215,24 +220,28 @@ public class ItemPipeBlock extends Block {
             return false;
         }
 
-        return facingState.getBlock() instanceof ItemPipeBlock
-            || (facingTile != null && facingTile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent());
+        return facingState.getBlock() instanceof ItemPipeBlock;
+    }
+
+    private static boolean hasInvConnection(IWorld world, BlockPos pos, Direction direction) {
+        TileEntity facingTile = world.getTileEntity(pos.offset(direction));
+
+        return facingTile != null && facingTile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent();
     }
 
     private static BlockState getState(BlockState currentState, IWorld world, BlockPos pos) {
-        boolean north = hasConnection(world, pos, Direction.NORTH);
-        boolean east = hasConnection(world, pos, Direction.EAST);
-        boolean south = hasConnection(world, pos, Direction.SOUTH);
-        boolean west = hasConnection(world, pos, Direction.WEST);
-        boolean up = hasConnection(world, pos, Direction.UP);
-        boolean down = hasConnection(world, pos, Direction.DOWN);
-
         return currentState
-            .with(NORTH, north)
-            .with(EAST, east)
-            .with(SOUTH, south)
-            .with(WEST, west)
-            .with(UP, up)
-            .with(DOWN, down);
+            .with(NORTH, hasConnection(world, pos, Direction.NORTH))
+            .with(EAST, hasConnection(world, pos, Direction.EAST))
+            .with(SOUTH, hasConnection(world, pos, Direction.SOUTH))
+            .with(WEST, hasConnection(world, pos, Direction.WEST))
+            .with(UP, hasConnection(world, pos, Direction.UP))
+            .with(DOWN, hasConnection(world, pos, Direction.DOWN))
+            .with(INV_NORTH, hasInvConnection(world, pos, Direction.NORTH))
+            .with(INV_EAST, hasInvConnection(world, pos, Direction.EAST))
+            .with(INV_SOUTH, hasInvConnection(world, pos, Direction.SOUTH))
+            .with(INV_WEST, hasInvConnection(world, pos, Direction.WEST))
+            .with(INV_UP, hasInvConnection(world, pos, Direction.UP))
+            .with(INV_DOWN, hasInvConnection(world, pos, Direction.DOWN));
     }
 }

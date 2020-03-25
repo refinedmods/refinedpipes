@@ -1,5 +1,8 @@
 # Refined Pipes Changelog
 
+## 0.1.2
+- Added inventory connector to make placing attachments easier (raoulvdberge)
+
 ## 0.1.1
 Note: Pipes that are placed in the world from version 0.1 will all be removed, since the IDs have changed.
 

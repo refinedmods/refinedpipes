@@ -66,6 +66,8 @@ public class ClientSetup {
         ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/item/advanced/core"));
         ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/item/advanced/extension"));
         ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/item/advanced/straight"));
+
+        ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/attachment/inventory_attachment"));
     }
 
     @SubscribeEvent
@@ -82,6 +84,7 @@ public class ClientSetup {
                     e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/item/simple/core")),
                     e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/item/simple/extension")),
                     e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/item/simple/straight")),
+                    e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/attachment/inventory_attachment")),
                     attachmentModels
                 ));
             } else if (isPipeModel(id, ItemPipeType.BASIC)) {
@@ -89,6 +92,7 @@ public class ClientSetup {
                     e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/item/basic/core")),
                     e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/item/basic/extension")),
                     e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/item/basic/straight")),
+                    e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/attachment/inventory_attachment")),
                     attachmentModels
                 ));
             } else if (isPipeModel(id, ItemPipeType.IMPROVED)) {
@@ -96,6 +100,7 @@ public class ClientSetup {
                     e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/item/improved/core")),
                     e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/item/improved/extension")),
                     e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/item/improved/straight")),
+                    e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/attachment/inventory_attachment")),
                     attachmentModels
                 ));
             } else if (isPipeModel(id, ItemPipeType.ADVANCED)) {
@@ -103,6 +108,7 @@ public class ClientSetup {
                     e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/item/advanced/core")),
                     e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/item/advanced/extension")),
                     e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/item/advanced/straight")),
+                    e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/attachment/inventory_attachment")),
                     attachmentModels
                 ));
             }
