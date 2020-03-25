@@ -1,7 +1,7 @@
 package com.raoulvdberge.refinedpipes.network.pipe.transport;
 
 import com.raoulvdberge.refinedpipes.network.Network;
-import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
+import com.raoulvdberge.refinedpipes.network.pipe.ItemPipe;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.callback.TransportCallback;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.callback.TransportCallbackFactory;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.callback.TransportCallbackFactoryRegistry;
@@ -65,7 +65,7 @@ public class ItemTransport {
         return value;
     }
 
-    public Direction getDirection(Pipe currentPipe) {
+    public Direction getDirection(ItemPipe currentPipe) {
         BlockPos nextPipe = path.peek();
 
         if (nextPipe == null) {
@@ -75,7 +75,7 @@ public class ItemTransport {
         return getDirection(currentPipe.getPos(), nextPipe);
     }
 
-    private boolean onDone(Network network, World world, Pipe currentPipe) {
+    private boolean onDone(Network network, World world, ItemPipe currentPipe) {
         finishedCallback.call(network, world, currentPipe.getPos(), cancelCallback);
         return true;
     }
@@ -86,7 +86,7 @@ public class ItemTransport {
         return true;
     }
 
-    public boolean update(Network network, Pipe currentPipe) {
+    public boolean update(Network network, ItemPipe currentPipe) {
         progressInCurrentPipe += 1;
 
         double progress = (double) progressInCurrentPipe / (double) getMaxTicksInPipe(currentPipe);
@@ -106,7 +106,7 @@ public class ItemTransport {
                 return onDone(network, currentPipe.getWorld(), currentPipe);
             }
 
-            Pipe nextPipe = getPipe(network, nextPipePos);
+            ItemPipe nextPipe = getPipe(network, nextPipePos);
             if (nextPipe == null) {
                 return onPipeGone(network, currentPipe.getWorld(), nextPipePos);
             }
@@ -118,7 +118,7 @@ public class ItemTransport {
         return false;
     }
 
-    private Pipe getPipe(Network network, BlockPos pos) {
+    private ItemPipe getPipe(Network network, BlockPos pos) {
         return network.getGraph().getPipes().stream().filter(p -> p.getPos().equals(pos)).findFirst().orElse(null);
     }
 
@@ -154,7 +154,7 @@ public class ItemTransport {
         return Direction.NORTH;
     }
 
-    private int getMaxTicksInPipe(Pipe currentPipe) {
+    private int getMaxTicksInPipe(ItemPipe currentPipe) {
         double mt = currentPipe.getMaxTicksInPipe();
 
         if (firstPipe) {
@@ -168,7 +168,7 @@ public class ItemTransport {
         return (int) mt;
     }
 
-    public ItemTransportProps createProps(Pipe currentPipe) {
+    public ItemTransportProps createProps(ItemPipe currentPipe) {
         return new ItemTransportProps(
             value,
             currentPipe.getMaxTicksInPipe(),

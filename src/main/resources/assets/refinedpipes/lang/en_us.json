@@ -1,8 +1,8 @@
 {
   "itemGroup.refinedpipes": "Refined Pipes",
-  "block.refinedpipes.simple_pipe": "Simple Pipe",
-  "block.refinedpipes.basic_pipe": "Basic Pipe",
-  "block.refinedpipes.improved_pipe": "Improved Pipe",
-  "block.refinedpipes.advanced_pipe": "Advanced Pipe",
+  "block.refinedpipes.simple_item_pipe": "Simple Item Pipe",
+  "block.refinedpipes.basic_item_pipe": "Basic Item Pipe",
+  "block.refinedpipes.improved_item_pipe": "Improved Item Pipe",
+  "block.refinedpipes.advanced_item_pipe": "Advanced Item Pipe",
   "item.refinedpipes.extractor_attachment": "Extractor Attachment"
 }

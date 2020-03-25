@@ -2,7 +2,7 @@ package com.raoulvdberge.refinedpipes.network;
 
 import com.raoulvdberge.refinedpipes.RefinedPipes;
 import com.raoulvdberge.refinedpipes.network.graph.scanner.NetworkGraphScannerResult;
-import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
+import com.raoulvdberge.refinedpipes.network.pipe.ItemPipe;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
@@ -34,7 +34,7 @@ public class NetworkManager extends WorldSavedData {
 
     private final World world;
     private final Map<String, Network> networks = new HashMap<>();
-    private final Map<BlockPos, Pipe> pipes = new HashMap<>();
+    private final Map<BlockPos, ItemPipe> pipes = new HashMap<>();
 
     public NetworkManager(String name, World world) {
         super(name);
@@ -74,14 +74,14 @@ public class NetworkManager extends WorldSavedData {
         network.scanGraph(world, pos);
     }
 
-    private void mergeNetworksIntoOne(Set<Pipe> candidates, World world, BlockPos pos) {
+    private void mergeNetworksIntoOne(Set<ItemPipe> candidates, World world, BlockPos pos) {
         if (candidates.isEmpty()) {
             throw new RuntimeException("Cannot merge networks: no candidates");
         }
 
         Set<Network> networkCandidates = new HashSet<>();
 
-        for (Pipe candidate : candidates) {
+        for (ItemPipe candidate : candidates) {
             if (candidate.getNetwork() == null) {
                 throw new RuntimeException("Pipe network is null!");
             }
@@ -101,7 +101,7 @@ public class NetworkManager extends WorldSavedData {
         mainNetwork.scanGraph(world, pos);
     }
 
-    public void addPipe(Pipe pipe) {
+    public void addPipe(ItemPipe pipe) {
         if (pipes.containsKey(pipe.getPos())) {
             throw new RuntimeException("Pipe at " + pipe.getPos() + " already exists");
         }
@@ -112,7 +112,7 @@ public class NetworkManager extends WorldSavedData {
 
         markDirty();
 
-        Set<Pipe> adjacentPipes = findAdjacentPipes(pipe.getPos());
+        Set<ItemPipe> adjacentPipes = findAdjacentPipes(pipe.getPos());
 
         if (adjacentPipes.isEmpty()) {
             formNetworkAt(pipe.getWorld(), pipe.getPos());
@@ -122,7 +122,7 @@ public class NetworkManager extends WorldSavedData {
     }
 
     public void removePipe(BlockPos pos) {
-        Pipe pipe = getPipe(pos);
+        ItemPipe pipe = getPipe(pos);
         if (pipe == null) {
             throw new RuntimeException("Pipe at " + pos + " was not found");
         }
@@ -140,9 +140,9 @@ public class NetworkManager extends WorldSavedData {
         splitNetworks(pipe);
     }
 
-    private void splitNetworks(Pipe originPipe) {
+    private void splitNetworks(ItemPipe originPipe) {
         // Sanity checks
-        for (Pipe adjacent : findAdjacentPipes(originPipe.getPos())) {
+        for (ItemPipe adjacent : findAdjacentPipes(originPipe.getPos())) {
             if (adjacent.getNetwork() == null) {
                 throw new RuntimeException("Adjacent pipe has no network");
             }
@@ -154,7 +154,7 @@ public class NetworkManager extends WorldSavedData {
 
         // We can assume all adjacent pipes shared the same network with the removed pipe.
         // That means it doesn't matter which pipe network we use for splitting, we'll take the first found one.
-        Pipe otherPipeInNetwork = findFirstAdjacentPipe(originPipe.getPos());
+        ItemPipe otherPipeInNetwork = findFirstAdjacentPipe(originPipe.getPos());
 
         if (otherPipeInNetwork != null) {
             otherPipeInNetwork.getNetwork().setOriginPos(otherPipeInNetwork.getPos());
@@ -168,7 +168,7 @@ public class NetworkManager extends WorldSavedData {
             // For sanity checking
             boolean foundRemovedPipe = false;
 
-            for (Pipe removed : result.getRemovedPipes()) {
+            for (ItemPipe removed : result.getRemovedPipes()) {
                 // It's obvious that our removed pipe is removed.
                 // We don't want to create a new splitted network for this one.
                 if (removed.getPos().equals(originPipe.getPos())) {
@@ -193,11 +193,11 @@ public class NetworkManager extends WorldSavedData {
         }
     }
 
-    private Set<Pipe> findAdjacentPipes(BlockPos pos) {
-        Set<Pipe> pipes = new HashSet<>();
+    private Set<ItemPipe> findAdjacentPipes(BlockPos pos) {
+        Set<ItemPipe> pipes = new HashSet<>();
 
         for (Direction dir : Direction.values()) {
-            Pipe pipe = getPipe(pos.offset(dir));
+            ItemPipe pipe = getPipe(pos.offset(dir));
 
             if (pipe != null) {
                 pipes.add(pipe);
@@ -208,9 +208,9 @@ public class NetworkManager extends WorldSavedData {
     }
 
     @Nullable
-    private Pipe findFirstAdjacentPipe(BlockPos pos) {
+    private ItemPipe findFirstAdjacentPipe(BlockPos pos) {
         for (Direction dir : Direction.values()) {
-            Pipe pipe = getPipe(pos.offset(dir));
+            ItemPipe pipe = getPipe(pos.offset(dir));
 
             if (pipe != null) {
                 return pipe;
@@ -221,7 +221,7 @@ public class NetworkManager extends WorldSavedData {
     }
 
     @Nullable
-    public Pipe getPipe(BlockPos pos) {
+    public ItemPipe getPipe(BlockPos pos) {
         return pipes.get(pos);
     }
 
@@ -238,7 +238,7 @@ public class NetworkManager extends WorldSavedData {
     public void read(CompoundNBT tag) {
         ListNBT pipes = tag.getList("pipes", Constants.NBT.TAG_COMPOUND);
         for (INBT item : pipes) {
-            Pipe pipe = Pipe.fromNbt(world, (CompoundNBT) item);
+            ItemPipe pipe = ItemPipe.fromNbt(world, (CompoundNBT) item);
 
             this.pipes.put(pipe.getPos(), pipe);
         }

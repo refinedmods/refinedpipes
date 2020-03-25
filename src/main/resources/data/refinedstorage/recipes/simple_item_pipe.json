@@ -7,14 +7,14 @@
   ],
   "key": {
     "C": {
-      "item": "minecraft:iron_ingot"
+      "item": "minecraft:cobblestone"
     },
     "G": {
       "item": "minecraft:glass"
     }
   },
   "result": {
-    "item": "refinedpipes:basic_pipe",
-    "count": 6
+    "item": "refinedpipes:simple_item_pipe",
+    "count": 2
   }
 }

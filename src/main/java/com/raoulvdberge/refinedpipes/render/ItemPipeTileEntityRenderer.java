@@ -2,7 +2,7 @@ package com.raoulvdberge.refinedpipes.render;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.ItemTransportProps;
-import com.raoulvdberge.refinedpipes.tile.PipeTileEntity;
+import com.raoulvdberge.refinedpipes.tile.ItemPipeTileEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.Quaternion;
@@ -11,14 +11,14 @@ import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.util.Direction;
 
-public class PipeTileEntityRenderer extends TileEntityRenderer<PipeTileEntity> {
-    public PipeTileEntityRenderer(TileEntityRendererDispatcher dispatcher) {
+public class ItemPipeTileEntityRenderer extends TileEntityRenderer<ItemPipeTileEntity> {
+    public ItemPipeTileEntityRenderer(TileEntityRendererDispatcher dispatcher) {
         super(dispatcher);
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public void render(PipeTileEntity tile, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer bufferType, int combinedLight, int combinedOverlay) {
+    public void render(ItemPipeTileEntity tile, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer bufferType, int combinedLight, int combinedOverlay) {
         for (ItemTransportProps prop : tile.getProps()) {
             Direction dir = prop.getDirection();
 

@@ -25,8 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Pipe {
-    private static final Logger LOGGER = LogManager.getLogger(Pipe.class);
+public class ItemPipe {
+    private static final Logger LOGGER = LogManager.getLogger(ItemPipe.class);
 
     private final World world;
     private final BlockPos pos;
@@ -36,9 +36,9 @@ public class Pipe {
     private final List<ItemTransport> transports = new ArrayList<>();
     private final List<ItemTransport> transportsToAdd = new ArrayList<>();
     private final List<ItemTransport> transportsToRemove = new ArrayList<>();
-    private final PipeType type;
+    private final ItemPipeType type;
 
-    public Pipe(World world, BlockPos pos, PipeType type) {
+    public ItemPipe(World world, BlockPos pos, ItemPipeType type) {
         this.world = world;
         this.pos = pos;
         this.type = type;
@@ -153,12 +153,12 @@ public class Pipe {
         return tag;
     }
 
-    public static Pipe fromNbt(World world, CompoundNBT tag) {
+    public static ItemPipe fromNbt(World world, CompoundNBT tag) {
         BlockPos pos = BlockPos.fromLong(tag.getLong("pos"));
 
-        PipeType pipeType = PipeType.values()[tag.getInt("type")];
+        ItemPipeType pipeType = ItemPipeType.values()[tag.getInt("type")];
 
-        Pipe pipe = new Pipe(world, pos, pipeType);
+        ItemPipe pipe = new ItemPipe(world, pos, pipeType);
 
         ListNBT attch = tag.getList("attch", Constants.NBT.TAG_COMPOUND);
         for (INBT item : attch) {
@@ -194,7 +194,7 @@ public class Pipe {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Pipe pipe = (Pipe) o;
+        ItemPipe pipe = (ItemPipe) o;
         return world.equals(pipe.world) &&
             pos.equals(pipe.pos);
     }

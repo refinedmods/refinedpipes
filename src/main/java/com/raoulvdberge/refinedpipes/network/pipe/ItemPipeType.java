@@ -2,11 +2,11 @@ package com.raoulvdberge.refinedpipes.network.pipe;
 
 import com.raoulvdberge.refinedpipes.RefinedPipes;
 import com.raoulvdberge.refinedpipes.RefinedPipesTileEntities;
-import com.raoulvdberge.refinedpipes.tile.PipeTileEntity;
+import com.raoulvdberge.refinedpipes.tile.ItemPipeTileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 
-public enum PipeType {
+public enum ItemPipeType {
     SIMPLE(30),
     BASIC(20),
     IMPROVED(10),
@@ -14,7 +14,7 @@ public enum PipeType {
 
     private final int maxTicksInPipe;
 
-    PipeType(int maxTicksInPipe) {
+    ItemPipeType(int maxTicksInPipe) {
         this.maxTicksInPipe = maxTicksInPipe;
     }
 
@@ -22,16 +22,16 @@ public enum PipeType {
         return maxTicksInPipe;
     }
 
-    public TileEntityType<PipeTileEntity> getTileType() {
+    public TileEntityType<ItemPipeTileEntity> getTileType() {
         switch (this) {
             case SIMPLE:
-                return RefinedPipesTileEntities.SIMPLE_PIPE;
+                return RefinedPipesTileEntities.SIMPLE_ITEM_PIPE;
             case BASIC:
-                return RefinedPipesTileEntities.BASIC_PIPE;
+                return RefinedPipesTileEntities.BASIC_ITEM_PIPE;
             case IMPROVED:
-                return RefinedPipesTileEntities.IMPROVED_PIPE;
+                return RefinedPipesTileEntities.IMPROVED_ITEM_PIPE;
             case ADVANCED:
-                return RefinedPipesTileEntities.ADVANCED_PIPE;
+                return RefinedPipesTileEntities.ADVANCED_ITEM_PIPE;
             default:
                 throw new RuntimeException("?");
         }
@@ -40,13 +40,13 @@ public enum PipeType {
     public ResourceLocation getId() {
         switch (this) {
             case SIMPLE:
-                return new ResourceLocation(RefinedPipes.ID, "simple_pipe");
+                return new ResourceLocation(RefinedPipes.ID, "simple_item_pipe");
             case BASIC:
-                return new ResourceLocation(RefinedPipes.ID, "basic_pipe");
+                return new ResourceLocation(RefinedPipes.ID, "basic_item_pipe");
             case IMPROVED:
-                return new ResourceLocation(RefinedPipes.ID, "improved_pipe");
+                return new ResourceLocation(RefinedPipes.ID, "improved_item_pipe");
             case ADVANCED:
-                return new ResourceLocation(RefinedPipes.ID, "advanced_pipe");
+                return new ResourceLocation(RefinedPipes.ID, "advanced_item_pipe");
             default:
                 throw new RuntimeException("?");
         }

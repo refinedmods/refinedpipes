@@ -7,14 +7,14 @@
   ],
   "key": {
     "C": {
-      "item": "minecraft:gold_ingot"
+      "item": "minecraft:diamond"
     },
     "G": {
       "item": "minecraft:glass"
     }
   },
   "result": {
-    "item": "refinedpipes:improved_pipe",
-    "count": 6
+    "item": "refinedpipes:advanced_item_pipe",
+    "count": 8
   }
 }

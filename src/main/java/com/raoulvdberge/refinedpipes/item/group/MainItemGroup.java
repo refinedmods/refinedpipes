@@ -12,6 +12,6 @@ public class MainItemGroup extends ItemGroup {
 
     @Override
     public ItemStack createIcon() {
-        return new ItemStack(RefinedPipesItems.BASIC_PIPE);
+        return new ItemStack(RefinedPipesItems.BASIC_ITEM_PIPE);
     }
 }

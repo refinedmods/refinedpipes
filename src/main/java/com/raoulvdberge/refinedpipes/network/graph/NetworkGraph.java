@@ -3,7 +3,7 @@ package com.raoulvdberge.refinedpipes.network.graph;
 import com.raoulvdberge.refinedpipes.network.Network;
 import com.raoulvdberge.refinedpipes.network.graph.scanner.NetworkGraphScanner;
 import com.raoulvdberge.refinedpipes.network.graph.scanner.NetworkGraphScannerResult;
-import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
+import com.raoulvdberge.refinedpipes.network.pipe.ItemPipe;
 import com.raoulvdberge.refinedpipes.network.route.Edge;
 import com.raoulvdberge.refinedpipes.network.route.Graph;
 import com.raoulvdberge.refinedpipes.network.route.Node;
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class NetworkGraph {
     private final Network network;
 
-    private Set<Pipe> pipes = new HashSet<>();
+    private Set<ItemPipe> pipes = new HashSet<>();
     private DestinationPathCache destinationPathCache;
 
     public NetworkGraph(Network network) {
@@ -34,7 +34,7 @@ public class NetworkGraph {
         this.pipes = result.getFoundPipes();
 
         result.getNewPipes().forEach(p -> p.joinNetwork(network));
-        result.getRemovedPipes().forEach(Pipe::leaveNetwork);
+        result.getRemovedPipes().forEach(ItemPipe::leaveNetwork);
 
         updateRouting(result);
 
@@ -60,7 +60,7 @@ public class NetworkGraph {
         return pipes.stream().map(p -> new Node<>(p.getPos())).collect(Collectors.toList());
     }
 
-    public Set<Pipe> getPipes() {
+    public Set<ItemPipe> getPipes() {
         return pipes;
     }
 

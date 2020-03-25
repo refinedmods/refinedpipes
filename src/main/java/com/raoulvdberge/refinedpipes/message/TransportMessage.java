@@ -1,7 +1,7 @@
 package com.raoulvdberge.refinedpipes.message;
 
 import com.raoulvdberge.refinedpipes.network.pipe.transport.ItemTransportProps;
-import com.raoulvdberge.refinedpipes.tile.PipeTileEntity;
+import com.raoulvdberge.refinedpipes.tile.ItemPipeTileEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
@@ -44,8 +44,8 @@ public class TransportMessage {
         ctx.get().enqueueWork(() -> {
             TileEntity tile = Minecraft.getInstance().world.getTileEntity(message.pos);
 
-            if (tile instanceof PipeTileEntity) {
-                ((PipeTileEntity) tile).setProps(message.props);
+            if (tile instanceof ItemPipeTileEntity) {
+                ((ItemPipeTileEntity) tile).setProps(message.props);
             }
         });
 

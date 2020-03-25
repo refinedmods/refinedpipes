@@ -8,9 +8,9 @@ import java.util.Objects;
 public class Destination {
     private final BlockPos receiver;
     private final Direction incomingDirection;
-    private final Pipe connectedPipe;
+    private final ItemPipe connectedPipe;
 
-    public Destination(BlockPos receiver, Direction incomingDirection, Pipe connectedPipe) {
+    public Destination(BlockPos receiver, Direction incomingDirection, ItemPipe connectedPipe) {
         this.receiver = receiver;
         this.incomingDirection = incomingDirection;
         this.connectedPipe = connectedPipe;
@@ -24,7 +24,7 @@ public class Destination {
         return incomingDirection;
     }
 
-    public Pipe getConnectedPipe() {
+    public ItemPipe getConnectedPipe() {
         return connectedPipe;
     }
 

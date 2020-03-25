@@ -4,7 +4,7 @@ import com.raoulvdberge.refinedpipes.RefinedPipes;
 import com.raoulvdberge.refinedpipes.RefinedPipesItems;
 import com.raoulvdberge.refinedpipes.network.Network;
 import com.raoulvdberge.refinedpipes.network.pipe.Destination;
-import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
+import com.raoulvdberge.refinedpipes.network.pipe.ItemPipe;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.ItemTransport;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.callback.ItemBounceBackTransportCallback;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.callback.ItemInsertTransportCallback;
@@ -36,7 +36,7 @@ public class ExtractorAttachmentType implements AttachmentType {
     }
 
     @Override
-    public void update(World world, Network network, Pipe pipe, Attachment attachment) {
+    public void update(World world, Network network, ItemPipe pipe, Attachment attachment) {
         BlockPos itemHandlerPos = pipe.getPos().offset(attachment.getDirection());
 
         TileEntity tile = world.getTileEntity(itemHandlerPos);
@@ -48,7 +48,7 @@ public class ExtractorAttachmentType implements AttachmentType {
             .ifPresent(itemHandler -> update(network, pipe, attachment, itemHandlerPos, itemHandler));
     }
 
-    private void update(Network network, Pipe pipe, Attachment attachment, BlockPos sourcePos, IItemHandler source) {
+    private void update(Network network, ItemPipe pipe, Attachment attachment, BlockPos sourcePos, IItemHandler source) {
         int firstSlot = getFirstSlot(source);
         if (firstSlot == -1) {
             return;

@@ -1,7 +1,0 @@
-{
-  "parent": "refinedpipes:block/pipe/extension",
-  "textures": {
-    "0": "refinedpipes:blocks/advanced_pipe",
-    "particle": "refinedpipes:blocks/advanced_pipe"
-  }
-}

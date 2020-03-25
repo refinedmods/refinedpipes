@@ -2,11 +2,11 @@ package com.raoulvdberge.refinedpipes.block;
 
 import com.raoulvdberge.refinedpipes.item.AttachmentItem;
 import com.raoulvdberge.refinedpipes.network.NetworkManager;
-import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
-import com.raoulvdberge.refinedpipes.network.pipe.PipeType;
+import com.raoulvdberge.refinedpipes.network.pipe.ItemPipe;
+import com.raoulvdberge.refinedpipes.network.pipe.ItemPipeType;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.Attachment;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
-import com.raoulvdberge.refinedpipes.tile.PipeTileEntity;
+import com.raoulvdberge.refinedpipes.tile.ItemPipeTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
@@ -31,7 +31,7 @@ import net.minecraftforge.items.CapabilityItemHandler;
 
 import javax.annotation.Nullable;
 
-public class PipeBlock extends Block {
+public class ItemPipeBlock extends Block {
     public static final BooleanProperty NORTH = BooleanProperty.create("north");
     public static final BooleanProperty EAST = BooleanProperty.create("east");
     public static final BooleanProperty SOUTH = BooleanProperty.create("south");
@@ -47,9 +47,9 @@ public class PipeBlock extends Block {
     public static final VoxelShape UP_EXTENSION_SHAPE = makeCuboidShape(4, 12, 4, 12, 16, 12);
     public static final VoxelShape DOWN_EXTENSION_SHAPE = makeCuboidShape(4, 0, 4, 12, 4, 12);
 
-    private final PipeType type;
+    private final ItemPipeType type;
 
-    public PipeBlock(PipeType type) {
+    public ItemPipeBlock(ItemPipeType type) {
         super(Block.Properties.create(Material.ROCK));
 
         this.type = type;
@@ -81,7 +81,7 @@ public class PipeBlock extends Block {
 
     private ActionResultType addAttachment(PlayerEntity player, World world, BlockPos pos, ItemStack attachment, Direction dir) {
         if (!world.isRemote) {
-            Pipe pipe = NetworkManager.get(world).getPipe(pos);
+            ItemPipe pipe = NetworkManager.get(world).getPipe(pos);
 
             if (pipe != null && !pipe.getAttachmentManager().hasAttachment(dir)) {
                 AttachmentType type = ((AttachmentItem) attachment.getItem()).getType();
@@ -104,7 +104,7 @@ public class PipeBlock extends Block {
 
     private ActionResultType removeAttachment(World world, BlockPos pos, Direction dir) {
         if (!world.isRemote) {
-            Pipe pipe = NetworkManager.get(world).getPipe(pos);
+            ItemPipe pipe = NetworkManager.get(world).getPipe(pos);
 
             if (pipe != null && pipe.getAttachmentManager().hasAttachment(dir)) {
                 Attachment attachment = pipe.getAttachmentManager().getAttachment(dir);
@@ -121,7 +121,7 @@ public class PipeBlock extends Block {
 
             return ActionResultType.SUCCESS;
         } else {
-            return ((PipeTileEntity) world.getTileEntity(pos)).hasAttachment(dir) ? ActionResultType.SUCCESS : ActionResultType.FAIL;
+            return ((ItemPipeTileEntity) world.getTileEntity(pos)).hasAttachment(dir) ? ActionResultType.SUCCESS : ActionResultType.FAIL;
         }
     }
 
@@ -133,21 +133,14 @@ public class PipeBlock extends Block {
     @Nullable
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return new PipeTileEntity(type);
+        return new ItemPipeTileEntity(type);
     }
 
     @Override
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
         super.fillStateContainer(builder);
 
-        builder.add(
-            NORTH,
-            EAST,
-            SOUTH,
-            WEST,
-            UP,
-            DOWN
-        );
+        builder.add(NORTH, EAST, SOUTH, WEST, UP, DOWN);
     }
 
     @Override
@@ -156,7 +149,7 @@ public class PipeBlock extends Block {
         super.neighborChanged(state, world, pos, block, fromPos, isMoving);
 
         if (!world.isRemote) {
-            Pipe pipe = NetworkManager.get(world).getPipe(pos);
+            ItemPipe pipe = NetworkManager.get(world).getPipe(pos);
 
             if (pipe != null && pipe.getNetwork() != null) {
                 pipe.getNetwork().scanGraph(world, pos);
@@ -210,18 +203,18 @@ public class PipeBlock extends Block {
 
     private static boolean hasConnection(IWorld world, BlockPos pos, Direction direction) {
         TileEntity currentTile = world.getTileEntity(pos);
-        if (currentTile instanceof PipeTileEntity && ((PipeTileEntity) currentTile).hasAttachment(direction)) {
+        if (currentTile instanceof ItemPipeTileEntity && ((ItemPipeTileEntity) currentTile).hasAttachment(direction)) {
             return false;
         }
 
         BlockState facingState = world.getBlockState(pos.offset(direction));
         TileEntity facingTile = world.getTileEntity(pos.offset(direction));
 
-        if (facingTile instanceof PipeTileEntity && ((PipeTileEntity) facingTile).hasAttachment(direction.getOpposite())) {
+        if (facingTile instanceof ItemPipeTileEntity && ((ItemPipeTileEntity) facingTile).hasAttachment(direction.getOpposite())) {
             return false;
         }
 
-        return facingState.getBlock() instanceof PipeBlock
+        return facingState.getBlock() instanceof ItemPipeBlock
             || (facingTile != null && facingTile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent());
     }
 

@@ -1,16 +1,16 @@
 package com.raoulvdberge.refinedpipes;
 
-import com.raoulvdberge.refinedpipes.tile.PipeTileEntity;
+import com.raoulvdberge.refinedpipes.tile.ItemPipeTileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.registries.ObjectHolder;
 
 public class RefinedPipesTileEntities {
-    @ObjectHolder(RefinedPipes.ID + ":simple_pipe")
-    public static final TileEntityType<PipeTileEntity> SIMPLE_PIPE = null;
-    @ObjectHolder(RefinedPipes.ID + ":basic_pipe")
-    public static final TileEntityType<PipeTileEntity> BASIC_PIPE = null;
-    @ObjectHolder(RefinedPipes.ID + ":improved_pipe")
-    public static final TileEntityType<PipeTileEntity> IMPROVED_PIPE = null;
-    @ObjectHolder(RefinedPipes.ID + ":advanced_pipe")
-    public static final TileEntityType<PipeTileEntity> ADVANCED_PIPE = null;
+    @ObjectHolder(RefinedPipes.ID + ":simple_item_pipe")
+    public static final TileEntityType<ItemPipeTileEntity> SIMPLE_ITEM_PIPE = null;
+    @ObjectHolder(RefinedPipes.ID + ":basic_item_pipe")
+    public static final TileEntityType<ItemPipeTileEntity> BASIC_ITEM_PIPE = null;
+    @ObjectHolder(RefinedPipes.ID + ":improved_item_pipe")
+    public static final TileEntityType<ItemPipeTileEntity> IMPROVED_ITEM_PIPE = null;
+    @ObjectHolder(RefinedPipes.ID + ":advanced_item_pipe")
+    public static final TileEntityType<ItemPipeTileEntity> ADVANCED_ITEM_PIPE = null;
 }

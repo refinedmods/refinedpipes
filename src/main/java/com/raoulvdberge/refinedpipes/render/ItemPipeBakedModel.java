@@ -1,8 +1,8 @@
 package com.raoulvdberge.refinedpipes.render;
 
-import com.raoulvdberge.refinedpipes.block.PipeBlock;
+import com.raoulvdberge.refinedpipes.block.ItemPipeBlock;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
-import com.raoulvdberge.refinedpipes.tile.PipeTileEntity;
+import com.raoulvdberge.refinedpipes.tile.ItemPipeTileEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.IBakedModel;
@@ -16,13 +16,13 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-public class PipeBakedModel implements IBakedModel {
+public class ItemPipeBakedModel implements IBakedModel {
     private final IBakedModel core;
     private final IBakedModel extension;
     private final IBakedModel straight;
     private final Map<AttachmentType, Map<Direction, IBakedModel>> attachmentModels = new HashMap<>();
 
-    public PipeBakedModel(IBakedModel core, IBakedModel extension, IBakedModel straight, Map<AttachmentType, IBakedModel> attachmentModels) {
+    public ItemPipeBakedModel(IBakedModel core, IBakedModel extension, IBakedModel straight, Map<AttachmentType, IBakedModel> attachmentModels) {
         this.core = core;
         this.extension = extension;
         this.straight = straight;
@@ -52,12 +52,12 @@ public class PipeBakedModel implements IBakedModel {
         List<BakedQuad> quads = new ArrayList<>();
 
         if (state != null) {
-            boolean north = state.get(PipeBlock.NORTH);
-            boolean east = state.get(PipeBlock.EAST);
-            boolean south = state.get(PipeBlock.SOUTH);
-            boolean west = state.get(PipeBlock.WEST);
-            boolean up = state.get(PipeBlock.UP);
-            boolean down = state.get(PipeBlock.DOWN);
+            boolean north = state.get(ItemPipeBlock.NORTH);
+            boolean east = state.get(ItemPipeBlock.EAST);
+            boolean south = state.get(ItemPipeBlock.SOUTH);
+            boolean west = state.get(ItemPipeBlock.WEST);
+            boolean up = state.get(ItemPipeBlock.UP);
+            boolean down = state.get(ItemPipeBlock.DOWN);
 
             if (north && south && !east && !west && !up && !down) {
                 quads.addAll(straight.getQuads(state, side, rand, EmptyModelData.INSTANCE));
@@ -96,7 +96,7 @@ public class PipeBakedModel implements IBakedModel {
             }
         }
 
-        Map<Direction, AttachmentType> attachments = extraData.getData(PipeTileEntity.ATTACHMENTS_PROPERTY);
+        Map<Direction, AttachmentType> attachments = extraData.getData(ItemPipeTileEntity.ATTACHMENTS_PROPERTY);
         if (attachments != null) {
             for (Map.Entry<Direction, AttachmentType> entry : attachments.entrySet()) {
                 quads.addAll(attachmentModels.get(entry.getValue()).get(entry.getKey()).getQuads(state, side, rand, extraData));

@@ -1,8 +1,8 @@
 package com.raoulvdberge.refinedpipes.tile;
 
 import com.raoulvdberge.refinedpipes.network.NetworkManager;
-import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
-import com.raoulvdberge.refinedpipes.network.pipe.PipeType;
+import com.raoulvdberge.refinedpipes.network.pipe.ItemPipe;
+import com.raoulvdberge.refinedpipes.network.pipe.ItemPipeType;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentRegistry;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.ItemTransport;
@@ -25,15 +25,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class PipeTileEntity extends TileEntity implements ITickableTileEntity {
+public class ItemPipeTileEntity extends TileEntity implements ITickableTileEntity {
     public static final ModelProperty<Map<Direction, AttachmentType>> ATTACHMENTS_PROPERTY = new ModelProperty<>();
 
     private Map<Direction, AttachmentType> attachments = new HashMap<>();
     private List<ItemTransportProps> props = new ArrayList<>();
 
-    private final PipeType type;
+    private final ItemPipeType type;
 
-    public PipeTileEntity(PipeType type) {
+    public ItemPipeTileEntity(ItemPipeType type) {
         super(type.getTileType());
 
         this.type = type;
@@ -48,7 +48,7 @@ public class PipeTileEntity extends TileEntity implements ITickableTileEntity {
 
     public boolean hasAttachment(Direction dir) {
         if (!world.isRemote) {
-            Pipe pipe = NetworkManager.get(world).getPipe(pos);
+            ItemPipe pipe = NetworkManager.get(world).getPipe(pos);
 
             if (pipe != null) {
                 return pipe.getAttachmentManager().hasAttachment(dir);
@@ -61,7 +61,7 @@ public class PipeTileEntity extends TileEntity implements ITickableTileEntity {
     }
 
     public CompoundNBT writeUpdate(CompoundNBT tag) {
-        Pipe pipe = NetworkManager.get(world).getPipe(pos);
+        ItemPipe pipe = NetworkManager.get(world).getPipe(pos);
 
         if (pipe != null && pipe.getNetwork() != null) {
             for (Direction dir : Direction.values()) {
@@ -134,7 +134,7 @@ public class PipeTileEntity extends TileEntity implements ITickableTileEntity {
             NetworkManager mgr = NetworkManager.get(world);
 
             if (mgr.getPipe(pos) == null) {
-                mgr.addPipe(new Pipe(world, pos, type));
+                mgr.addPipe(new ItemPipe(world, pos, type));
             }
         }
     }
@@ -146,7 +146,7 @@ public class PipeTileEntity extends TileEntity implements ITickableTileEntity {
         if (!world.isRemote) {
             NetworkManager mgr = NetworkManager.get(world);
 
-            Pipe pipe = mgr.getPipe(pos);
+            ItemPipe pipe = mgr.getPipe(pos);
             if (pipe != null) {
                 for (ItemTransport transport : pipe.getTransports()) {
                     InventoryHelper.spawnItemStack(world, pos.getX(), pos.getY(), pos.getZ(), transport.getValue());

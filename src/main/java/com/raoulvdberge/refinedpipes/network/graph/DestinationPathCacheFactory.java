@@ -1,7 +1,7 @@
 package com.raoulvdberge.refinedpipes.network.graph;
 
 import com.raoulvdberge.refinedpipes.network.pipe.Destination;
-import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
+import com.raoulvdberge.refinedpipes.network.pipe.ItemPipe;
 import com.raoulvdberge.refinedpipes.network.route.*;
 import net.minecraft.util.math.BlockPos;
 import org.apache.logging.log4j.LogManager;
@@ -41,7 +41,7 @@ public class DestinationPathCacheFactory {
                     continue;
                 }
 
-                Pipe connectedPipe = destination.getConnectedPipe();
+                ItemPipe connectedPipe = destination.getConnectedPipe();
                 Node<BlockPos> connectedPipeNode = nodeIndex.getNode(connectedPipe.getPos());
 
                 if (connectedPipeNode == null) {
