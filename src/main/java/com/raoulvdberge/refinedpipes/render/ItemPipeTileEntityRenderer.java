@@ -33,7 +33,7 @@ public class ItemPipeTileEntityRenderer extends TileEntityRenderer<ItemPipeTileE
             }
 
             if (prop.isLastPipe()) {
-                pipeLength = 0.50D; // Every transport starts in the center to go to the next center. But for the last pipe we only want to go to the end part, not the "next" center.
+                pipeLength = 0.25D; // Every transport starts in the center to go to the next center. But for the last pipe we only want to go to the end part, not the "next" center.
                 // [X][X][Y]</>
                 // X/Y= A center
                 // [] = The pipe casing
@@ -44,7 +44,6 @@ public class ItemPipeTileEntityRenderer extends TileEntityRenderer<ItemPipeTileE
 
             double v = (((double) prop.getProgress() + partialTicks) / maxTicksInPipe) * pipeLength;
 
-            // TODO: checkout item stutter?
             if (prop.isFirstPipe() && v < 0.25) {
                 dir = prop.getInitialDirection(); // Get the item out first
             }

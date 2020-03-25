@@ -28,7 +28,6 @@ public class DestinationPathCache {
 
     @Nullable
     public Destination findNearestDestination(BlockPos source, Predicate<Destination> filter) {
-        // TODO: don't connect to pipe that has attachment.
         Map<Destination, Path<BlockPos>> pathsFromSource = paths.get(source);
         if (pathsFromSource == null) {
             return null;

@@ -94,6 +94,9 @@ public class ItemPipeBlock extends Block {
 
                 world.setBlockState(pos, getState(world.getBlockState(pos), world, pos));
 
+                // Re-scan graph, required to rebuild destinations (chests with an attachment connected are no valid destination, refresh that)
+                pipe.getNetwork().scanGraph(world, pos);
+
                 NetworkManager.get(world).markDirty();
 
                 if (!player.isCreative()) {
@@ -116,6 +119,9 @@ public class ItemPipeBlock extends Block {
                 pipe.sendBlockUpdate();
 
                 world.setBlockState(pos, getState(world.getBlockState(pos), world, pos));
+
+                // Re-scan graph, required to rebuild destinations (chests with an attachment connected are no valid destination, refresh that)
+                pipe.getNetwork().scanGraph(world, pos);
 
                 NetworkManager.get(world).markDirty();
 

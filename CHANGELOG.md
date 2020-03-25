@@ -2,6 +2,7 @@
 
 ## 0.1.2
 - Added inventory connector to make placing attachments easier (raoulvdberge)
+- Inventories connected with a pipe and an attachment are no longer marked as a valid destination (raoulvdberge)
 
 ## 0.1.1
 Note: Pipes that are placed in the world from version 0.1 will all be removed, since the IDs have changed.

@@ -68,11 +68,14 @@ public class NetworkGraphScanner {
         } else if (request.getParent() != null) {
             ItemPipe connectedPipe = NetworkManager.get(request.getWorld()).getPipe(request.getParent().getPos());
 
-            TileEntity tile = request.getWorld().getTileEntity(request.getPos());
+            // If this item handler is connected to a pipe with an attachment, then this is not a valid destination.
+            if (!connectedPipe.getAttachmentManager().hasAttachment(request.getDirection())) {
+                TileEntity tile = request.getWorld().getTileEntity(request.getPos());
 
-            if (tile != null) {
-                tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, request.getDirection())
-                    .ifPresent(itemHandler -> destinations.add(new Destination(request.getPos(), request.getDirection(), connectedPipe)));
+                if (tile != null) {
+                    tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, request.getDirection())
+                        .ifPresent(itemHandler -> destinations.add(new Destination(request.getPos(), request.getDirection(), connectedPipe)));
+                }
             }
         }
     }
