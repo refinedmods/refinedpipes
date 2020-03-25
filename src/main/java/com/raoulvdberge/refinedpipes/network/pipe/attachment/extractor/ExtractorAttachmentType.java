@@ -90,7 +90,6 @@ public class ExtractorAttachmentType implements AttachmentType {
             return;
         }
 
-        // TODO: extend attachment model by one
         ItemStack extractedActual = source.extractItem(firstSlot, type.itemsToExtract, false);
         if (extractedActual.isEmpty()) {
             return;
