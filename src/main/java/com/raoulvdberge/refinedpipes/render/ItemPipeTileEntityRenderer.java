@@ -45,7 +45,6 @@ public class ItemPipeTileEntityRenderer extends TileEntityRenderer<ItemPipeTileE
             double v = (((double) prop.getProgress() + partialTicks) / maxTicksInPipe) * pipeLength;
 
             // TODO: checkout item stutter?
-            // TODO: model loader warnings
             if (prop.isFirstPipe() && v < 0.25) {
                 dir = prop.getInitialDirection(); // Get the item out first
             }
