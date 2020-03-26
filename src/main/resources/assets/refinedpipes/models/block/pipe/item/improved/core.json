@@ -1,7 +1,7 @@
 {
   "parent": "refinedpipes:block/pipe/item/core",
   "textures": {
-    "0": "refinedpipes:blocks/improved_item_pipe",
-    "particle": "refinedpipes:blocks/improved_item_pipe"
+    "0": "refinedpipes:blocks/pipe/item/improved",
+    "particle": "refinedpipes:blocks/pipe/item/improved"
   }
 }

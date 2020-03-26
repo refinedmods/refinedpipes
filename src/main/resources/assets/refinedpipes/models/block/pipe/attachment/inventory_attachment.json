@@ -1,6 +1,6 @@
 {
   "parent": "refinedpipes:block/pipe/attachment/attachment",
   "textures": {
-    "attachment": "refinedpipes:blocks/item_pipe_inventory_attachment"
+    "attachment": "refinedpipes:blocks/pipe/attachment/inventory_attachment"
   }
 }

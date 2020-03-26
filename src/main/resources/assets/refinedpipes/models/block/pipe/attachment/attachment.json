@@ -1,7 +1,7 @@
 {
   "parent": "block/block",
   "textures": {
-    "1": "refinedpipes:blocks/item_pipe_inventory_attachment"
+    "1": "refinedpipes:blocks/pipe/attachment/inventory_attachment"
   },
   "elements": [
     {
