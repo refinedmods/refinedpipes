@@ -1,4 +1,4 @@
-# Refined Pipes [![CurseForge](http://cf.way2muchnoise.eu/full_370696_downloads.svg)](http://minecraft.curseforge.com/projects/refined-pipes)
+# Refined Pipes [![CurseForge](http://cf.way2muchnoise.eu/full_370696_downloads.svg)](https://www.curseforge.com/minecraft/mc-mods/refined-pipes)
 
 Refined Pipes is a Minecraft mod that adds pipes.
 
