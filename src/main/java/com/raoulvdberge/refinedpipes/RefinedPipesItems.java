@@ -13,4 +13,8 @@ public class RefinedPipesItems {
     public static final AttachmentItem IMPROVED_EXTRACTOR_ATTACHMENT = null;
     @ObjectHolder(RefinedPipes.ID + ":advanced_extractor_attachment")
     public static final AttachmentItem ADVANCED_EXTRACTOR_ATTACHMENT = null;
+    @ObjectHolder(RefinedPipes.ID + ":elite_extractor_attachment")
+    public static final AttachmentItem ELITE_EXTRACTOR_ATTACHMENT = null;
+    @ObjectHolder(RefinedPipes.ID + ":ultimate_extractor_attachment")
+    public static final AttachmentItem ULTIMATE_EXTRACTOR_ATTACHMENT = null;
 }

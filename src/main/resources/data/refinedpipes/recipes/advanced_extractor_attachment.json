@@ -2,15 +2,18 @@
   "type": "minecraft:crafting_shaped",
   "pattern": [
     "   ",
-    "III",
-    "IPI"
+    "QDQ",
+    "DPD"
   ],
   "key": {
-    "I": {
+    "D": {
       "item": "minecraft:diamond"
     },
+    "Q": {
+      "item": "minecraft:quartz"
+    },
     "P": {
-      "item": "minecraft:piston"
+      "item": "refinedpipes:improved_extractor_attachment"
     }
   },
   "result": {

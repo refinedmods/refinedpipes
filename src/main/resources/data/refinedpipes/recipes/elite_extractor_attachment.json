@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "   ",
+    "BEB",
+    "EPE"
+  ],
+  "key": {
+    "B": {
+      "item": "minecraft:blaze_rod"
+    },
+    "E": {
+      "item": "minecraft:emerald"
+    },
+    "P": {
+      "item": "refinedpipes:advanced_extractor_attachment"
+    }
+  },
+  "result": {
+    "item": "refinedpipes:elite_extractor_attachment"
+  }
+}

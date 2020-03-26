@@ -1,13 +1,16 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "CCC",
+    "DQD",
     "GGG",
-    "CCC"
+    "DQD"
   ],
   "key": {
-    "C": {
+    "D": {
       "item": "minecraft:diamond"
+    },
+    "Q": {
+      "item": "minecraft:quartz"
     },
     "G": {
       "item": "minecraft:glass"
@@ -15,6 +18,6 @@
   },
   "result": {
     "item": "refinedpipes:advanced_item_pipe",
-    "count": 8
+    "count": 6
   }
 }

@@ -6,5 +6,8 @@
   "block.refinedpipes.advanced_item_pipe": "Advanced Item Pipe",
   "item.refinedpipes.basic_extractor_attachment": "Basic Extractor Attachment",
   "item.refinedpipes.improved_extractor_attachment": "Improved Extractor Attachment",
-  "item.refinedpipes.advanced_extractor_attachment": "Advanced Extractor Attachment"
+  "item.refinedpipes.advanced_extractor_attachment": "Advanced Extractor Attachment",
+  "item.refinedpipes.elite_extractor_attachment": "Elite Extractor Attachment",
+  "item.refinedpipes.ultimate_extractor_attachment": "Ultimate Extractor Attachment",
+  "misc.refinedpipes.tier": "Tier"
 }

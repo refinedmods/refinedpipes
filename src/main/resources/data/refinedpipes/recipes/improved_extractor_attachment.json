@@ -10,7 +10,7 @@
       "item": "minecraft:gold_ingot"
     },
     "P": {
-      "item": "minecraft:piston"
+      "item": "refinedpipes:basic_extractor_attachment"
     }
   },
   "result": {

@@ -9,6 +9,12 @@ buildscript {
     }
 }
 
+repositories {
+    maven {
+        url = "https://dvs1.progwml6.com/files/maven/"
+    }
+}
+
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
@@ -85,6 +91,7 @@ processResources {
 
 dependencies {
     minecraft 'net.minecraftforge:forge:1.15.2-31.1.25'
+    runtimeOnly fg.deobf("mezz.jei:jei-1.15.2:6.0.0.2")
 }
 
 jar {

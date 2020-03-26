@@ -27,6 +27,8 @@ public class CommonSetup {
         AttachmentRegistry.INSTANCE.addType(new ExtractorAttachmentType(ExtractorAttachmentType.Type.BASIC));
         AttachmentRegistry.INSTANCE.addType(new ExtractorAttachmentType(ExtractorAttachmentType.Type.IMPROVED));
         AttachmentRegistry.INSTANCE.addType(new ExtractorAttachmentType(ExtractorAttachmentType.Type.ADVANCED));
+        AttachmentRegistry.INSTANCE.addType(new ExtractorAttachmentType(ExtractorAttachmentType.Type.ELITE));
+        AttachmentRegistry.INSTANCE.addType(new ExtractorAttachmentType(ExtractorAttachmentType.Type.ULTIMATE));
 
         TransportCallbackFactoryRegistry.INSTANCE.addFactory(ItemInsertTransportCallback.ID, ItemInsertTransportCallback::of);
         TransportCallbackFactoryRegistry.INSTANCE.addFactory(ItemBounceBackTransportCallback.ID, ItemBounceBackTransportCallback::of);

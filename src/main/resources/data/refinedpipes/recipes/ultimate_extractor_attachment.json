@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "   ",
+    "MCM",
+    "CPC"
+  ],
+  "key": {
+    "M": {
+      "item": "minecraft:prismarine_shard"
+    },
+    "C": {
+      "item": "minecraft:popped_chorus_fruit"
+    },
+    "P": {
+      "item": "refinedpipes:elite_extractor_attachment"
+    }
+  },
+  "result": {
+    "item": "refinedpipes:ultimate_extractor_attachment"
+  }
+}

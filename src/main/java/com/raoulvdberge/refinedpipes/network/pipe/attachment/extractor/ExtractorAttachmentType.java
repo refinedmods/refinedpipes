@@ -44,7 +44,9 @@ public class ExtractorAttachmentType implements AttachmentType {
 
     @Override
     public void update(World world, Network network, ItemPipe pipe, Attachment attachment) {
-        if (ticks++ % type.tickInterval != 0) {
+        ticks++;
+
+        if (ticks % type.tickInterval != 0) {
             return;
         }
 
@@ -166,9 +168,11 @@ public class ExtractorAttachmentType implements AttachmentType {
     }
 
     public enum Type {
-        BASIC(20 * 2, 8),
-        IMPROVED(20, 16),
-        ADVANCED(10, 64);
+        BASIC(20 * 3, 8),
+        IMPROVED(20 * 2, 16),
+        ADVANCED(20, 32),
+        ELITE(10, 64),
+        ULTIMATE(10, 64);
 
         private final int tickInterval;
         private final int itemsToExtract;
@@ -186,6 +190,10 @@ public class ExtractorAttachmentType implements AttachmentType {
                     return new ResourceLocation(RefinedPipes.ID, "improved_extractor");
                 case ADVANCED:
                     return new ResourceLocation(RefinedPipes.ID, "advanced_extractor");
+                case ELITE:
+                    return new ResourceLocation(RefinedPipes.ID, "elite_extractor");
+                case ULTIMATE:
+                    return new ResourceLocation(RefinedPipes.ID, "ultimate_extractor");
                 default:
                     throw new RuntimeException("?");
             }
@@ -199,6 +207,10 @@ public class ExtractorAttachmentType implements AttachmentType {
                     return new ResourceLocation(RefinedPipes.ID, "improved_extractor_attachment");
                 case ADVANCED:
                     return new ResourceLocation(RefinedPipes.ID, "advanced_extractor_attachment");
+                case ELITE:
+                    return new ResourceLocation(RefinedPipes.ID, "elite_extractor_attachment");
+                case ULTIMATE:
+                    return new ResourceLocation(RefinedPipes.ID, "ultimate_extractor_attachment");
                 default:
                     throw new RuntimeException("?");
             }
@@ -212,6 +224,10 @@ public class ExtractorAttachmentType implements AttachmentType {
                     return RefinedPipesItems.IMPROVED_EXTRACTOR_ATTACHMENT;
                 case ADVANCED:
                     return RefinedPipesItems.ADVANCED_EXTRACTOR_ATTACHMENT;
+                case ELITE:
+                    return RefinedPipesItems.ELITE_EXTRACTOR_ATTACHMENT;
+                case ULTIMATE:
+                    return RefinedPipesItems.ULTIMATE_EXTRACTOR_ATTACHMENT;
                 default:
                     throw new RuntimeException("?");
             }
@@ -225,6 +241,10 @@ public class ExtractorAttachmentType implements AttachmentType {
                     return new ResourceLocation(RefinedPipes.ID, "block/pipe/attachment/extractor/improved");
                 case ADVANCED:
                     return new ResourceLocation(RefinedPipes.ID, "block/pipe/attachment/extractor/advanced");
+                case ELITE:
+                    return new ResourceLocation(RefinedPipes.ID, "block/pipe/attachment/extractor/elite");
+                case ULTIMATE:
+                    return new ResourceLocation(RefinedPipes.ID, "block/pipe/attachment/extractor/ultimate");
                 default:
                     throw new RuntimeException("?");
             }
