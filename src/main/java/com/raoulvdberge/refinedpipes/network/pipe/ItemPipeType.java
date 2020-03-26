@@ -7,14 +7,20 @@ import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 
 public enum ItemPipeType {
-    BASIC(30),
-    IMPROVED(20),
-    ADVANCED(10);
+    BASIC(1, 30),
+    IMPROVED(2, 20),
+    ADVANCED(3, 10);
 
+    private final int tier;
     private final int maxTicksInPipe;
 
-    ItemPipeType(int maxTicksInPipe) {
+    ItemPipeType(int tier, int maxTicksInPipe) {
+        this.tier = tier;
         this.maxTicksInPipe = maxTicksInPipe;
+    }
+
+    public int getTier() {
+        return tier;
     }
 
     public int getMaxTicksInPipe() {

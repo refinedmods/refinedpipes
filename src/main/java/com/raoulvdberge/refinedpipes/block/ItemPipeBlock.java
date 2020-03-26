@@ -68,6 +68,10 @@ public class ItemPipeBlock extends Block {
         );
     }
 
+    public ItemPipeType getType() {
+        return type;
+    }
+
     @Override
     @SuppressWarnings("deprecation")
     public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {

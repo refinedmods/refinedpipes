@@ -19,12 +19,18 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.List;
 
 public class ExtractorAttachmentType implements AttachmentType {
     private static final Logger LOGGER = LogManager.getLogger(ExtractorAttachmentType.class);
@@ -55,6 +61,11 @@ public class ExtractorAttachmentType implements AttachmentType {
 
         tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, attachment.getDirection())
             .ifPresent(itemHandler -> update(network, pipe, attachment, itemHandlerPos, itemHandler));
+    }
+
+    @Override
+    public void addInformation(List<ITextComponent> tooltip) {
+        tooltip.add(new TranslationTextComponent("misc.refinedpipes.tier", new TranslationTextComponent("enchantment.level." + type.tier)).setStyle(new Style().setColor(TextFormatting.GRAY)));
     }
 
     private void update(Network network, ItemPipe pipe, Attachment attachment, BlockPos sourcePos, IItemHandler source) {
@@ -164,16 +175,18 @@ public class ExtractorAttachmentType implements AttachmentType {
     }
 
     public enum Type {
-        BASIC(20 * 3, 8),
-        IMPROVED(20 * 2, 16),
-        ADVANCED(20, 32),
-        ELITE(10, 64),
-        ULTIMATE(10, 64);
+        BASIC(1, 20 * 3, 8),
+        IMPROVED(2, 20 * 2, 16),
+        ADVANCED(3, 20, 32),
+        ELITE(4, 10, 64),
+        ULTIMATE(5, 10, 64);
 
+        private final int tier;
         private final int tickInterval;
         private final int itemsToExtract;
 
-        Type(int tickInterval, int itemsToExtract) {
+        Type(int tier, int tickInterval, int itemsToExtract) {
+            this.tier = tier;
             this.tickInterval = tickInterval;
             this.itemsToExtract = itemsToExtract;
         }

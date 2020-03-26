@@ -4,7 +4,7 @@ import com.raoulvdberge.refinedpipes.RefinedPipes;
 import com.raoulvdberge.refinedpipes.RefinedPipesBlocks;
 import com.raoulvdberge.refinedpipes.block.ItemPipeBlock;
 import com.raoulvdberge.refinedpipes.item.AttachmentItem;
-import com.raoulvdberge.refinedpipes.item.BaseBlockItem;
+import com.raoulvdberge.refinedpipes.item.ItemPipeBlockItem;
 import com.raoulvdberge.refinedpipes.network.NetworkManager;
 import com.raoulvdberge.refinedpipes.network.pipe.ItemPipeType;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentRegistry;
@@ -46,9 +46,9 @@ public class CommonSetup {
 
     @SubscribeEvent
     public void onRegisterItems(RegistryEvent.Register<Item> e) {
-        e.getRegistry().register(new BaseBlockItem(RefinedPipesBlocks.BASIC_ITEM_PIPE));
-        e.getRegistry().register(new BaseBlockItem(RefinedPipesBlocks.IMPROVED_ITEM_PIPE));
-        e.getRegistry().register(new BaseBlockItem(RefinedPipesBlocks.ADVANCED_ITEM_PIPE));
+        e.getRegistry().register(new ItemPipeBlockItem(RefinedPipesBlocks.BASIC_ITEM_PIPE));
+        e.getRegistry().register(new ItemPipeBlockItem(RefinedPipesBlocks.IMPROVED_ITEM_PIPE));
+        e.getRegistry().register(new ItemPipeBlockItem(RefinedPipesBlocks.ADVANCED_ITEM_PIPE));
 
         for (AttachmentType type : AttachmentRegistry.INSTANCE.getTypes()) {
             e.getRegistry().register(new AttachmentItem(type));
