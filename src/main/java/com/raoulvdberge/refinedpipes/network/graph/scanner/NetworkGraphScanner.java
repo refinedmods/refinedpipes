@@ -73,7 +73,7 @@ public class NetworkGraphScanner {
                 TileEntity tile = request.getWorld().getTileEntity(request.getPos());
 
                 if (tile != null) {
-                    tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, request.getDirection())
+                    tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, request.getDirection().getOpposite())
                         .ifPresent(itemHandler -> destinations.add(new Destination(request.getPos(), request.getDirection(), connectedPipe)));
                 }
             }

@@ -236,7 +236,8 @@ public class ItemPipeBlock extends Block {
     private static boolean hasInvConnection(IWorld world, BlockPos pos, Direction direction) {
         TileEntity facingTile = world.getTileEntity(pos.offset(direction));
 
-        return facingTile != null && facingTile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent();
+        return facingTile != null
+            && facingTile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction.getOpposite()).isPresent();
     }
 
     private static BlockState getState(BlockState currentState, IWorld world, BlockPos pos) {

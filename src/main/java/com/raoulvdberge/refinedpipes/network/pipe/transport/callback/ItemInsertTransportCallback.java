@@ -41,7 +41,7 @@ public class ItemInsertTransportCallback implements TransportCallback {
             return;
         }
 
-        IItemHandler itemHandler = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, incomingDirection).orElse(null);
+        IItemHandler itemHandler = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, incomingDirection.getOpposite()).orElse(null);
         if (itemHandler == null) {
             LOGGER.warn("Destination item handler is no longer exposing a capability at " + itemHandlerPosition);
             cancelCallback.call(network, world, currentPos, cancelCallback);

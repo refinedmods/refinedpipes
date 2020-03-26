@@ -59,7 +59,7 @@ public class ExtractorAttachmentType implements AttachmentType {
             return;
         }
 
-        tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, attachment.getDirection())
+        tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, attachment.getDirection().getOpposite())
             .ifPresent(itemHandler -> update(network, pipe, attachment, itemHandlerPos, itemHandler));
     }
 
@@ -123,7 +123,7 @@ public class ExtractorAttachmentType implements AttachmentType {
             return false;
         }
 
-        IItemHandler handler = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, destination.getIncomingDirection()).orElse(null);
+        IItemHandler handler = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, destination.getIncomingDirection().getOpposite()).orElse(null);
         if (handler == null) {
             return false;
         }

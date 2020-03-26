@@ -1,5 +1,8 @@
 # Refined Pipes Changelog
 
+## 0.1.3
+- Fixed Item Pipes using the wrong side of an inventory (raoulvdberge)
+
 ## 0.1.2
 - Updated the textures slightly (raoulvdberge)
 - Updated the recipes slightly (raoulvdberge)
