@@ -11,7 +11,7 @@ import net.minecraft.world.World;
 public interface AttachmentType {
     ResourceLocation getModelLocation();
 
-    void update(World world, Network network, ItemPipe pipe, Attachment attachment);
+    void update(World world, Network network, ItemPipe pipe, Attachment attachment, int ticks);
 
     ResourceLocation getId();
 

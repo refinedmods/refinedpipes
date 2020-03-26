@@ -5,8 +5,6 @@ import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.registries.ObjectHolder;
 
 public class RefinedPipesTileEntities {
-    @ObjectHolder(RefinedPipes.ID + ":simple_item_pipe")
-    public static final TileEntityType<ItemPipeTileEntity> SIMPLE_ITEM_PIPE = null;
     @ObjectHolder(RefinedPipes.ID + ":basic_item_pipe")
     public static final TileEntityType<ItemPipeTileEntity> BASIC_ITEM_PIPE = null;
     @ObjectHolder(RefinedPipes.ID + ":improved_item_pipe")

@@ -9,6 +9,8 @@ import net.minecraft.world.World;
 public class Attachment {
     private final AttachmentType type;
     private final Direction direction;
+    
+    private int ticks;
 
     public Attachment(AttachmentType type, Direction direction) {
         this.type = type;
@@ -30,6 +32,8 @@ public class Attachment {
     }
 
     public void update(World world, Network network, ItemPipe pipe) {
-        type.update(world, network, pipe, this);
+        ++ticks;
+
+        type.update(world, network, pipe, this, ticks);
     }
 }

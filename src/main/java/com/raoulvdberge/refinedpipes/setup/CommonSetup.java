@@ -39,7 +39,6 @@ public class CommonSetup {
 
     @SubscribeEvent
     public void onRegisterBlocks(RegistryEvent.Register<Block> e) {
-        e.getRegistry().register(new ItemPipeBlock(ItemPipeType.SIMPLE));
         e.getRegistry().register(new ItemPipeBlock(ItemPipeType.BASIC));
         e.getRegistry().register(new ItemPipeBlock(ItemPipeType.IMPROVED));
         e.getRegistry().register(new ItemPipeBlock(ItemPipeType.ADVANCED));
@@ -47,7 +46,6 @@ public class CommonSetup {
 
     @SubscribeEvent
     public void onRegisterItems(RegistryEvent.Register<Item> e) {
-        e.getRegistry().register(new BaseBlockItem(RefinedPipesBlocks.SIMPLE_ITEM_PIPE));
         e.getRegistry().register(new BaseBlockItem(RefinedPipesBlocks.BASIC_ITEM_PIPE));
         e.getRegistry().register(new BaseBlockItem(RefinedPipesBlocks.IMPROVED_ITEM_PIPE));
         e.getRegistry().register(new BaseBlockItem(RefinedPipesBlocks.ADVANCED_ITEM_PIPE));
@@ -59,7 +57,6 @@ public class CommonSetup {
 
     @SubscribeEvent
     public void onRegisterTileEntities(RegistryEvent.Register<TileEntityType<?>> e) {
-        e.getRegistry().register(TileEntityType.Builder.create(() -> new ItemPipeTileEntity(ItemPipeType.SIMPLE), RefinedPipesBlocks.SIMPLE_ITEM_PIPE).build(null).setRegistryName(ItemPipeType.SIMPLE.getId()));
         e.getRegistry().register(TileEntityType.Builder.create(() -> new ItemPipeTileEntity(ItemPipeType.BASIC), RefinedPipesBlocks.BASIC_ITEM_PIPE).build(null).setRegistryName(ItemPipeType.BASIC.getId()));
         e.getRegistry().register(TileEntityType.Builder.create(() -> new ItemPipeTileEntity(ItemPipeType.IMPROVED), RefinedPipesBlocks.IMPROVED_ITEM_PIPE).build(null).setRegistryName(ItemPipeType.IMPROVED.getId()));
         e.getRegistry().register(TileEntityType.Builder.create(() -> new ItemPipeTileEntity(ItemPipeType.ADVANCED), RefinedPipesBlocks.ADVANCED_ITEM_PIPE).build(null).setRegistryName(ItemPipeType.ADVANCED.getId()));

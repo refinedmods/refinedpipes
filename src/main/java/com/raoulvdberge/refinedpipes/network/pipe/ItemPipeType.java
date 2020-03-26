@@ -7,10 +7,9 @@ import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 
 public enum ItemPipeType {
-    SIMPLE(30),
-    BASIC(20),
-    IMPROVED(10),
-    ADVANCED(5);
+    BASIC(30),
+    IMPROVED(20),
+    ADVANCED(10);
 
     private final int maxTicksInPipe;
 
@@ -24,8 +23,6 @@ public enum ItemPipeType {
 
     public TileEntityType<ItemPipeTileEntity> getTileType() {
         switch (this) {
-            case SIMPLE:
-                return RefinedPipesTileEntities.SIMPLE_ITEM_PIPE;
             case BASIC:
                 return RefinedPipesTileEntities.BASIC_ITEM_PIPE;
             case IMPROVED:
@@ -39,8 +36,6 @@ public enum ItemPipeType {
 
     public ResourceLocation getId() {
         switch (this) {
-            case SIMPLE:
-                return new ResourceLocation(RefinedPipes.ID, "simple_item_pipe");
             case BASIC:
                 return new ResourceLocation(RefinedPipes.ID, "basic_item_pipe");
             case IMPROVED:

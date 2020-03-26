@@ -31,8 +31,6 @@ public class ExtractorAttachmentType implements AttachmentType {
 
     private final Type type;
 
-    private int ticks;
-
     public ExtractorAttachmentType(Type type) {
         this.type = type;
     }
@@ -43,9 +41,7 @@ public class ExtractorAttachmentType implements AttachmentType {
     }
 
     @Override
-    public void update(World world, Network network, ItemPipe pipe, Attachment attachment) {
-        ticks++;
-
+    public void update(World world, Network network, ItemPipe pipe, Attachment attachment, int ticks) {
         if (ticks % type.tickInterval != 0) {
             return;
         }
