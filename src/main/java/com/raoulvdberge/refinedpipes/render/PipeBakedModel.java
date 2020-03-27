@@ -16,14 +16,14 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-public class ItemPipeBakedModel implements IBakedModel {
+public class PipeBakedModel implements IBakedModel {
     private final IBakedModel core;
     private final IBakedModel extension;
     private final IBakedModel straight;
     private final Map<AttachmentType, Map<Direction, IBakedModel>> attachmentModels = new HashMap<>();
     private final Map<Direction, IBakedModel> inventoryAttachmentModels = new HashMap<>();
 
-    public ItemPipeBakedModel(IBakedModel core, IBakedModel extension, IBakedModel straight, IBakedModel inventoryAttachment, Map<AttachmentType, IBakedModel> attachmentModels) {
+    public PipeBakedModel(IBakedModel core, IBakedModel extension, IBakedModel straight, IBakedModel inventoryAttachment, Map<AttachmentType, IBakedModel> attachmentModels) {
         this.core = core;
         this.extension = extension;
         this.straight = straight;

@@ -3,6 +3,7 @@ package com.raoulvdberge.refinedpipes.network;
 import com.raoulvdberge.refinedpipes.RefinedPipes;
 import com.raoulvdberge.refinedpipes.network.graph.scanner.NetworkGraphScannerResult;
 import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
+import com.raoulvdberge.refinedpipes.network.pipe.fluid.FluidPipe;
 import com.raoulvdberge.refinedpipes.network.pipe.item.ItemPipe;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
@@ -239,7 +240,18 @@ public class NetworkManager extends WorldSavedData {
     public void read(CompoundNBT tag) {
         ListNBT pipes = tag.getList("pipes", Constants.NBT.TAG_COMPOUND);
         for (INBT item : pipes) {
-            ItemPipe pipe = ItemPipe.fromNbt(world, (CompoundNBT) item);
+            CompoundNBT itemNbt = (CompoundNBT) item;
+
+            // TODO: the !contains is BC code
+            boolean isItemPipe = !itemNbt.contains("id") || itemNbt.getString("id").equals(RefinedPipes.ID + ":item");
+
+            Pipe pipe;
+
+            if (isItemPipe) {
+                pipe = ItemPipe.fromNbt(world, itemNbt);
+            } else {
+                pipe = FluidPipe.fromNbt(world, itemNbt);
+            }
 
             this.pipes.put(pipe.getPos(), pipe);
         }

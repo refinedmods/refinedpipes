@@ -84,6 +84,7 @@ public class ItemPipe extends Pipe {
     public CompoundNBT writeToNbt(CompoundNBT tag) {
         tag = super.writeToNbt(tag);
 
+        tag.putString("id", new ResourceLocation(RefinedPipes.ID, "item").toString());
         tag.putInt("type", type.ordinal());
 
         ListNBT transports = new ListNBT();
@@ -93,11 +94,6 @@ public class ItemPipe extends Pipe {
         tag.put("transports", transports);
 
         return tag;
-    }
-
-    @Override
-    public boolean canFormNetworkWith(Pipe otherPipe) {
-        return otherPipe instanceof ItemPipe;
     }
 
     public static ItemPipe fromNbt(World world, CompoundNBT tag) {
@@ -131,6 +127,11 @@ public class ItemPipe extends Pipe {
         }
 
         return pipe;
+    }
+
+    @Override
+    public boolean canFormNetworkWith(Pipe otherPipe) {
+        return otherPipe instanceof ItemPipe;
     }
 
     public int getMaxTicksInPipe() {
