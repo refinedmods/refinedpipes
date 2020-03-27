@@ -103,6 +103,7 @@ public class ItemPipeBlock extends Block {
 
     @Nullable
     private Direction getAttachmentDirectionClicked(BlockPos pos, Vec3d hit) {
+        // We need to grow by 0.01 to make the contains() check inclusive instead of exclusive on the higher bound
         if (NORTH_ATTACHMENT_SHAPE.getBoundingBox().grow(0.01).offset(pos).contains(hit)) {
             return Direction.NORTH;
         }
