@@ -1,7 +1,7 @@
 package com.raoulvdberge.refinedpipes.network.graph;
 
-import com.raoulvdberge.refinedpipes.network.pipe.Destination;
-import com.raoulvdberge.refinedpipes.network.pipe.ItemPipe;
+import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
+import com.raoulvdberge.refinedpipes.network.pipe.item.ItemDestination;
 import com.raoulvdberge.refinedpipes.network.route.*;
 import net.minecraft.util.math.BlockPos;
 import org.apache.logging.log4j.LogManager;
@@ -16,9 +16,9 @@ public class DestinationPathCacheFactory {
 
     private final Graph<BlockPos> graph;
     private final NodeIndex<BlockPos> nodeIndex;
-    private final Set<Destination> destinations;
+    private final Set<ItemDestination> destinations;
 
-    public DestinationPathCacheFactory(Graph<BlockPos> graph, NodeIndex<BlockPos> nodeIndex, Set<Destination> destinations) {
+    public DestinationPathCacheFactory(Graph<BlockPos> graph, NodeIndex<BlockPos> nodeIndex, Set<ItemDestination> destinations) {
         this.graph = graph;
         this.nodeIndex = nodeIndex;
         this.destinations = destinations;
@@ -32,7 +32,7 @@ public class DestinationPathCacheFactory {
 
             dijkstra.execute(node);
 
-            for (Destination destination : destinations) {
+            for (ItemDestination destination : destinations) {
                 if (destination.getConnectedPipe().getPos().equals(node.getId())) {
                     List<Node<BlockPos>> nodes = new ArrayList<>();
                     nodes.add(node);
@@ -41,7 +41,7 @@ public class DestinationPathCacheFactory {
                     continue;
                 }
 
-                ItemPipe connectedPipe = destination.getConnectedPipe();
+                Pipe connectedPipe = destination.getConnectedPipe();
                 Node<BlockPos> connectedPipeNode = nodeIndex.getNode(connectedPipe.getPos());
 
                 if (connectedPipeNode == null) {

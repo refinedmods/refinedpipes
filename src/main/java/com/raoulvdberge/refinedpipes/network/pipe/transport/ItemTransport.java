@@ -1,7 +1,8 @@
 package com.raoulvdberge.refinedpipes.network.pipe.transport;
 
 import com.raoulvdberge.refinedpipes.network.Network;
-import com.raoulvdberge.refinedpipes.network.pipe.ItemPipe;
+import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
+import com.raoulvdberge.refinedpipes.network.pipe.item.ItemPipe;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.callback.TransportCallback;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.callback.TransportCallbackFactory;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.callback.TransportCallbackFactoryRegistry;
@@ -106,19 +107,19 @@ public class ItemTransport {
                 return onDone(network, currentPipe.getWorld(), currentPipe);
             }
 
-            ItemPipe nextPipe = getPipe(network, nextPipePos);
+            Pipe nextPipe = getPipe(network, nextPipePos);
             if (nextPipe == null) {
                 return onPipeGone(network, currentPipe.getWorld(), nextPipePos);
             }
 
             progressInCurrentPipe = 0;
-            nextPipe.addTransport(this);
+            ((ItemPipe) nextPipe).addTransport(this);
         }
 
         return false;
     }
 
-    private ItemPipe getPipe(Network network, BlockPos pos) {
+    private Pipe getPipe(Network network, BlockPos pos) {
         return network.getGraph().getPipes().stream().filter(p -> p.getPos().equals(pos)).findFirst().orElse(null);
     }
 

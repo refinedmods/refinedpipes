@@ -1,16 +1,14 @@
-package com.raoulvdberge.refinedpipes.network.pipe;
+package com.raoulvdberge.refinedpipes.network.pipe.item;
 
 import com.raoulvdberge.refinedpipes.RefinedPipes;
-import com.raoulvdberge.refinedpipes.message.TransportMessage;
-import com.raoulvdberge.refinedpipes.network.Network;
+import com.raoulvdberge.refinedpipes.message.ItemTransportMessage;
 import com.raoulvdberge.refinedpipes.network.NetworkManager;
+import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.Attachment;
-import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentManager;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentRegistry;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.ItemTransport;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.ItemTransportProps;
-import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
@@ -23,31 +21,23 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-public class ItemPipe {
+public class ItemPipe extends Pipe {
     private static final Logger LOGGER = LogManager.getLogger(ItemPipe.class);
 
-    private final World world;
-    private final BlockPos pos;
-    private final AttachmentManager attachmentManager = new AttachmentManager();
-
-    private Network network;
     private final List<ItemTransport> transports = new ArrayList<>();
     private final List<ItemTransport> transportsToAdd = new ArrayList<>();
     private final List<ItemTransport> transportsToRemove = new ArrayList<>();
     private final ItemPipeType type;
 
     public ItemPipe(World world, BlockPos pos, ItemPipeType type) {
-        this.world = world;
-        this.pos = pos;
+        super(world, pos);
+
         this.type = type;
     }
 
     public void update(World world) {
-        for (Attachment attachment : attachmentManager.getAttachments()) {
-            attachment.update(world, network, this);
-        }
+        super.update(world);
 
         transports.addAll(transportsToAdd);
         transports.removeAll(transportsToRemove);
@@ -73,42 +63,6 @@ public class ItemPipe {
         return transports;
     }
 
-    public AttachmentManager getAttachmentManager() {
-        return attachmentManager;
-    }
-
-    public World getWorld() {
-        return world;
-    }
-
-    public BlockPos getPos() {
-        return pos;
-    }
-
-    public Network getNetwork() {
-        return network;
-    }
-
-    public void setNetwork(Network network) {
-        this.network = network;
-    }
-
-    public void joinNetwork(Network network) {
-        this.network = network;
-
-        LOGGER.debug(pos + " joined network " + network.getId());
-
-        sendBlockUpdate();
-    }
-
-    public void leaveNetwork() {
-        LOGGER.debug(pos + " left network " + network.getId());
-
-        this.network = null;
-
-        sendBlockUpdate();
-    }
-
     public void addTransport(ItemTransport transport) {
         transportsToAdd.add(transport);
     }
@@ -117,32 +71,20 @@ public class ItemPipe {
         transportsToRemove.add(transport);
     }
 
-    public void sendBlockUpdate() {
-        BlockState state = world.getBlockState(pos);
-        world.notifyBlockUpdate(pos, state, state, 1 | 2);
-    }
-
     public void sendTransportUpdate() {
         List<ItemTransportProps> props = new ArrayList<>();
         for (ItemTransport transport : transports) {
             props.add(transport.createProps(this));
         }
 
-        RefinedPipes.NETWORK.sendInArea(world, pos, 32, new TransportMessage(pos, props));
+        RefinedPipes.NETWORK.sendInArea(world, pos, 32, new ItemTransportMessage(pos, props));
     }
 
+    @Override
     public CompoundNBT writeToNbt(CompoundNBT tag) {
-        tag.putLong("pos", pos.toLong());
+        tag = super.writeToNbt(tag);
 
         tag.putInt("type", type.ordinal());
-
-        ListNBT attch = new ListNBT();
-        attachmentManager.getAttachments().forEach(a -> {
-            CompoundNBT attchTag = new CompoundNBT();
-            attchTag.putString("typ", a.getType().getId().toString());
-            attch.add(a.writeToNbt(attchTag));
-        });
-        tag.put("attch", attch);
 
         ListNBT transports = new ListNBT();
         for (ItemTransport transport : this.transports) {
@@ -151,6 +93,11 @@ public class ItemPipe {
         tag.put("transports", transports);
 
         return tag;
+    }
+
+    @Override
+    public boolean canFormNetworkWith(Pipe otherPipe) {
+        return otherPipe instanceof ItemPipe;
     }
 
     public static ItemPipe fromNbt(World world, CompoundNBT tag) {
@@ -188,19 +135,5 @@ public class ItemPipe {
 
     public int getMaxTicksInPipe() {
         return type.getMaxTicksInPipe();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ItemPipe pipe = (ItemPipe) o;
-        return world.equals(pipe.world) &&
-            pos.equals(pipe.pos);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(world, pos);
     }
 }

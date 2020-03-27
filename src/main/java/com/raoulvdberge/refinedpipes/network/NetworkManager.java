@@ -2,7 +2,8 @@ package com.raoulvdberge.refinedpipes.network;
 
 import com.raoulvdberge.refinedpipes.RefinedPipes;
 import com.raoulvdberge.refinedpipes.network.graph.scanner.NetworkGraphScannerResult;
-import com.raoulvdberge.refinedpipes.network.pipe.ItemPipe;
+import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
+import com.raoulvdberge.refinedpipes.network.pipe.item.ItemPipe;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
@@ -168,7 +169,7 @@ public class NetworkManager extends WorldSavedData {
             // For sanity checking
             boolean foundRemovedPipe = false;
 
-            for (ItemPipe removed : result.getRemovedPipes()) {
+            for (Pipe removed : result.getRemovedPipes()) {
                 // It's obvious that our removed pipe is removed.
                 // We don't want to create a new splitted network for this one.
                 if (removed.getPos().equals(originPipe.getPos())) {

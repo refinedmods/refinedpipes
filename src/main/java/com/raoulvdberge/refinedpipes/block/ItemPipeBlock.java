@@ -2,10 +2,10 @@ package com.raoulvdberge.refinedpipes.block;
 
 import com.raoulvdberge.refinedpipes.item.AttachmentItem;
 import com.raoulvdberge.refinedpipes.network.NetworkManager;
-import com.raoulvdberge.refinedpipes.network.pipe.ItemPipe;
-import com.raoulvdberge.refinedpipes.network.pipe.ItemPipeType;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.Attachment;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
+import com.raoulvdberge.refinedpipes.network.pipe.item.ItemPipe;
+import com.raoulvdberge.refinedpipes.network.pipe.item.ItemPipeType;
 import com.raoulvdberge.refinedpipes.tile.ItemPipeTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;

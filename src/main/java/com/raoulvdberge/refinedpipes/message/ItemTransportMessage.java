@@ -12,23 +12,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class TransportMessage {
+public class ItemTransportMessage {
     private BlockPos pos;
     private List<ItemTransportProps> props;
 
-    public TransportMessage(BlockPos pos, List<ItemTransportProps> props) {
+    public ItemTransportMessage(BlockPos pos, List<ItemTransportProps> props) {
         this.pos = pos;
         this.props = props;
     }
 
-    public static void encode(TransportMessage message, PacketBuffer buf) {
+    public static void encode(ItemTransportMessage message, PacketBuffer buf) {
         buf.writeBlockPos(message.pos);
         buf.writeInt(message.props.size());
 
         message.props.forEach(p -> p.writeToBuffer(buf));
     }
 
-    public static TransportMessage decode(PacketBuffer buf) {
+    public static ItemTransportMessage decode(PacketBuffer buf) {
         BlockPos pos = buf.readBlockPos();
         int count = buf.readInt();
         List<ItemTransportProps> props = new ArrayList<>();
@@ -37,10 +37,10 @@ public class TransportMessage {
             props.add(ItemTransportProps.create(buf));
         }
 
-        return new TransportMessage(pos, props);
+        return new ItemTransportMessage(pos, props);
     }
 
-    public static void handle(TransportMessage message, Supplier<NetworkEvent.Context> ctx) {
+    public static void handle(ItemTransportMessage message, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             TileEntity tile = Minecraft.getInstance().world.getTileEntity(message.pos);
 

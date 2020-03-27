@@ -1,8 +1,8 @@
 package com.raoulvdberge.refinedpipes.network.graph.scanner;
 
 import com.raoulvdberge.refinedpipes.network.NetworkManager;
-import com.raoulvdberge.refinedpipes.network.pipe.Destination;
-import com.raoulvdberge.refinedpipes.network.pipe.ItemPipe;
+import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
+import com.raoulvdberge.refinedpipes.network.pipe.item.ItemDestination;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
@@ -12,16 +12,18 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import java.util.*;
 
 public class NetworkGraphScanner {
-    private final Set<ItemPipe> foundPipes = new HashSet<>();
-    private final Set<ItemPipe> newPipes = new HashSet<>();
-    private final Set<ItemPipe> removedPipes = new HashSet<>();
-    private final Set<Destination> destinations = new HashSet<>();
-    private final Set<ItemPipe> currentPipes;
+    private final Set<Pipe> foundPipes = new HashSet<>();
+    private final Set<Pipe> newPipes = new HashSet<>();
+    private final Set<Pipe> removedPipes = new HashSet<>();
+    private final Set<ItemDestination> destinations = new HashSet<>();
+    private final Set<Pipe> currentPipes;
+
+    private Pipe firstFoundPipe;
 
     private final List<NetworkGraphScannerRequest> allRequests = new ArrayList<>();
     private final Queue<NetworkGraphScannerRequest> requests = new ArrayDeque<>();
 
-    public NetworkGraphScanner(Set<ItemPipe> currentPipes) {
+    public NetworkGraphScanner(Set<Pipe> currentPipes) {
         this.currentPipes = currentPipes;
         this.removedPipes.addAll(currentPipes);
     }
@@ -44,10 +46,18 @@ public class NetworkGraphScanner {
     }
 
     private void singleScanAt(NetworkGraphScannerRequest request) {
-        ItemPipe pipe = NetworkManager.get(request.getWorld()).getPipe(request.getPos());
+        Pipe pipe = NetworkManager.get(request.getWorld()).getPipe(request.getPos());
 
         if (pipe != null) {
+            if (firstFoundPipe != null && !firstFoundPipe.canFormNetworkWith(pipe)) {
+                return;
+            }
+
             if (foundPipes.add(pipe)) {
+                if (firstFoundPipe == null) {
+                    firstFoundPipe = pipe;
+                }
+
                 if (!currentPipes.contains(pipe)) {
                     newPipes.add(pipe);
                 }
@@ -66,7 +76,7 @@ public class NetworkGraphScanner {
                 }
             }
         } else if (request.getParent() != null) {
-            ItemPipe connectedPipe = NetworkManager.get(request.getWorld()).getPipe(request.getParent().getPos());
+            Pipe connectedPipe = NetworkManager.get(request.getWorld()).getPipe(request.getParent().getPos());
 
             // If this item handler is connected to a pipe with an attachment, then this is not a valid destination.
             if (!connectedPipe.getAttachmentManager().hasAttachment(request.getDirection())) {
@@ -74,7 +84,7 @@ public class NetworkGraphScanner {
 
                 if (tile != null) {
                     tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, request.getDirection().getOpposite())
-                        .ifPresent(itemHandler -> destinations.add(new Destination(request.getPos(), request.getDirection(), connectedPipe)));
+                        .ifPresent(itemHandler -> destinations.add(new ItemDestination(request.getPos(), request.getDirection(), connectedPipe)));
                 }
             }
         }

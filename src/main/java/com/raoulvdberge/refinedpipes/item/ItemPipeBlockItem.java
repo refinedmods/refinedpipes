@@ -1,7 +1,7 @@
 package com.raoulvdberge.refinedpipes.item;
 
 import com.raoulvdberge.refinedpipes.block.ItemPipeBlock;
-import com.raoulvdberge.refinedpipes.network.pipe.ItemPipeType;
+import com.raoulvdberge.refinedpipes.network.pipe.item.ItemPipeType;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;

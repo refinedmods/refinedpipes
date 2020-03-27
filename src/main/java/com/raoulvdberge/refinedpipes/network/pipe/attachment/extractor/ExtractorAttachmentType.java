@@ -3,10 +3,11 @@ package com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor;
 import com.raoulvdberge.refinedpipes.RefinedPipes;
 import com.raoulvdberge.refinedpipes.RefinedPipesItems;
 import com.raoulvdberge.refinedpipes.network.Network;
-import com.raoulvdberge.refinedpipes.network.pipe.Destination;
-import com.raoulvdberge.refinedpipes.network.pipe.ItemPipe;
+import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.Attachment;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
+import com.raoulvdberge.refinedpipes.network.pipe.item.ItemDestination;
+import com.raoulvdberge.refinedpipes.network.pipe.item.ItemPipe;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.ItemTransport;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.callback.ItemBounceBackTransportCallback;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.callback.ItemInsertTransportCallback;
@@ -47,7 +48,7 @@ public class ExtractorAttachmentType implements AttachmentType {
     }
 
     @Override
-    public void update(World world, Network network, ItemPipe pipe, Attachment attachment, int ticks) {
+    public void update(World world, Network network, Pipe pipe, Attachment attachment, int ticks) {
         if (ticks % type.getTickInterval() != 0) {
             return;
         }
@@ -68,7 +69,7 @@ public class ExtractorAttachmentType implements AttachmentType {
         tooltip.add(new TranslationTextComponent("misc.refinedpipes.tier", new TranslationTextComponent("enchantment.level." + type.tier)).setStyle(new Style().setColor(TextFormatting.GRAY)));
     }
 
-    private void update(Network network, ItemPipe pipe, Attachment attachment, BlockPos sourcePos, IItemHandler source) {
+    private void update(Network network, Pipe pipe, Attachment attachment, BlockPos sourcePos, IItemHandler source) {
         int firstSlot = getFirstSlot(source);
         if (firstSlot == -1) {
             return;
@@ -79,7 +80,7 @@ public class ExtractorAttachmentType implements AttachmentType {
             return;
         }
 
-        Destination destination = network
+        ItemDestination destination = network
             .getGraph()
             .getDestinationPathCache()
             .findNearestDestination(pipe.getPos(), d -> isDestinationApplicable(attachment, sourcePos, extracted, d));
@@ -106,7 +107,7 @@ public class ExtractorAttachmentType implements AttachmentType {
 
         BlockPos fromPos = pipe.getPos().offset(attachment.getDirection());
 
-        pipe.addTransport(new ItemTransport(
+        ((ItemPipe) pipe).addTransport(new ItemTransport(
             extractedActual.copy(),
             fromPos,
             destination.getReceiver(),
@@ -117,7 +118,7 @@ public class ExtractorAttachmentType implements AttachmentType {
         ));
     }
 
-    private boolean isDestinationApplicable(Attachment attachment, BlockPos sourcePos, ItemStack extracted, Destination destination) {
+    private boolean isDestinationApplicable(Attachment attachment, BlockPos sourcePos, ItemStack extracted, ItemDestination destination) {
         TileEntity tile = destination.getConnectedPipe().getWorld().getTileEntity(destination.getReceiver());
         if (tile == null) {
             return false;

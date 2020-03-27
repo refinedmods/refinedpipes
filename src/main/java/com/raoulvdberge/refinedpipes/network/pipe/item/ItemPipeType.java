@@ -1,4 +1,4 @@
-package com.raoulvdberge.refinedpipes.network.pipe;
+package com.raoulvdberge.refinedpipes.network.pipe.item;
 
 import com.raoulvdberge.refinedpipes.RefinedPipes;
 import com.raoulvdberge.refinedpipes.RefinedPipesTileEntities;

@@ -1,7 +1,7 @@
 package com.raoulvdberge.refinedpipes.network.pipe.attachment;
 
 import com.raoulvdberge.refinedpipes.network.Network;
-import com.raoulvdberge.refinedpipes.network.pipe.ItemPipe;
+import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
@@ -14,7 +14,7 @@ import java.util.List;
 public interface AttachmentType {
     ResourceLocation getModelLocation();
 
-    void update(World world, Network network, ItemPipe pipe, Attachment attachment, int ticks);
+    void update(World world, Network network, Pipe pipe, Attachment attachment, int ticks);
 
     void addInformation(List<ITextComponent> tooltip);
 

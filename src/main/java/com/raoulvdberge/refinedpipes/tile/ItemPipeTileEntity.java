@@ -1,11 +1,11 @@
 package com.raoulvdberge.refinedpipes.tile;
 
 import com.raoulvdberge.refinedpipes.network.NetworkManager;
-import com.raoulvdberge.refinedpipes.network.pipe.ItemPipe;
-import com.raoulvdberge.refinedpipes.network.pipe.ItemPipeType;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.Attachment;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentRegistry;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
+import com.raoulvdberge.refinedpipes.network.pipe.item.ItemPipe;
+import com.raoulvdberge.refinedpipes.network.pipe.item.ItemPipeType;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.ItemTransport;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.ItemTransportProps;
 import net.minecraft.block.BlockState;

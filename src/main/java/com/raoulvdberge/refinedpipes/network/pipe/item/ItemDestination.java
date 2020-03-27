@@ -1,16 +1,17 @@
-package com.raoulvdberge.refinedpipes.network.pipe;
+package com.raoulvdberge.refinedpipes.network.pipe.item;
 
+import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.Objects;
 
-public class Destination {
+public class ItemDestination {
     private final BlockPos receiver;
     private final Direction incomingDirection;
-    private final ItemPipe connectedPipe;
+    private final Pipe connectedPipe;
 
-    public Destination(BlockPos receiver, Direction incomingDirection, ItemPipe connectedPipe) {
+    public ItemDestination(BlockPos receiver, Direction incomingDirection, Pipe connectedPipe) {
         this.receiver = receiver;
         this.incomingDirection = incomingDirection;
         this.connectedPipe = connectedPipe;
@@ -24,7 +25,7 @@ public class Destination {
         return incomingDirection;
     }
 
-    public ItemPipe getConnectedPipe() {
+    public Pipe getConnectedPipe() {
         return connectedPipe;
     }
 
@@ -32,7 +33,7 @@ public class Destination {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Destination that = (Destination) o;
+        ItemDestination that = (ItemDestination) o;
         return Objects.equals(receiver, that.receiver) &&
             incomingDirection == that.incomingDirection &&
             Objects.equals(connectedPipe.getPos(), that.connectedPipe.getPos());

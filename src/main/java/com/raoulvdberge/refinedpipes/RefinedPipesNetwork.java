@@ -1,6 +1,6 @@
 package com.raoulvdberge.refinedpipes;
 
-import com.raoulvdberge.refinedpipes.message.TransportMessage;
+import com.raoulvdberge.refinedpipes.message.ItemTransportMessage;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -18,7 +18,7 @@ public class RefinedPipesNetwork {
         .simpleChannel();
 
     public void register() {
-        handler.registerMessage(0, TransportMessage.class, TransportMessage::encode, TransportMessage::decode, TransportMessage::handle);
+        handler.registerMessage(0, ItemTransportMessage.class, ItemTransportMessage::encode, ItemTransportMessage::decode, ItemTransportMessage::handle);
     }
 
     public void sendInArea(World world, BlockPos pos, int radius, Object message) {
