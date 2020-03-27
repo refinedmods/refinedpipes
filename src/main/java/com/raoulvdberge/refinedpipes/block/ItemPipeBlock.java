@@ -94,7 +94,7 @@ public class ItemPipeBlock extends Block {
 
         if (held.getItem() instanceof AttachmentItem) {
             return addAttachment(player, world, pos, held, dirClicked);
-        } else if (held.isEmpty()) {
+        } else if (held.isEmpty() && player.isCrouching()) {
             return removeAttachment(world, pos, dirClicked);
         }
 
