@@ -7,16 +7,14 @@ import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 
 public enum ItemPipeType {
-    BASIC(1, 30),
-    IMPROVED(2, 20),
-    ADVANCED(3, 10);
+    BASIC(1),
+    IMPROVED(2),
+    ADVANCED(3);
 
     private final int tier;
-    private final int maxTicksInPipe;
 
-    ItemPipeType(int tier, int maxTicksInPipe) {
+    ItemPipeType(int tier) {
         this.tier = tier;
-        this.maxTicksInPipe = maxTicksInPipe;
     }
 
     public int getTier() {
@@ -24,7 +22,16 @@ public enum ItemPipeType {
     }
 
     public int getMaxTicksInPipe() {
-        return maxTicksInPipe;
+        switch (this) {
+            case BASIC:
+                return RefinedPipes.SERVER_CONFIG.getBasicPipe().getMaxTicks();
+            case IMPROVED:
+                return RefinedPipes.SERVER_CONFIG.getImprovedPipe().getMaxTicks();
+            case ADVANCED:
+                return RefinedPipes.SERVER_CONFIG.getAdvancedPipe().getMaxTicks();
+            default:
+                throw new RuntimeException("?");
+        }
     }
 
     public TileEntityType<ItemPipeTileEntity> getTileType() {

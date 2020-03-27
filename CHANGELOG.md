@@ -2,6 +2,7 @@
 
 ## 0.1.4
 - Added hitboxes for the attachments on pipes (raoulvdberge)
+- Added a config file (raoulvdberge)
 
 ## 0.1.3
 - Fixed Item Pipes using the wrong side of an inventory (raoulvdberge)

@@ -48,7 +48,7 @@ public class ExtractorAttachmentType implements AttachmentType {
 
     @Override
     public void update(World world, Network network, ItemPipe pipe, Attachment attachment, int ticks) {
-        if (ticks % type.tickInterval != 0) {
+        if (ticks % type.getTickInterval() != 0) {
             return;
         }
 
@@ -74,7 +74,7 @@ public class ExtractorAttachmentType implements AttachmentType {
             return;
         }
 
-        ItemStack extracted = source.extractItem(firstSlot, type.itemsToExtract, true);
+        ItemStack extracted = source.extractItem(firstSlot, type.getItemsToExtract(), true);
         if (extracted.isEmpty()) {
             return;
         }
@@ -99,7 +99,7 @@ public class ExtractorAttachmentType implements AttachmentType {
             return;
         }
 
-        ItemStack extractedActual = source.extractItem(firstSlot, type.itemsToExtract, false);
+        ItemStack extractedActual = source.extractItem(firstSlot, type.getItemsToExtract(), false);
         if (extractedActual.isEmpty()) {
             return;
         }
@@ -175,20 +175,50 @@ public class ExtractorAttachmentType implements AttachmentType {
     }
 
     public enum Type {
-        BASIC(1, 20 * 3, 8),
-        IMPROVED(2, 20 * 2, 16),
-        ADVANCED(3, 20, 32),
-        ELITE(4, 10, 64),
-        ULTIMATE(5, 10, 64);
+        BASIC(1),
+        IMPROVED(2),
+        ADVANCED(3),
+        ELITE(4),
+        ULTIMATE(5);
 
         private final int tier;
-        private final int tickInterval;
-        private final int itemsToExtract;
 
-        Type(int tier, int tickInterval, int itemsToExtract) {
+        Type(int tier) {
             this.tier = tier;
-            this.tickInterval = tickInterval;
-            this.itemsToExtract = itemsToExtract;
+        }
+
+        int getTickInterval() {
+            switch (this) {
+                case BASIC:
+                    return RefinedPipes.SERVER_CONFIG.getBasicExtractorAttachment().getTickInterval();
+                case IMPROVED:
+                    return RefinedPipes.SERVER_CONFIG.getImprovedExtractorAttachment().getTickInterval();
+                case ADVANCED:
+                    return RefinedPipes.SERVER_CONFIG.getAdvancedExtractorAttachment().getTickInterval();
+                case ELITE:
+                    return RefinedPipes.SERVER_CONFIG.getEliteExtractorAttachment().getTickInterval();
+                case ULTIMATE:
+                    return RefinedPipes.SERVER_CONFIG.getUltimateExtractorAttachment().getTickInterval();
+                default:
+                    throw new RuntimeException("?");
+            }
+        }
+
+        int getItemsToExtract() {
+            switch (this) {
+                case BASIC:
+                    return RefinedPipes.SERVER_CONFIG.getBasicExtractorAttachment().getItemsToExtract();
+                case IMPROVED:
+                    return RefinedPipes.SERVER_CONFIG.getImprovedExtractorAttachment().getItemsToExtract();
+                case ADVANCED:
+                    return RefinedPipes.SERVER_CONFIG.getAdvancedExtractorAttachment().getItemsToExtract();
+                case ELITE:
+                    return RefinedPipes.SERVER_CONFIG.getEliteExtractorAttachment().getItemsToExtract();
+                case ULTIMATE:
+                    return RefinedPipes.SERVER_CONFIG.getUltimateExtractorAttachment().getItemsToExtract();
+                default:
+                    throw new RuntimeException("?");
+            }
         }
 
         ResourceLocation getId() {
