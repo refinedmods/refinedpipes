@@ -35,7 +35,7 @@ public class NetworkManager extends WorldSavedData {
 
     private final World world;
     private final Map<String, Network> networks = new HashMap<>();
-    private final Map<BlockPos, ItemPipe> pipes = new HashMap<>();
+    private final Map<BlockPos, Pipe> pipes = new HashMap<>();
 
     public NetworkManager(String name, World world) {
         super(name);
@@ -75,14 +75,14 @@ public class NetworkManager extends WorldSavedData {
         network.scanGraph(world, pos);
     }
 
-    private void mergeNetworksIntoOne(Set<ItemPipe> candidates, World world, BlockPos pos) {
+    private void mergeNetworksIntoOne(Set<Pipe> candidates, World world, BlockPos pos) {
         if (candidates.isEmpty()) {
             throw new RuntimeException("Cannot merge networks: no candidates");
         }
 
         Set<Network> networkCandidates = new HashSet<>();
 
-        for (ItemPipe candidate : candidates) {
+        for (Pipe candidate : candidates) {
             if (candidate.getNetwork() == null) {
                 throw new RuntimeException("Pipe network is null!");
             }
@@ -102,7 +102,7 @@ public class NetworkManager extends WorldSavedData {
         mainNetwork.scanGraph(world, pos);
     }
 
-    public void addPipe(ItemPipe pipe) {
+    public void addPipe(Pipe pipe) {
         if (pipes.containsKey(pipe.getPos())) {
             throw new RuntimeException("Pipe at " + pipe.getPos() + " already exists");
         }
@@ -113,7 +113,7 @@ public class NetworkManager extends WorldSavedData {
 
         markDirty();
 
-        Set<ItemPipe> adjacentPipes = findAdjacentPipes(pipe.getPos());
+        Set<Pipe> adjacentPipes = findAdjacentPipes(pipe.getPos());
 
         if (adjacentPipes.isEmpty()) {
             formNetworkAt(pipe.getWorld(), pipe.getPos());
@@ -123,7 +123,7 @@ public class NetworkManager extends WorldSavedData {
     }
 
     public void removePipe(BlockPos pos) {
-        ItemPipe pipe = getPipe(pos);
+        Pipe pipe = getPipe(pos);
         if (pipe == null) {
             throw new RuntimeException("Pipe at " + pos + " was not found");
         }
@@ -141,9 +141,9 @@ public class NetworkManager extends WorldSavedData {
         splitNetworks(pipe);
     }
 
-    private void splitNetworks(ItemPipe originPipe) {
+    private void splitNetworks(Pipe originPipe) {
         // Sanity checks
-        for (ItemPipe adjacent : findAdjacentPipes(originPipe.getPos())) {
+        for (Pipe adjacent : findAdjacentPipes(originPipe.getPos())) {
             if (adjacent.getNetwork() == null) {
                 throw new RuntimeException("Adjacent pipe has no network");
             }
@@ -155,7 +155,7 @@ public class NetworkManager extends WorldSavedData {
 
         // We can assume all adjacent pipes shared the same network with the removed pipe.
         // That means it doesn't matter which pipe network we use for splitting, we'll take the first found one.
-        ItemPipe otherPipeInNetwork = findFirstAdjacentPipe(originPipe.getPos());
+        Pipe otherPipeInNetwork = findFirstAdjacentPipe(originPipe.getPos());
 
         if (otherPipeInNetwork != null) {
             otherPipeInNetwork.getNetwork().setOriginPos(otherPipeInNetwork.getPos());
@@ -194,11 +194,11 @@ public class NetworkManager extends WorldSavedData {
         }
     }
 
-    private Set<ItemPipe> findAdjacentPipes(BlockPos pos) {
-        Set<ItemPipe> pipes = new HashSet<>();
+    private Set<Pipe> findAdjacentPipes(BlockPos pos) {
+        Set<Pipe> pipes = new HashSet<>();
 
         for (Direction dir : Direction.values()) {
-            ItemPipe pipe = getPipe(pos.offset(dir));
+            Pipe pipe = getPipe(pos.offset(dir));
 
             if (pipe != null) {
                 pipes.add(pipe);
@@ -209,9 +209,9 @@ public class NetworkManager extends WorldSavedData {
     }
 
     @Nullable
-    private ItemPipe findFirstAdjacentPipe(BlockPos pos) {
+    private Pipe findFirstAdjacentPipe(BlockPos pos) {
         for (Direction dir : Direction.values()) {
-            ItemPipe pipe = getPipe(pos.offset(dir));
+            Pipe pipe = getPipe(pos.offset(dir));
 
             if (pipe != null) {
                 return pipe;
@@ -222,7 +222,7 @@ public class NetworkManager extends WorldSavedData {
     }
 
     @Nullable
-    public ItemPipe getPipe(BlockPos pos) {
+    public Pipe getPipe(BlockPos pos) {
         return pipes.get(pos);
     }
 
