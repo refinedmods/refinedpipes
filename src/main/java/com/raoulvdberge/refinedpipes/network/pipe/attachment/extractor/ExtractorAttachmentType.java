@@ -85,7 +85,7 @@ public class ExtractorAttachmentType implements AttachmentType {
             .findNearestDestination(pipe.getPos(), d -> isDestinationApplicable(attachment, sourcePos, extracted, d));
 
         if (destination == null) {
-            LOGGER.error("No destination found from " + pipe.getPos());
+            LOGGER.warn("No destination found from " + pipe.getPos());
             return;
         }
 

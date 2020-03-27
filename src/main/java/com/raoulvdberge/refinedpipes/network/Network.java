@@ -2,6 +2,7 @@ package com.raoulvdberge.refinedpipes.network;
 
 import com.raoulvdberge.refinedpipes.network.graph.NetworkGraph;
 import com.raoulvdberge.refinedpipes.network.graph.scanner.NetworkGraphScannerResult;
+import com.raoulvdberge.refinedpipes.util.StringUtil;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -20,7 +21,7 @@ public class Network {
     private boolean didDoInitialScan;
 
     public Network(BlockPos originPos) {
-        this(originPos, generateRandomString(new Random(), 8));
+        this(originPos, StringUtil.randomString(new Random(), 8));
     }
 
     public Network(BlockPos originPos, String id) {
@@ -80,14 +81,5 @@ public class Network {
     @Override
     public int hashCode() {
         return Objects.hash(id);
-    }
-
-    private static String generateRandomString(Random r, int length) {
-        StringBuilder word = new StringBuilder(length);
-        for (int i = 0; i < length; i++) {
-            int tmp = 'a' + r.nextInt('z' - 'a');
-            word.append((char) tmp);
-        }
-        return word.toString();
     }
 }

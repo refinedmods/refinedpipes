@@ -21,6 +21,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
@@ -30,6 +31,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.items.CapabilityItemHandler;
 
 import javax.annotation.Nullable;
+import java.util.function.Predicate;
 
 public class ItemPipeBlock extends Block {
     public static final BooleanProperty NORTH = BooleanProperty.create("north");
@@ -54,6 +56,13 @@ public class ItemPipeBlock extends Block {
     public static final VoxelShape UP_EXTENSION_SHAPE = makeCuboidShape(4, 12, 4, 12, 16, 12);
     public static final VoxelShape DOWN_EXTENSION_SHAPE = makeCuboidShape(4, 0, 4, 12, 4, 12);
 
+    private static final VoxelShape NORTH_ATTACHMENT_SHAPE = makeCuboidShape(3, 3, 0, 13, 13, 3);
+    private static final VoxelShape EAST_ATTACHMENT_SHAPE = makeCuboidShape(13, 3, 3, 16, 13, 13);
+    private static final VoxelShape SOUTH_ATTACHMENT_SHAPE = makeCuboidShape(3, 3, 13, 13, 13, 16);
+    private static final VoxelShape WEST_ATTACHMENT_SHAPE = makeCuboidShape(0, 3, 3, 3, 13, 13);
+    private static final VoxelShape UP_ATTACHMENT_SHAPE = makeCuboidShape(3, 13, 3, 13, 16, 13);
+    private static final VoxelShape DOWN_ATTACHMENT_SHAPE = makeCuboidShape(3, 0, 3, 13, 3, 13);
+
     private final ItemPipeType type;
 
     public ItemPipeBlock(ItemPipeType type) {
@@ -75,15 +84,50 @@ public class ItemPipeBlock extends Block {
     @Override
     @SuppressWarnings("deprecation")
     public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
+        Direction dirClicked = getAttachmentDirectionClicked(pos, hit.getHitVec());
+
+        if (dirClicked == null) {
+            dirClicked = hit.getFace();
+        }
+
         ItemStack held = player.getHeldItemMainhand();
 
         if (held.getItem() instanceof AttachmentItem) {
-            return addAttachment(player, world, pos, held, hit.getFace());
-        } else if (held.isEmpty() && player.isCrouching()) {
-            return removeAttachment(world, pos, hit.getFace());
+            return addAttachment(player, world, pos, held, dirClicked);
+        } else if (held.isEmpty()) {
+            return removeAttachment(world, pos, dirClicked);
         }
 
         return super.onBlockActivated(state, world, pos, player, hand, hit);
+    }
+
+    @Nullable
+    private Direction getAttachmentDirectionClicked(BlockPos pos, Vec3d hit) {
+        if (NORTH_ATTACHMENT_SHAPE.getBoundingBox().grow(0.01).offset(pos).contains(hit)) {
+            return Direction.NORTH;
+        }
+
+        if (EAST_ATTACHMENT_SHAPE.getBoundingBox().grow(0.01).offset(pos).contains(hit)) {
+            return Direction.EAST;
+        }
+
+        if (SOUTH_ATTACHMENT_SHAPE.getBoundingBox().grow(0.01).offset(pos).contains(hit)) {
+            return Direction.SOUTH;
+        }
+
+        if (WEST_ATTACHMENT_SHAPE.getBoundingBox().grow(0.01).offset(pos).contains(hit)) {
+            return Direction.WEST;
+        }
+
+        if (UP_ATTACHMENT_SHAPE.getBoundingBox().grow(0.01).offset(pos).contains(hit)) {
+            return Direction.UP;
+        }
+
+        if (DOWN_ATTACHMENT_SHAPE.getBoundingBox().grow(0.01).offset(pos).contains(hit)) {
+            return Direction.DOWN;
+        }
+
+        return null;
     }
 
     private ActionResultType addAttachment(PlayerEntity player, World world, BlockPos pos, ItemStack attachment, Direction dir) {
@@ -212,6 +256,37 @@ public class ItemPipeBlock extends Block {
 
         if (state.get(DOWN)) {
             shape = VoxelShapes.or(shape, DOWN_EXTENSION_SHAPE);
+        }
+
+        Predicate<Direction> hasAttachment = (dir) -> false;
+
+        TileEntity tile = world.getTileEntity(pos);
+        if (tile instanceof ItemPipeTileEntity) {
+            hasAttachment = ((ItemPipeTileEntity) tile)::hasAttachment;
+        }
+
+        if (hasAttachment.test(Direction.NORTH) || state.get(INV_NORTH)) {
+            shape = VoxelShapes.or(shape, NORTH_ATTACHMENT_SHAPE);
+        }
+
+        if (hasAttachment.test(Direction.EAST) || state.get(INV_EAST)) {
+            shape = VoxelShapes.or(shape, EAST_ATTACHMENT_SHAPE);
+        }
+
+        if (hasAttachment.test(Direction.SOUTH) || state.get(INV_SOUTH)) {
+            shape = VoxelShapes.or(shape, SOUTH_ATTACHMENT_SHAPE);
+        }
+
+        if (hasAttachment.test(Direction.WEST) || state.get(INV_WEST)) {
+            shape = VoxelShapes.or(shape, WEST_ATTACHMENT_SHAPE);
+        }
+
+        if (hasAttachment.test(Direction.UP) || state.get(INV_UP)) {
+            shape = VoxelShapes.or(shape, UP_ATTACHMENT_SHAPE);
+        }
+
+        if (hasAttachment.test(Direction.DOWN) || state.get(INV_DOWN)) {
+            shape = VoxelShapes.or(shape, DOWN_ATTACHMENT_SHAPE);
         }
 
         return shape;
