@@ -14,4 +14,8 @@ public class RefinedPipesTileEntities {
     public static final TileEntityType<ItemPipeTileEntity> ADVANCED_ITEM_PIPE = null;
     @ObjectHolder(RefinedPipes.ID + ":basic_fluid_pipe")
     public static final TileEntityType<FluidPipeTileEntity> BASIC_FLUID_PIPE = null;
+    @ObjectHolder(RefinedPipes.ID + ":improved_fluid_pipe")
+    public static final TileEntityType<FluidPipeTileEntity> IMPROVED_FLUID_PIPE = null;
+    @ObjectHolder(RefinedPipes.ID + ":advanced_fluid_pipe")
+    public static final TileEntityType<FluidPipeTileEntity> ADVANCED_FLUID_PIPE = null;
 }

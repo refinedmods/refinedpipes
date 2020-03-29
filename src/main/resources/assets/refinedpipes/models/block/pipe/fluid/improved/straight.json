@@ -1,0 +1,7 @@
+{
+  "parent": "refinedpipes:block/pipe/item/straight",
+  "textures": {
+    "0": "refinedpipes:blocks/pipe/fluid/improved",
+    "particle": "refinedpipes:blocks/pipe/fluid/improved"
+  }
+}

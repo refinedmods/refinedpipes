@@ -4,6 +4,8 @@
   "block.refinedpipes.improved_item_pipe": "Improved Item Pipe",
   "block.refinedpipes.advanced_item_pipe": "Advanced Item Pipe",
   "block.refinedpipes.basic_fluid_pipe": "Basic Fluid Pipe",
+  "block.refinedpipes.improved_fluid_pipe": "Improved Fluid Pipe",
+  "block.refinedpipes.advanced_fluid_pipe": "Advanced Fluid Pipe",
   "item.refinedpipes.basic_extractor_attachment": "Basic Extractor Attachment",
   "item.refinedpipes.improved_extractor_attachment": "Improved Extractor Attachment",
   "item.refinedpipes.advanced_extractor_attachment": "Advanced Extractor Attachment",

@@ -13,4 +13,8 @@ public class RefinedPipesBlocks {
     public static final ItemPipeBlock ADVANCED_ITEM_PIPE = null;
     @ObjectHolder(RefinedPipes.ID + ":basic_fluid_pipe")
     public static final FluidPipeBlock BASIC_FLUID_PIPE = null;
+    @ObjectHolder(RefinedPipes.ID + ":improved_fluid_pipe")
+    public static final FluidPipeBlock IMPROVED_FLUID_PIPE = null;
+    @ObjectHolder(RefinedPipes.ID + ":advanced_fluid_pipe")
+    public static final FluidPipeBlock ADVANCED_FLUID_PIPE = null;
 }
