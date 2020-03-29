@@ -18,6 +18,8 @@ import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
 
 public class FluidPipeTileEntityRenderer extends TileEntityRenderer<FluidPipeTileEntity> {
+    private static final float INSET = 0.001F;
+
     public FluidPipeTileEntityRenderer(TileEntityRendererDispatcher dispatcher) {
         super(dispatcher);
     }
@@ -27,6 +29,7 @@ public class FluidPipeTileEntityRenderer extends TileEntityRenderer<FluidPipeTil
     public void render(FluidPipeTileEntity tile, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer bufferType, int combinedLight, int combinedOverlay) {
         FluidStack fluidStack = tile.getFluid();
         if (fluidStack.isEmpty()) {
+            tile.updateAndGetRenderFullness(partialTicks);
             return;
         }
 
@@ -35,14 +38,14 @@ public class FluidPipeTileEntityRenderer extends TileEntityRenderer<FluidPipeTil
         TextureAtlasSprite sprite = Minecraft.getInstance().getAtlasSpriteGetter(PlayerContainer.LOCATION_BLOCKS_TEXTURE).apply(attributes.getStillTexture(fluidStack));
         int fluidColor = attributes.getColor(fluidStack);
 
-        int colorRed = fluidColor >> 16 & 0xFF;
-        int colorGreen = fluidColor >> 8 & 0xFF;
-        int colorBlue = fluidColor & 0xFF;
-        int colorAlpha = fluidColor >> 24 & 0xFF;
+        int r = fluidColor >> 16 & 0xFF;
+        int g = fluidColor >> 8 & 0xFF;
+        int b = fluidColor & 0xFF;
+        int a = fluidColor >> 24 & 0xFF;
 
         IVertexBuilder buffer = bufferType.getBuffer(RenderType.getText(sprite.getAtlasTexture().getTextureLocation()));
 
-        float fullness = tile.getFullness();
+        float fullness = tile.updateAndGetRenderFullness(partialTicks);
 
         BlockState state = tile.getWorld().getBlockState(tile.getPos());
         if (state.get(FluidPipeBlock.NORTH)) {
@@ -53,7 +56,23 @@ public class FluidPipeTileEntityRenderer extends TileEntityRenderer<FluidPipeTil
             float y2 = 4 + (fullness * (12 - 4));
             float z2 = 4;
 
-            CubeBuilder.INSTANCE.addCube(matrixStack, buffer, (x1 / 16F) + 0.001F, (y1 / 16F) + 0.001F, (z1 / 16F) + 0.001F, (x2 / 16F) - 0.001F, (y2 / 16F) - 0.001F, (z2 / 16F) - 0.001F, colorRed, colorGreen, colorBlue, colorAlpha, light, sprite);
+            CubeBuilder.INSTANCE.putCube(
+                matrixStack,
+                buffer,
+                (x1 / 16F) + INSET,
+                (y1 / 16F) + INSET,
+                (z1 / 16F) + INSET,
+                (x2 / 16F) - INSET,
+                (y2 / 16F) - INSET,
+                (z2 / 16F) - INSET,
+                r,
+                g,
+                b,
+                a,
+                light,
+                sprite,
+                Direction.SOUTH
+            );
         }
 
         if (state.get(FluidPipeBlock.EAST)) {
@@ -64,7 +83,23 @@ public class FluidPipeTileEntityRenderer extends TileEntityRenderer<FluidPipeTil
             float y2 = 4 + (fullness * (12 - 4));
             float z2 = 12;
 
-            CubeBuilder.INSTANCE.addCube(matrixStack, buffer, (x1 / 16F) + 0.001F, (y1 / 16F) + 0.001F, (z1 / 16F) + 0.001F, (x2 / 16F) - 0.001F, (y2 / 16F) - 0.001F, (z2 / 16F) - 0.001F, colorRed, colorGreen, colorBlue, colorAlpha, light, sprite);
+            CubeBuilder.INSTANCE.putCube(
+                matrixStack,
+                buffer,
+                (x1 / 16F) + INSET,
+                (y1 / 16F) + INSET,
+                (z1 / 16F) + INSET,
+                (x2 / 16F) - INSET,
+                (y2 / 16F) - INSET,
+                (z2 / 16F) - INSET,
+                r,
+                g,
+                b,
+                a,
+                light,
+                sprite,
+                Direction.WEST
+            );
         }
 
         if (state.get(FluidPipeBlock.SOUTH)) {
@@ -75,7 +110,23 @@ public class FluidPipeTileEntityRenderer extends TileEntityRenderer<FluidPipeTil
             float y2 = 4 + (fullness * (12 - 4));
             float z2 = 16;
 
-            CubeBuilder.INSTANCE.addCube(matrixStack, buffer, (x1 / 16F) + 0.001F, (y1 / 16F) + 0.001F, (z1 / 16F) + 0.001F, (x2 / 16F) - 0.001F, (y2 / 16F) - 0.001F, (z2 / 16F) - 0.001F, colorRed, colorGreen, colorBlue, colorAlpha, light, sprite);
+            CubeBuilder.INSTANCE.putCube(
+                matrixStack,
+                buffer,
+                (x1 / 16F) + INSET,
+                (y1 / 16F) + INSET,
+                (z1 / 16F) + INSET,
+                (x2 / 16F) - INSET,
+                (y2 / 16F) - INSET,
+                (z2 / 16F) - INSET,
+                r,
+                g,
+                b,
+                a,
+                light,
+                sprite,
+                Direction.NORTH
+            );
         }
 
         if (state.get(FluidPipeBlock.WEST)) {
@@ -86,7 +137,23 @@ public class FluidPipeTileEntityRenderer extends TileEntityRenderer<FluidPipeTil
             float y2 = 4 + (fullness * (12 - 4));
             float z2 = 12;
 
-            CubeBuilder.INSTANCE.addCube(matrixStack, buffer, (x1 / 16F) + 0.001F, (y1 / 16F) + 0.001F, (z1 / 16F) + 0.001F, (x2 / 16F) - 0.001F, (y2 / 16F) - 0.001F, (z2 / 16F) - 0.001F, colorRed, colorGreen, colorBlue, colorAlpha, light, sprite);
+            CubeBuilder.INSTANCE.putCube(
+                matrixStack,
+                buffer,
+                (x1 / 16F) + INSET,
+                (y1 / 16F) + INSET,
+                (z1 / 16F) + INSET,
+                (x2 / 16F) - INSET,
+                (y2 / 16F) - INSET,
+                (z2 / 16F) - INSET,
+                r,
+                g,
+                b,
+                a,
+                light,
+                sprite,
+                Direction.EAST
+            );
         }
 
         if (state.get(FluidPipeBlock.UP)) {
@@ -111,7 +178,23 @@ public class FluidPipeTileEntityRenderer extends TileEntityRenderer<FluidPipeTil
             // We should be able to go from Y 12 to Y 4.
             y1 -= (1F - fullness) * (12F - 4F);
 
-            CubeBuilder.INSTANCE.addCube(matrixStack, buffer, (x1 / 16F) + 0.001F, (y1 / 16F) + 0.001F, (z1 / 16F) + 0.001F, (x2 / 16F) - 0.001F, (y2 / 16F) - 0.001F, (z2 / 16F) - 0.001F, colorRed, colorGreen, colorBlue, colorAlpha, light, sprite);
+            CubeBuilder.INSTANCE.putCube(
+                matrixStack,
+                buffer,
+                (x1 / 16F) + INSET,
+                (y1 / 16F) + INSET,
+                (z1 / 16F) + INSET,
+                (x2 / 16F) - INSET,
+                (y2 / 16F) - INSET,
+                (z2 / 16F) - INSET,
+                r,
+                g,
+                b,
+                a,
+                light,
+                sprite,
+                Direction.DOWN
+            );
         }
 
         if (state.get(FluidPipeBlock.DOWN)) {
@@ -130,7 +213,23 @@ public class FluidPipeTileEntityRenderer extends TileEntityRenderer<FluidPipeTil
             x2 -= shrinkage;
             z2 -= shrinkage;
 
-            CubeBuilder.INSTANCE.addCube(matrixStack, buffer, (x1 / 16F) + 0.001F, (y1 / 16F) + 0.001F, (z1 / 16F) + 0.001F, (x2 / 16F) - 0.001F, (y2 / 16F) - 0.001F, (z2 / 16F) - 0.001F, colorRed, colorGreen, colorBlue, colorAlpha, light, sprite);
+            CubeBuilder.INSTANCE.putCube(
+                matrixStack,
+                buffer,
+                (x1 / 16F) + INSET,
+                (y1 / 16F) + INSET,
+                (z1 / 16F) + INSET,
+                (x2 / 16F) - INSET,
+                (y2 / 16F) - INSET,
+                (z2 / 16F) - INSET,
+                r,
+                g,
+                b,
+                a,
+                light,
+                sprite,
+                Direction.UP
+            );
         }
 
         {
@@ -143,24 +242,120 @@ public class FluidPipeTileEntityRenderer extends TileEntityRenderer<FluidPipeTil
 
             matrixStack.push();
 
-            CubeBuilder.INSTANCE.putFace(matrixStack, buffer, (x1 / 16F) + 0.001F, (y1 / 16F) + 0.001F, (z1 / 16F) + 0.001F, (x2 / 16F) - 0.001F, (y2 / 16F) - 0.001F, (z2 / 16F) - 0.001F, colorRed, colorGreen, colorBlue, colorAlpha, light, sprite, Direction.UP);
-            CubeBuilder.INSTANCE.putFace(matrixStack, buffer, (x1 / 16F) + 0.001F, (y1 / 16F) + 0.001F, (z1 / 16F) + 0.001F, (x2 / 16F) - 0.001F, (y2 / 16F) - 0.001F, (z2 / 16F) - 0.001F, colorRed, colorGreen, colorBlue, colorAlpha, light, sprite, Direction.DOWN);
+            CubeBuilder.INSTANCE.putFace(
+                matrixStack,
+                buffer,
+                (x1 / 16F) + INSET,
+                (y1 / 16F) + INSET,
+                (z1 / 16F) + INSET,
+                (x2 / 16F) - INSET,
+                (y2 / 16F) - INSET,
+                (z2 / 16F) - INSET,
+                r,
+                g,
+                b,
+                a,
+                light,
+                sprite,
+                Direction.UP
+            );
 
-            // TODO do the same for the attachments probably?
+            CubeBuilder.INSTANCE.putFace(
+                matrixStack,
+                buffer,
+                (x1 / 16F) + INSET,
+                (y1 / 16F) + INSET,
+                (z1 / 16F) + INSET,
+                (x2 / 16F) - INSET,
+                (y2 / 16F) - INSET,
+                (z2 / 16F) - INSET,
+                r,
+                g,
+                b,
+                a,
+                light,
+                sprite,
+                Direction.DOWN
+            );
+
             if (!state.get(FluidPipeBlock.NORTH)) {
-                CubeBuilder.INSTANCE.putFace(matrixStack, buffer, (x1 / 16F) + 0.001F, (y1 / 16F) + 0.001F, (z1 / 16F) + 0.001F, (x2 / 16F) - 0.001F, (y2 / 16F) - 0.001F, (z2 / 16F) - 0.001F, colorRed, colorGreen, colorBlue, colorAlpha, light, sprite, Direction.NORTH);
+                CubeBuilder.INSTANCE.putFace(
+                    matrixStack,
+                    buffer,
+                    (x1 / 16F) + INSET,
+                    (y1 / 16F) + INSET,
+                    (z1 / 16F) + INSET,
+                    (x2 / 16F) - INSET,
+                    (y2 / 16F) - INSET,
+                    (z2 / 16F) - INSET,
+                    r,
+                    g,
+                    b,
+                    a,
+                    light,
+                    sprite,
+                    Direction.NORTH
+                );
             }
 
             if (!state.get(FluidPipeBlock.EAST)) {
-                CubeBuilder.INSTANCE.putFace(matrixStack, buffer, (x1 / 16F) + 0.001F, (y1 / 16F) + 0.001F, (z1 / 16F) + 0.001F, (x2 / 16F) - 0.001F, (y2 / 16F) - 0.001F, (z2 / 16F) - 0.001F, colorRed, colorGreen, colorBlue, colorAlpha, light, sprite, Direction.EAST);
+                CubeBuilder.INSTANCE.putFace(
+                    matrixStack,
+                    buffer,
+                    (x1 / 16F) + INSET,
+                    (y1 / 16F) + INSET,
+                    (z1 / 16F) + INSET,
+                    (x2 / 16F) - INSET,
+                    (y2 / 16F) - INSET,
+                    (z2 / 16F) - INSET,
+                    r,
+                    g,
+                    b,
+                    a,
+                    light,
+                    sprite,
+                    Direction.EAST
+                );
             }
 
             if (!state.get(FluidPipeBlock.SOUTH)) {
-                CubeBuilder.INSTANCE.putFace(matrixStack, buffer, (x1 / 16F) + 0.001F, (y1 / 16F) + 0.001F, (z1 / 16F) + 0.001F, (x2 / 16F) - 0.001F, (y2 / 16F) - 0.001F, (z2 / 16F) - 0.001F, colorRed, colorGreen, colorBlue, colorAlpha, light, sprite, Direction.SOUTH);
+                CubeBuilder.INSTANCE.putFace(
+                    matrixStack,
+                    buffer,
+                    (x1 / 16F) + INSET,
+                    (y1 / 16F) + INSET,
+                    (z1 / 16F) + INSET,
+                    (x2 / 16F) - INSET,
+                    (y2 / 16F) - INSET,
+                    (z2 / 16F) - INSET,
+                    r,
+                    g,
+                    b,
+                    a,
+                    light,
+                    sprite,
+                    Direction.SOUTH
+                );
             }
 
             if (!state.get(FluidPipeBlock.WEST)) {
-                CubeBuilder.INSTANCE.putFace(matrixStack, buffer, (x1 / 16F) + 0.001F, (y1 / 16F) + 0.001F, (z1 / 16F) + 0.001F, (x2 / 16F) - 0.001F, (y2 / 16F) - 0.001F, (z2 / 16F) - 0.001F, colorRed, colorGreen, colorBlue, colorAlpha, light, sprite, Direction.WEST);
+                CubeBuilder.INSTANCE.putFace(
+                    matrixStack,
+                    buffer,
+                    (x1 / 16F) + INSET,
+                    (y1 / 16F) + INSET,
+                    (z1 / 16F) + INSET,
+                    (x2 / 16F) - INSET,
+                    (y2 / 16F) - INSET,
+                    (z2 / 16F) - INSET,
+                    r,
+                    g,
+                    b,
+                    a,
+                    light,
+                    sprite,
+                    Direction.WEST
+                );
             }
 
             matrixStack.pop();

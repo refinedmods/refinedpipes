@@ -16,10 +16,7 @@ repositories {
     maven {
         url = "https://dvs1.progwml6.com/files/maven/"
     }
-
-    if (Files.exists(Paths.get('deps/'))) {
-        flatDir { dirs 'deps' }
-    }
+    flatDir { dirs 'deps' }
 }
 
 apply plugin: 'net.minecraftforge.gradle'
@@ -99,10 +96,7 @@ processResources {
 dependencies {
     minecraft 'net.minecraftforge:forge:1.15.2-31.1.25'
     runtimeOnly fg.deobf("mezz.jei:jei-1.15.2:6.0.0.2")
-
-    if (Files.exists(Paths.get('deps/'))) {
-        runtimeOnly fg.deobf("not_used:Mekanism-1.15.2:9.9.17.409")
-    }
+    runtimeOnly fg.deobf("not_used:Mekanism-1.15.2:9.9.17.409")
 }
 
 jar {

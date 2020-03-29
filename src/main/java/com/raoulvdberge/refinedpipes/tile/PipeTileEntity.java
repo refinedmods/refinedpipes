@@ -8,7 +8,6 @@ import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
 import net.minecraft.block.BlockState;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
@@ -22,7 +21,7 @@ import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class PipeTileEntity extends BaseTileEntity implements ITickableTileEntity {
+public abstract class PipeTileEntity extends BaseTileEntity {
     public static final ModelProperty<Map<Direction, AttachmentType>> ATTACHMENTS_PROPERTY = new ModelProperty<>();
 
     private Map<Direction, AttachmentType> attachments = new HashMap<>();

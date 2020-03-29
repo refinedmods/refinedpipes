@@ -12,6 +12,7 @@ public class FluidPipeTileEntity extends PipeTileEntity {
 
     private FluidStack fluid = FluidStack.EMPTY;
     private float fullness = 0;
+    private float renderFullness = 0;
 
     public FluidPipeTileEntity(FluidPipeType type) {
         super(type.getTileType());
@@ -27,8 +28,24 @@ public class FluidPipeTileEntity extends PipeTileEntity {
         this.fluid = fluid;
     }
 
-    public float getFullness() {
-        return fullness;
+    public float updateAndGetRenderFullness(float partialTicks) {
+        float step = partialTicks * 0.05F;
+
+        if (renderFullness > fullness) {
+            renderFullness -= step;
+
+            if (renderFullness < fullness) {
+                renderFullness = fullness;
+            }
+        } else if (renderFullness < fullness) {
+            renderFullness += step;
+
+            if (renderFullness > fullness) {
+                renderFullness = fullness;
+            }
+        }
+
+        return renderFullness;
     }
 
     public void setFullness(float fullness) {
@@ -38,10 +55,5 @@ public class FluidPipeTileEntity extends PipeTileEntity {
     @Override
     protected Pipe createPipe(World world, BlockPos pos) {
         return new FluidPipe(world, pos, type);
-    }
-
-    @Override
-    public void tick() {
-
     }
 }
