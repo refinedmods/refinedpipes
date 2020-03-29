@@ -23,3 +23,6 @@ run
 
 # Files from Forge MDK
 forge*changelog.txt
+
+# obfed mod deps
+deps/

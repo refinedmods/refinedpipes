@@ -1,6 +1,7 @@
 package com.raoulvdberge.refinedpipes.network.pipe.fluid;
 
 import com.raoulvdberge.refinedpipes.RefinedPipes;
+import com.raoulvdberge.refinedpipes.message.FluidPipeMessage;
 import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.Attachment;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentRegistry;
@@ -19,11 +20,35 @@ public class FluidPipe extends Pipe {
     private static final Logger LOGGER = LogManager.getLogger(FluidPipe.class);
 
     private final FluidPipeType type;
+    private float lastFullness = 0;
 
     public FluidPipe(World world, BlockPos pos, FluidPipeType type) {
         super(world, pos);
 
         this.type = type;
+    }
+
+    @Override
+    public void update(World world) {
+        super.update(world);
+
+        float f = getFullness();
+        if (lastFullness != f) {
+            lastFullness = f;
+
+            sendFluidPipeUpdate();
+        }
+    }
+
+    public void sendFluidPipeUpdate() {
+        RefinedPipes.NETWORK.sendInArea(world, pos, 32, new FluidPipeMessage(pos, network.getFluidTank().getFluid(), getFullness()));
+    }
+
+    public float getFullness() {
+        int cap = network.getFluidTank().getCapacity();
+        int stored = network.getFluidTank().getFluidAmount();
+
+        return (float) stored / (float) cap;
     }
 
     public FluidPipeType getType() {
