@@ -34,6 +34,17 @@ public enum ItemPipeType {
         }
     }
 
+    public int getSpeedComparedToBasicTier() {
+        int mySpeed = this == BASIC ? getMaxTicksInPipe() :
+            (this == IMPROVED ? BASIC.getMaxTicksInPipe() + getMaxTicksInPipe() :
+                (this == ADVANCED ? BASIC.getMaxTicksInPipe() + IMPROVED.getMaxTicksInPipe() + getMaxTicksInPipe() :
+                    0));
+
+        int speedOfBasicTier = BASIC.getMaxTicksInPipe();
+
+        return (int) ((float) mySpeed / (float) speedOfBasicTier * 100F);
+    }
+
     public TileEntityType<ItemPipeTileEntity> getTileType() {
         switch (this) {
             case BASIC:

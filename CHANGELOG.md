@@ -2,6 +2,7 @@
 
 ## 0.2
 - Added fluid pipes (raoulvdberge)
+- Improved tooltips (raoulvdberge)
 
 ## 0.1.4
 - Added hitboxes for the attachments on pipes (raoulvdberge)

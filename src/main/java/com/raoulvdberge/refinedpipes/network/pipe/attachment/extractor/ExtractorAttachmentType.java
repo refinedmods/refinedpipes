@@ -22,10 +22,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.util.text.*;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
@@ -83,7 +80,19 @@ public class ExtractorAttachmentType implements AttachmentType {
 
     @Override
     public void addInformation(List<ITextComponent> tooltip) {
-        tooltip.add(new TranslationTextComponent("misc.refinedpipes.tier", new TranslationTextComponent("enchantment.level." + type.tier)).setStyle(new Style().setColor(TextFormatting.GRAY)));
+        tooltip.add(new TranslationTextComponent("misc.refinedpipes.tier", new TranslationTextComponent("enchantment.level." + type.tier)).setStyle(new Style().setColor(TextFormatting.YELLOW)));
+
+        tooltip.add(new TranslationTextComponent(
+            "tooltip.refinedpipes.extractor_attachment.item_extraction_rate",
+            new StringTextComponent("" + type.getItemsToExtract()).setStyle(new Style().setColor(TextFormatting.WHITE)),
+            new StringTextComponent("" + (float) type.getItemTickInterval() / 20F).setStyle(new Style().setColor(TextFormatting.WHITE))
+        ).setStyle(new Style().setColor(TextFormatting.GRAY)));
+
+        tooltip.add(new TranslationTextComponent(
+            "tooltip.refinedpipes.extractor_attachment.fluid_extraction_rate",
+            new StringTextComponent("" + type.getFluidsToExtract()).setStyle(new Style().setColor(TextFormatting.WHITE)),
+            new StringTextComponent("" + (float) type.getFluidTickInterval() / 20F).setStyle(new Style().setColor(TextFormatting.WHITE))
+        ).setStyle(new Style().setColor(TextFormatting.GRAY)));
     }
 
     private void update(Network network, Pipe pipe, Attachment attachment, BlockPos sourcePos, IItemHandler source) {

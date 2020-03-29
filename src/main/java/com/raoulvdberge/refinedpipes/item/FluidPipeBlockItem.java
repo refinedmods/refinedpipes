@@ -4,10 +4,7 @@ import com.raoulvdberge.refinedpipes.block.FluidPipeBlock;
 import com.raoulvdberge.refinedpipes.network.pipe.fluid.FluidPipeType;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.util.text.*;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -26,6 +23,13 @@ public class FluidPipeBlockItem extends BaseBlockItem {
     public void addInformation(ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, ITooltipFlag flag) {
         super.addInformation(stack, world, tooltip, flag);
 
-        tooltip.add(new TranslationTextComponent("misc.refinedpipes.tier", new TranslationTextComponent("enchantment.level." + type.getTier())).setStyle(new Style().setColor(TextFormatting.GRAY)));
+        tooltip.add(new TranslationTextComponent("misc.refinedpipes.tier", new TranslationTextComponent("enchantment.level." + type.getTier())).setStyle(new Style().setColor(TextFormatting.YELLOW)));
+
+        tooltip.add(new TranslationTextComponent(
+            "tooltip.refinedpipes.fluid_pipe.capacity",
+            new StringTextComponent("" + type.getCapacity()).setStyle(new Style().setColor(TextFormatting.WHITE))
+        ).setStyle(new Style().setColor(TextFormatting.GRAY)));
+
+        tooltip.add(new TranslationTextComponent("tooltip.refinedpipes.fluid_pipe.speed").setStyle(new Style().setColor(TextFormatting.GRAY)));
     }
 }
