@@ -8,10 +8,15 @@ import com.raoulvdberge.refinedpipes.item.AttachmentItem;
 import com.raoulvdberge.refinedpipes.item.FluidPipeBlockItem;
 import com.raoulvdberge.refinedpipes.item.ItemPipeBlockItem;
 import com.raoulvdberge.refinedpipes.network.NetworkManager;
+import com.raoulvdberge.refinedpipes.network.pipe.PipeRegistry;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentRegistry;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor.ExtractorAttachmentType;
+import com.raoulvdberge.refinedpipes.network.pipe.fluid.FluidPipe;
+import com.raoulvdberge.refinedpipes.network.pipe.fluid.FluidPipeFactory;
 import com.raoulvdberge.refinedpipes.network.pipe.fluid.FluidPipeType;
+import com.raoulvdberge.refinedpipes.network.pipe.item.ItemPipe;
+import com.raoulvdberge.refinedpipes.network.pipe.item.ItemPipeFactory;
 import com.raoulvdberge.refinedpipes.network.pipe.item.ItemPipeType;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.callback.ItemBounceBackTransportCallback;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.callback.ItemInsertTransportCallback;
@@ -28,6 +33,9 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class CommonSetup {
     public CommonSetup() {
+        PipeRegistry.INSTANCE.addFactory(ItemPipe.ID, new ItemPipeFactory());
+        PipeRegistry.INSTANCE.addFactory(FluidPipe.ID, new FluidPipeFactory());
+
         AttachmentRegistry.INSTANCE.addType(new ExtractorAttachmentType(ExtractorAttachmentType.Type.BASIC));
         AttachmentRegistry.INSTANCE.addType(new ExtractorAttachmentType(ExtractorAttachmentType.Type.IMPROVED));
         AttachmentRegistry.INSTANCE.addType(new ExtractorAttachmentType(ExtractorAttachmentType.Type.ADVANCED));

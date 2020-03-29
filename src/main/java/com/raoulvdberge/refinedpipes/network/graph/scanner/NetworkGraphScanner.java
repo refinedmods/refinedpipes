@@ -21,8 +21,6 @@ public class NetworkGraphScanner {
     private final Set<FluidDestination> fluidDestinations = new HashSet<>();
     private final Set<Pipe> currentPipes;
 
-    private Pipe firstFoundPipe;
-
     private final List<NetworkGraphScannerRequest> allRequests = new ArrayList<>();
     private final Queue<NetworkGraphScannerRequest> requests = new ArrayDeque<>();
 
@@ -53,15 +51,7 @@ public class NetworkGraphScanner {
         Pipe pipe = NetworkManager.get(request.getWorld()).getPipe(request.getPos());
 
         if (pipe != null) {
-            if (firstFoundPipe != null && !firstFoundPipe.canFormNetworkWith(pipe)) {
-                return;
-            }
-
             if (foundPipes.add(pipe)) {
-                if (firstFoundPipe == null) {
-                    firstFoundPipe = pipe;
-                }
-
                 if (!currentPipes.contains(pipe)) {
                     newPipes.add(pipe);
                 }

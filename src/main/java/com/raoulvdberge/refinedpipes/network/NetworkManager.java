@@ -3,17 +3,20 @@ package com.raoulvdberge.refinedpipes.network;
 import com.raoulvdberge.refinedpipes.RefinedPipes;
 import com.raoulvdberge.refinedpipes.network.graph.scanner.NetworkGraphScannerResult;
 import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
-import com.raoulvdberge.refinedpipes.network.pipe.fluid.FluidPipe;
+import com.raoulvdberge.refinedpipes.network.pipe.PipeFactory;
+import com.raoulvdberge.refinedpipes.network.pipe.PipeRegistry;
 import com.raoulvdberge.refinedpipes.network.pipe.item.ItemPipe;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.WorldSavedData;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -97,7 +100,11 @@ public class NetworkManager extends WorldSavedData {
 
         while (networks.hasNext()) {
             // Remove all the other networks.
-            removeNetwork(networks.next().getId());
+            Network otherNetwork = networks.next();
+
+            mainNetwork.getFluidTank().fill(otherNetwork.getFluidTank().getFluid(), IFluidHandler.FluidAction.EXECUTE);
+
+            removeNetwork(otherNetwork.getId());
         }
 
         mainNetwork.scanGraph(world, pos);
@@ -239,19 +246,19 @@ public class NetworkManager extends WorldSavedData {
     @Override
     public void read(CompoundNBT tag) {
         ListNBT pipes = tag.getList("pipes", Constants.NBT.TAG_COMPOUND);
-        for (INBT item : pipes) {
-            CompoundNBT itemNbt = (CompoundNBT) item;
+        for (INBT pipeTag : pipes) {
+            CompoundNBT pipeTagCompound = (CompoundNBT) pipeTag;
 
-            // TODO: the !contains is BC code
-            boolean isItemPipe = !itemNbt.contains("id") || itemNbt.getString("id").equals(RefinedPipes.ID + ":item");
+            // @BC
+            ResourceLocation factoryId = pipeTagCompound.contains("id") ? new ResourceLocation(pipeTagCompound.getString("id")) : ItemPipe.ID;
 
-            Pipe pipe;
-
-            if (isItemPipe) {
-                pipe = ItemPipe.fromNbt(world, itemNbt);
-            } else {
-                pipe = FluidPipe.fromNbt(world, itemNbt);
+            PipeFactory factory = PipeRegistry.INSTANCE.getFactory(factoryId);
+            if (factory == null) {
+                LOGGER.warn("Pipe {} no longer exists", factoryId.toString());
+                continue;
             }
+
+            Pipe pipe = factory.createFromNbt(world, pipeTagCompound);
 
             this.pipes.put(pipe.getPos(), pipe);
         }
@@ -270,7 +277,11 @@ public class NetworkManager extends WorldSavedData {
     @Override
     public CompoundNBT write(CompoundNBT tag) {
         ListNBT pipes = new ListNBT();
-        this.pipes.values().forEach(p -> pipes.add(p.writeToNbt(new CompoundNBT())));
+        this.pipes.values().forEach(p -> {
+            CompoundNBT pipeTag = new CompoundNBT();
+            pipeTag.putString("id", p.getId().toString());
+            pipes.add(p.writeToNbt(pipeTag));
+        });
         tag.put("pipes", pipes);
 
         ListNBT networks = new ListNBT();

@@ -69,6 +69,7 @@ public class FluidPipeTileEntity extends PipeTileEntity {
 
         if (tag.contains("fullness")) {
             fullness = tag.getFloat("fullness");
+            renderFullness = fullness;
         }
 
         super.readUpdate(tag);

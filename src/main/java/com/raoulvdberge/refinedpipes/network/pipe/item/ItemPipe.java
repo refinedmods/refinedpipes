@@ -4,18 +4,13 @@ import com.raoulvdberge.refinedpipes.RefinedPipes;
 import com.raoulvdberge.refinedpipes.message.ItemTransportMessage;
 import com.raoulvdberge.refinedpipes.network.NetworkManager;
 import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
-import com.raoulvdberge.refinedpipes.network.pipe.attachment.Attachment;
-import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentRegistry;
-import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.ItemTransport;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.ItemTransportProps;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.Constants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -23,6 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ItemPipe extends Pipe {
+    public static final ResourceLocation ID = new ResourceLocation(RefinedPipes.ID, "item");
+
     private static final Logger LOGGER = LogManager.getLogger(ItemPipe.class);
 
     private final List<ItemTransport> transports = new ArrayList<>();
@@ -84,7 +81,6 @@ public class ItemPipe extends Pipe {
     public CompoundNBT writeToNbt(CompoundNBT tag) {
         tag = super.writeToNbt(tag);
 
-        tag.putString("id", new ResourceLocation(RefinedPipes.ID, "item").toString());
         tag.putInt("type", type.ordinal());
 
         ListNBT transports = new ListNBT();
@@ -96,42 +92,9 @@ public class ItemPipe extends Pipe {
         return tag;
     }
 
-    public static ItemPipe fromNbt(World world, CompoundNBT tag) {
-        BlockPos pos = BlockPos.fromLong(tag.getLong("pos"));
-
-        ItemPipeType pipeType = ItemPipeType.values()[tag.getInt("type")];
-
-        ItemPipe pipe = new ItemPipe(world, pos, pipeType);
-
-        ListNBT attch = tag.getList("attch", Constants.NBT.TAG_COMPOUND);
-        for (INBT item : attch) {
-            CompoundNBT attchTag = (CompoundNBT) item;
-
-            AttachmentType type = AttachmentRegistry.INSTANCE.getType(new ResourceLocation(attchTag.getString("typ")));
-            if (type != null) {
-                Attachment attachment = type.createFromNbt(attchTag);
-                pipe.attachmentManager.setAttachment(attachment.getDirection(), attachment);
-            } else {
-                LOGGER.warn("Attachment {} no longer exists", attchTag.getString("typ"));
-            }
-        }
-
-        ListNBT transports = tag.getList("transports", Constants.NBT.TAG_COMPOUND);
-        for (int i = 0; i < transports.size(); ++i) {
-            CompoundNBT transportTag = transports.getCompound(i);
-
-            ItemTransport itemTransport = ItemTransport.of(transportTag);
-            if (itemTransport != null) {
-                pipe.transports.add(itemTransport);
-            }
-        }
-
-        return pipe;
-    }
-
     @Override
-    public boolean canFormNetworkWith(Pipe otherPipe) {
-        return otherPipe instanceof ItemPipe;
+    public ResourceLocation getId() {
+        return ID;
     }
 
     public int getMaxTicksInPipe() {

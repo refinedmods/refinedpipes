@@ -6,7 +6,7 @@ import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentManager;
 import com.raoulvdberge.refinedpipes.network.pipe.item.ItemPipe;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
@@ -74,18 +74,12 @@ public abstract class Pipe {
     public CompoundNBT writeToNbt(CompoundNBT tag) {
         tag.putLong("pos", pos.toLong());
 
-        ListNBT attch = new ListNBT();
-        attachmentManager.getAttachments().forEach(a -> {
-            CompoundNBT attchTag = new CompoundNBT();
-            attchTag.putString("typ", a.getType().getId().toString());
-            attch.add(a.writeToNbt(attchTag));
-        });
-        tag.put("attch", attch);
+        attachmentManager.writeToNbt(tag);
 
         return tag;
     }
 
-    public abstract boolean canFormNetworkWith(Pipe otherPipe);
+    public abstract ResourceLocation getId();
 
     @Override
     public boolean equals(Object o) {

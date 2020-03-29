@@ -63,7 +63,7 @@ public class Network {
             network.fluidTank.readFromNBT(tag.getCompound("tank"));
         }
 
-        LOGGER.debug("Deserialized network " + network.id);
+        LOGGER.debug("Deserialized network {}", network.id);
 
         return network;
     }
