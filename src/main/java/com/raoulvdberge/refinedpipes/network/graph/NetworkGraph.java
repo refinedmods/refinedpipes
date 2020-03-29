@@ -4,6 +4,8 @@ import com.raoulvdberge.refinedpipes.network.Network;
 import com.raoulvdberge.refinedpipes.network.graph.scanner.NetworkGraphScanner;
 import com.raoulvdberge.refinedpipes.network.graph.scanner.NetworkGraphScannerResult;
 import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
+import com.raoulvdberge.refinedpipes.network.pipe.fluid.FluidDestination;
+import com.raoulvdberge.refinedpipes.network.pipe.fluid.FluidPipe;
 import com.raoulvdberge.refinedpipes.network.route.Edge;
 import com.raoulvdberge.refinedpipes.network.route.Graph;
 import com.raoulvdberge.refinedpipes.network.route.Node;
@@ -20,6 +22,7 @@ public class NetworkGraph {
     private final Network network;
 
     private Set<Pipe> pipes = new HashSet<>();
+    private Set<FluidDestination> fluidDestinations = new HashSet<>();
     private DestinationPathCache destinationPathCache;
 
     public NetworkGraph(Network network) {
@@ -36,6 +39,11 @@ public class NetworkGraph {
         result.getNewPipes().forEach(p -> p.joinNetwork(network));
         result.getRemovedPipes().forEach(Pipe::leaveNetwork);
 
+        network.getFluidTank().setCapacity(pipes.stream().filter(p -> p instanceof FluidPipe).mapToInt(p -> ((FluidPipe) p).getType().getCapacity()).sum());
+        if (network.getFluidTank().getFluidAmount() > network.getFluidTank().getCapacity()) {
+            network.getFluidTank().getFluid().setAmount(network.getFluidTank().getCapacity());
+        }
+
         updateRouting(result);
 
         return result;
@@ -51,9 +59,11 @@ public class NetworkGraph {
 
         Graph<BlockPos> graph = new Graph<>(nodes, edges);
 
-        DestinationPathCacheFactory destinationPathCacheFactory = new DestinationPathCacheFactory(graph, nodeIndex, result.getDestinations());
+        DestinationPathCacheFactory destinationPathCacheFactory = new DestinationPathCacheFactory(graph, nodeIndex, result.getItemDestinations());
 
         this.destinationPathCache = destinationPathCacheFactory.create();
+
+        this.fluidDestinations = result.getFluidDestinations();
     }
 
     private List<Node<BlockPos>> buildNodes() {
@@ -66,5 +76,9 @@ public class NetworkGraph {
 
     public DestinationPathCache getDestinationPathCache() {
         return destinationPathCache;
+    }
+
+    public Set<FluidDestination> getFluidDestinations() {
+        return fluidDestinations;
     }
 }

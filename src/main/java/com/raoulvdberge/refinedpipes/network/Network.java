@@ -6,6 +6,8 @@ import com.raoulvdberge.refinedpipes.util.StringUtil;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fluids.FluidAttributes;
+import net.minecraftforge.fluids.capability.templates.FluidTank;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -19,6 +21,7 @@ public class Network {
     private final String id;
     private BlockPos originPos;
     private boolean didDoInitialScan;
+    private FluidTank fluidTank = new FluidTank(FluidAttributes.BUCKET_VOLUME);
 
     public Network(BlockPos originPos) {
         this(originPos, StringUtil.randomString(new Random(), 8));
@@ -41,15 +44,24 @@ public class Network {
         return graph.scan(originWorld, originPos);
     }
 
+    public FluidTank getFluidTank() {
+        return fluidTank;
+    }
+
     public CompoundNBT writeToNbt(CompoundNBT tag) {
         tag.putString("id", id);
         tag.putLong("origin", originPos.toLong());
+        tag.put("tank", fluidTank.writeToNBT(new CompoundNBT()));
 
         return tag;
     }
 
     public static Network fromNbt(CompoundNBT tag) {
         Network network = new Network(BlockPos.fromLong(tag.getLong("origin")), tag.getString("id"));
+
+        if (tag.contains("tank")) {
+            network.fluidTank.readFromNBT(tag.getCompound("tank"));
+        }
 
         LOGGER.debug("Deserialized network " + network.id);
 

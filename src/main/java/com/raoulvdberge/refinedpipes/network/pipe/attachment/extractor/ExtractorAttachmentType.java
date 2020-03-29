@@ -6,6 +6,7 @@ import com.raoulvdberge.refinedpipes.network.Network;
 import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.Attachment;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
+import com.raoulvdberge.refinedpipes.network.pipe.fluid.FluidPipe;
 import com.raoulvdberge.refinedpipes.network.pipe.item.ItemDestination;
 import com.raoulvdberge.refinedpipes.network.pipe.item.ItemPipe;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.ItemTransport;
@@ -25,6 +26,9 @@ import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -53,15 +57,20 @@ public class ExtractorAttachmentType implements AttachmentType {
             return;
         }
 
-        BlockPos itemHandlerPos = pipe.getPos().offset(attachment.getDirection());
+        BlockPos destinationPos = pipe.getPos().offset(attachment.getDirection());
 
-        TileEntity tile = world.getTileEntity(itemHandlerPos);
+        TileEntity tile = world.getTileEntity(destinationPos);
         if (tile == null) {
             return;
         }
 
-        tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, attachment.getDirection().getOpposite())
-            .ifPresent(itemHandler -> update(network, pipe, attachment, itemHandlerPos, itemHandler));
+        if (pipe instanceof ItemPipe) {
+            tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, attachment.getDirection().getOpposite())
+                .ifPresent(itemHandler -> update(network, pipe, attachment, destinationPos, itemHandler));
+        } else if (pipe instanceof FluidPipe) {
+            tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, attachment.getDirection().getOpposite())
+                .ifPresent(fluidHandler -> update(network, fluidHandler));
+        }
     }
 
     @Override
@@ -116,6 +125,24 @@ public class ExtractorAttachmentType implements AttachmentType {
             new ItemBounceBackTransportCallback(destination.getReceiver(), sourcePos, extractedActual),
             new ItemPipeGoneTransportCallback(extractedActual)
         ));
+    }
+
+    private void update(Network network, IFluidHandler source) {
+        FluidStack drained = source.drain(type.getFluidsToExtract(), IFluidHandler.FluidAction.SIMULATE);
+        if (drained.isEmpty()) {
+            return;
+        }
+
+        int filled = network.getFluidTank().fill(drained, IFluidHandler.FluidAction.SIMULATE);
+        if (filled <= 0) {
+            return;
+        }
+
+        int toDrain = Math.min(type.getFluidsToExtract(), filled);
+
+        drained = source.drain(toDrain, IFluidHandler.FluidAction.EXECUTE);
+
+        network.getFluidTank().fill(drained, IFluidHandler.FluidAction.EXECUTE);
     }
 
     private boolean isDestinationApplicable(Attachment attachment, BlockPos sourcePos, ItemStack extracted, ItemDestination destination) {
@@ -217,6 +244,23 @@ public class ExtractorAttachmentType implements AttachmentType {
                     return RefinedPipes.SERVER_CONFIG.getEliteExtractorAttachment().getItemsToExtract();
                 case ULTIMATE:
                     return RefinedPipes.SERVER_CONFIG.getUltimateExtractorAttachment().getItemsToExtract();
+                default:
+                    throw new RuntimeException("?");
+            }
+        }
+
+        int getFluidsToExtract() {
+            switch (this) {
+                case BASIC:
+                    return RefinedPipes.SERVER_CONFIG.getBasicExtractorAttachment().getFluidsToExtract();
+                case IMPROVED:
+                    return RefinedPipes.SERVER_CONFIG.getImprovedExtractorAttachment().getFluidsToExtract();
+                case ADVANCED:
+                    return RefinedPipes.SERVER_CONFIG.getAdvancedExtractorAttachment().getFluidsToExtract();
+                case ELITE:
+                    return RefinedPipes.SERVER_CONFIG.getEliteExtractorAttachment().getFluidsToExtract();
+                case ULTIMATE:
+                    return RefinedPipes.SERVER_CONFIG.getUltimateExtractorAttachment().getFluidsToExtract();
                 default:
                     throw new RuntimeException("?");
             }

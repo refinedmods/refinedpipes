@@ -1,6 +1,7 @@
 package com.raoulvdberge.refinedpipes.config;
 
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.fluids.FluidAttributes;
 
 public class ServerConfig {
     private ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
@@ -25,11 +26,11 @@ public class ServerConfig {
 
         builder.push("attachment");
         builder.push("extractor");
-        basicExtractorAttachment = new ExtractorAttachment("basic", 20 * 3, 8);
-        improvedExtractorAttachment = new ExtractorAttachment("improved", 20 * 2, 16);
-        advancedExtractorAttachment = new ExtractorAttachment("advanced", 20, 32);
-        eliteExtractorAttachment = new ExtractorAttachment("elite", 10, 64);
-        ultimateExtractorAttachment = new ExtractorAttachment("ultimate", 10, 64);
+        basicExtractorAttachment = new ExtractorAttachment("basic", 20 * 3, 8, FluidAttributes.BUCKET_VOLUME);
+        improvedExtractorAttachment = new ExtractorAttachment("improved", 20 * 2, 16, FluidAttributes.BUCKET_VOLUME * 2);
+        advancedExtractorAttachment = new ExtractorAttachment("advanced", 20, 32, FluidAttributes.BUCKET_VOLUME * 3);
+        eliteExtractorAttachment = new ExtractorAttachment("elite", 10, 64, FluidAttributes.BUCKET_VOLUME * 4);
+        ultimateExtractorAttachment = new ExtractorAttachment("ultimate", 10, 64, FluidAttributes.BUCKET_VOLUME * 4);
         builder.pop();
         builder.pop();
 
@@ -91,12 +92,14 @@ public class ServerConfig {
     public class ExtractorAttachment {
         private ForgeConfigSpec.IntValue tickInterval;
         private ForgeConfigSpec.IntValue itemsToExtract;
+        private ForgeConfigSpec.IntValue fluidsToExtract;
 
-        public ExtractorAttachment(String type, int defaultTickInterval, int defaultItemsToExtract) {
+        public ExtractorAttachment(String type, int defaultTickInterval, int defaultItemsToExtract, int defaultFluidsToExtract) {
             builder.push(type);
 
             tickInterval = builder.comment("The interval between item extractions in ticks. Lower is faster.").defineInRange("tickInterval", defaultTickInterval, 0, Integer.MAX_VALUE);
             itemsToExtract = builder.comment("The amount of items to extract per extraction.").defineInRange("itemsToExtract", defaultItemsToExtract, 0, 64);
+            fluidsToExtract = builder.comment("The amount of fluids in mB to extract per extraction.").defineInRange("fluidsToExtract", defaultFluidsToExtract, 0, Integer.MAX_VALUE);
 
             builder.pop();
         }
@@ -107,6 +110,10 @@ public class ServerConfig {
 
         public int getItemsToExtract() {
             return itemsToExtract.get();
+        }
+
+        public int getFluidsToExtract() {
+            return fluidsToExtract.get();
         }
     }
 }

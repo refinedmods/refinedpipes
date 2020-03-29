@@ -5,7 +5,7 @@ import com.raoulvdberge.refinedpipes.network.NetworkManager;
 import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.Attachment;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
-import com.raoulvdberge.refinedpipes.tile.ItemPipeTileEntity;
+import com.raoulvdberge.refinedpipes.tile.PipeTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
@@ -162,7 +162,7 @@ public abstract class PipeBlock extends Block {
 
             return ActionResultType.SUCCESS;
         } else {
-            return ((ItemPipeTileEntity) world.getTileEntity(pos)).hasAttachment(dir) ? ActionResultType.SUCCESS : ActionResultType.FAIL;
+            return ((PipeTileEntity) world.getTileEntity(pos)).hasAttachment(dir) ? ActionResultType.SUCCESS : ActionResultType.FAIL;
         }
     }
 
@@ -240,8 +240,8 @@ public abstract class PipeBlock extends Block {
         Predicate<Direction> hasAttachment = (dir) -> false;
 
         TileEntity tile = world.getTileEntity(pos);
-        if (tile instanceof ItemPipeTileEntity) {
-            hasAttachment = ((ItemPipeTileEntity) tile)::hasAttachment;
+        if (tile instanceof PipeTileEntity) {
+            hasAttachment = ((PipeTileEntity) tile)::hasAttachment;
         }
 
         if (hasAttachment.test(Direction.NORTH) || state.get(INV_NORTH)) {

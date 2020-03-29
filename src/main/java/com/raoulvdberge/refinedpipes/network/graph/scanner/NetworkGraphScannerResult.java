@@ -1,6 +1,7 @@
 package com.raoulvdberge.refinedpipes.network.graph.scanner;
 
 import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
+import com.raoulvdberge.refinedpipes.network.pipe.fluid.FluidDestination;
 import com.raoulvdberge.refinedpipes.network.pipe.item.ItemDestination;
 
 import java.util.List;
@@ -10,14 +11,16 @@ public class NetworkGraphScannerResult {
     private final Set<Pipe> foundPipes;
     private final Set<Pipe> newPipes;
     private final Set<Pipe> removedPipes;
-    private final Set<ItemDestination> destinations;
+    private final Set<ItemDestination> itemDestinations;
+    private final Set<FluidDestination> fluidDestinations;
     private final List<NetworkGraphScannerRequest> requests;
 
-    public NetworkGraphScannerResult(Set<Pipe> foundPipes, Set<Pipe> newPipes, Set<Pipe> removedPipes, Set<ItemDestination> destinations, List<NetworkGraphScannerRequest> requests) {
+    public NetworkGraphScannerResult(Set<Pipe> foundPipes, Set<Pipe> newPipes, Set<Pipe> removedPipes, Set<ItemDestination> itemDestinations, Set<FluidDestination> fluidDestinations, List<NetworkGraphScannerRequest> requests) {
         this.foundPipes = foundPipes;
         this.newPipes = newPipes;
         this.removedPipes = removedPipes;
-        this.destinations = destinations;
+        this.itemDestinations = itemDestinations;
+        this.fluidDestinations = fluidDestinations;
         this.requests = requests;
     }
 
@@ -33,8 +36,12 @@ public class NetworkGraphScannerResult {
         return removedPipes;
     }
 
-    public Set<ItemDestination> getDestinations() {
-        return destinations;
+    public Set<ItemDestination> getItemDestinations() {
+        return itemDestinations;
+    }
+
+    public Set<FluidDestination> getFluidDestinations() {
+        return fluidDestinations;
     }
 
     public List<NetworkGraphScannerRequest> getRequests() {

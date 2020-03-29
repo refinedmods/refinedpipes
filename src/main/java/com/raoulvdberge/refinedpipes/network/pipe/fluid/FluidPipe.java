@@ -26,6 +26,10 @@ public class FluidPipe extends Pipe {
         this.type = type;
     }
 
+    public FluidPipeType getType() {
+        return type;
+    }
+
     // TODO: write proper system for pipe serialisation
     @Override
     public CompoundNBT writeToNbt(CompoundNBT tag) {

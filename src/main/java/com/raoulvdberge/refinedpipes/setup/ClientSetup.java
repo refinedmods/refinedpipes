@@ -7,6 +7,7 @@ import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentRegistry;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
 import com.raoulvdberge.refinedpipes.network.pipe.fluid.FluidPipeType;
 import com.raoulvdberge.refinedpipes.network.pipe.item.ItemPipeType;
+import com.raoulvdberge.refinedpipes.render.FluidPipeTileEntityRenderer;
 import com.raoulvdberge.refinedpipes.render.ItemPipeTileEntityRenderer;
 import com.raoulvdberge.refinedpipes.render.PipeBakedModel;
 import net.minecraft.client.renderer.RenderType;
@@ -50,6 +51,7 @@ public class ClientSetup {
         ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.BASIC_ITEM_PIPE, ItemPipeTileEntityRenderer::new);
         ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.IMPROVED_ITEM_PIPE, ItemPipeTileEntityRenderer::new);
         ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.ADVANCED_ITEM_PIPE, ItemPipeTileEntityRenderer::new);
+        ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.BASIC_FLUID_PIPE, FluidPipeTileEntityRenderer::new);
 
         ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/item/basic/core"));
         ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/item/basic/extension"));
