@@ -6,6 +6,7 @@ import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.Attachment;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
 import com.raoulvdberge.refinedpipes.tile.PipeTileEntity;
+import com.raoulvdberge.refinedpipes.util.Raytracer;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
@@ -18,6 +19,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.Vec3d;
@@ -27,8 +29,11 @@ import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Predicate;
 
 public abstract class PipeBlock extends Block {
@@ -61,6 +66,8 @@ public abstract class PipeBlock extends Block {
     private static final VoxelShape UP_ATTACHMENT_SHAPE = makeCuboidShape(3, 13, 3, 13, 16, 13);
     private static final VoxelShape DOWN_ATTACHMENT_SHAPE = makeCuboidShape(3, 0, 3, 13, 3, 13);
 
+    private final List<AxisAlignedBB> attachmentShapes = new ArrayList<>();
+
     public PipeBlock() {
         super(Block.Properties.create(Material.ROCK).hardnessAndResistance(0.35F));
 
@@ -68,6 +75,13 @@ public abstract class PipeBlock extends Block {
             .with(NORTH, false).with(EAST, false).with(SOUTH, false).with(WEST, false).with(UP, false).with(DOWN, false)
             .with(INV_NORTH, false).with(INV_EAST, false).with(INV_SOUTH, false).with(INV_WEST, false).with(INV_UP, false).with(INV_DOWN, false)
         );
+
+        attachmentShapes.add(NORTH_ATTACHMENT_SHAPE.getBoundingBox());
+        attachmentShapes.add(EAST_ATTACHMENT_SHAPE.getBoundingBox());
+        attachmentShapes.add(SOUTH_ATTACHMENT_SHAPE.getBoundingBox());
+        attachmentShapes.add(WEST_ATTACHMENT_SHAPE.getBoundingBox());
+        attachmentShapes.add(UP_ATTACHMENT_SHAPE.getBoundingBox());
+        attachmentShapes.add(DOWN_ATTACHMENT_SHAPE.getBoundingBox());
     }
 
     @Override
@@ -98,10 +112,6 @@ public abstract class PipeBlock extends Block {
     @SuppressWarnings("deprecation")
     public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
         Direction dirClicked = getAttachmentDirectionClicked(pos, hit.getHitVec());
-
-        if (dirClicked == null) {
-            dirClicked = hit.getFace();
-        }
 
         ItemStack held = player.getHeldItemMainhand();
 
@@ -242,6 +252,15 @@ public abstract class PipeBlock extends Block {
         TileEntity tile = world.getTileEntity(pos);
         if (tile instanceof PipeTileEntity) {
             hasAttachment = ((PipeTileEntity) tile)::hasAttachment;
+        }
+
+        if (ctx.getEntity() instanceof PlayerEntity && ((PlayerEntity) ctx.getEntity()).getHeldItemMainhand().getItem() instanceof AttachmentItem) {
+            Pair<Vec3d, Vec3d> vec = Raytracer.getVectors(ctx.getEntity());
+
+            Raytracer.AdvancedRayTraceResult<BlockRayTraceResult> result = Raytracer.collisionRayTrace(pos, vec.getLeft(), vec.getRight(), attachmentShapes);
+            if (result != null) {
+                shape = VoxelShapes.or(shape, VoxelShapes.create(result.bounds));
+            }
         }
 
         if (hasAttachment.test(Direction.NORTH) || state.get(INV_NORTH)) {

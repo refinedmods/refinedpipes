@@ -1,5 +1,8 @@
 # Refined Pipes Changelog
 
+## 0.2.1
+- Added ghost hitboxes when holding an attachment in hand (raoulvdberge)
+
 ## 0.2
 - Added fluid pipes (raoulvdberge)
 - Improved tooltips (raoulvdberge)
