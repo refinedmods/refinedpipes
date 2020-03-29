@@ -24,11 +24,11 @@ public enum ItemPipeType {
     public int getMaxTicksInPipe() {
         switch (this) {
             case BASIC:
-                return RefinedPipes.SERVER_CONFIG.getBasicPipe().getMaxTicks();
+                return RefinedPipes.SERVER_CONFIG.getBasicItemPipe().getMaxTicks();
             case IMPROVED:
-                return RefinedPipes.SERVER_CONFIG.getImprovedPipe().getMaxTicks();
+                return RefinedPipes.SERVER_CONFIG.getImprovedItemPipe().getMaxTicks();
             case ADVANCED:
-                return RefinedPipes.SERVER_CONFIG.getAdvancedPipe().getMaxTicks();
+                return RefinedPipes.SERVER_CONFIG.getAdvancedItemPipe().getMaxTicks();
             default:
                 throw new RuntimeException("?");
         }

@@ -5,7 +5,6 @@ import com.raoulvdberge.refinedpipes.RefinedPipesTileEntities;
 import com.raoulvdberge.refinedpipes.tile.FluidPipeTileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fluids.FluidAttributes;
 
 public enum FluidPipeType {
     BASIC(1),
@@ -38,11 +37,11 @@ public enum FluidPipeType {
     public int getCapacity() {
         switch (this) {
             case BASIC:
-                return FluidAttributes.BUCKET_VOLUME;
+                return RefinedPipes.SERVER_CONFIG.getBasicFluidPipe().getCapacity();
             case IMPROVED:
-                return FluidAttributes.BUCKET_VOLUME;
+                return RefinedPipes.SERVER_CONFIG.getImprovedFluidPipe().getCapacity();
             case ADVANCED:
-                return FluidAttributes.BUCKET_VOLUME;
+                return RefinedPipes.SERVER_CONFIG.getAdvancedFluidPipe().getCapacity();
             default:
                 throw new RuntimeException("?");
         }

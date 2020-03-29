@@ -1,14 +1,19 @@
 package com.raoulvdberge.refinedpipes.config;
 
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.fluids.FluidAttributes;
 
 public class ServerConfig {
     private ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
     private ForgeConfigSpec spec;
 
-    private ItemPipe basicPipe;
-    private ItemPipe improvedPipe;
-    private ItemPipe advancedPipe;
+    private ItemPipe basicItemPipe;
+    private ItemPipe improvedItemPipe;
+    private ItemPipe advancedItemPipe;
+
+    private FluidPipe basicFluidPipe;
+    private FluidPipe improvedFluidPipe;
+    private FluidPipe advancedFluidPipe;
 
     private ExtractorAttachment basicExtractorAttachment;
     private ExtractorAttachment improvedExtractorAttachment;
@@ -17,40 +22,58 @@ public class ServerConfig {
     private ExtractorAttachment ultimateExtractorAttachment;
 
     public ServerConfig() {
-        builder.push("itemPipe");
-        basicPipe = new ItemPipe("basic", 30);
-        improvedPipe = new ItemPipe("improved", 20);
-        advancedPipe = new ItemPipe("advanced", 10);
-        builder.pop();
+        builder.push("pipe");
+        {
+            builder.push("item");
+            {
+                basicItemPipe = new ItemPipe("basic", 30);
+                improvedItemPipe = new ItemPipe("improved", 20);
+                advancedItemPipe = new ItemPipe("advanced", 10);
+            }
+            builder.pop();
 
-        builder.push("attachment");
-        builder.push("extractor");
-        basicExtractorAttachment = new ExtractorAttachment(
-            "basic",
-            20 * 3, 8,
-            0, 100
-        );
-        improvedExtractorAttachment = new ExtractorAttachment(
-            "improved",
-            20 * 2, 16,
-            0, 400
-        );
-        advancedExtractorAttachment = new ExtractorAttachment(
-            "advanced",
-            20, 32,
-            0, 800
-        );
-        eliteExtractorAttachment = new ExtractorAttachment(
-            "elite",
-            10, 64,
-            0, 1600
-        );
-        ultimateExtractorAttachment = new ExtractorAttachment(
-            "ultimate",
-            10, 64,
-            0, 3200
-        );
-        builder.pop();
+            builder.push("fluid");
+            {
+                basicFluidPipe = new FluidPipe("basic", FluidAttributes.BUCKET_VOLUME);
+                improvedFluidPipe = new FluidPipe("improved", FluidAttributes.BUCKET_VOLUME * 4);
+                advancedFluidPipe = new FluidPipe("advanced", FluidAttributes.BUCKET_VOLUME * 8);
+            }
+            builder.pop();
+
+            builder.push("attachment");
+            {
+                builder.push("extractor");
+                {
+                    basicExtractorAttachment = new ExtractorAttachment(
+                        "basic",
+                        20 * 3, 8,
+                        0, 100
+                    );
+                    improvedExtractorAttachment = new ExtractorAttachment(
+                        "improved",
+                        20 * 2, 16,
+                        0, 400
+                    );
+                    advancedExtractorAttachment = new ExtractorAttachment(
+                        "advanced",
+                        20, 32,
+                        0, 800
+                    );
+                    eliteExtractorAttachment = new ExtractorAttachment(
+                        "elite",
+                        10, 64,
+                        0, 1600
+                    );
+                    ultimateExtractorAttachment = new ExtractorAttachment(
+                        "ultimate",
+                        10, 64,
+                        0, 3200
+                    );
+                }
+                builder.pop();
+            }
+            builder.pop();
+        }
         builder.pop();
 
         spec = builder.build();
@@ -60,16 +83,28 @@ public class ServerConfig {
         return spec;
     }
 
-    public ItemPipe getBasicPipe() {
-        return basicPipe;
+    public ItemPipe getBasicItemPipe() {
+        return basicItemPipe;
     }
 
-    public ItemPipe getImprovedPipe() {
-        return improvedPipe;
+    public ItemPipe getImprovedItemPipe() {
+        return improvedItemPipe;
     }
 
-    public ItemPipe getAdvancedPipe() {
-        return advancedPipe;
+    public ItemPipe getAdvancedItemPipe() {
+        return advancedItemPipe;
+    }
+
+    public FluidPipe getBasicFluidPipe() {
+        return basicFluidPipe;
+    }
+
+    public FluidPipe getImprovedFluidPipe() {
+        return improvedFluidPipe;
+    }
+
+    public FluidPipe getAdvancedFluidPipe() {
+        return advancedFluidPipe;
     }
 
     public ExtractorAttachment getBasicExtractorAttachment() {
@@ -105,6 +140,22 @@ public class ServerConfig {
 
         public int getMaxTicks() {
             return maxTicks.get();
+        }
+    }
+
+    public class FluidPipe {
+        private ForgeConfigSpec.IntValue capacity;
+
+        public FluidPipe(String type, int defaultCapacity) {
+            builder.push(type);
+
+            capacity = builder.comment("The capacity in mB of the pipe.").defineInRange("capacity", defaultCapacity, 0, Integer.MAX_VALUE);
+
+            builder.pop();
+        }
+
+        public int getCapacity() {
+            return capacity.get();
         }
     }
 
