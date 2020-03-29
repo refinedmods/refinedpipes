@@ -3,6 +3,7 @@ package com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor;
 import com.raoulvdberge.refinedpipes.RefinedPipes;
 import com.raoulvdberge.refinedpipes.RefinedPipesItems;
 import com.raoulvdberge.refinedpipes.network.Network;
+import com.raoulvdberge.refinedpipes.network.NetworkManager;
 import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.Attachment;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
@@ -53,7 +54,14 @@ public class ExtractorAttachmentType implements AttachmentType {
 
     @Override
     public void update(World world, Network network, Pipe pipe, Attachment attachment, int ticks) {
-        if (ticks % type.getTickInterval() != 0) {
+        int tickInterval = 0;
+        if (pipe instanceof ItemPipe) {
+            tickInterval = type.getItemTickInterval();
+        } else if (pipe instanceof FluidPipe) {
+            tickInterval = type.getFluidTickInterval();
+        }
+
+        if (tickInterval != 0 && ticks % tickInterval != 0) {
             return;
         }
 
@@ -69,7 +77,7 @@ public class ExtractorAttachmentType implements AttachmentType {
                 .ifPresent(itemHandler -> update(network, pipe, attachment, destinationPos, itemHandler));
         } else if (pipe instanceof FluidPipe) {
             tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, attachment.getDirection().getOpposite())
-                .ifPresent(fluidHandler -> update(network, fluidHandler));
+                .ifPresent(fluidHandler -> update(network, world, fluidHandler));
         }
     }
 
@@ -127,7 +135,7 @@ public class ExtractorAttachmentType implements AttachmentType {
         ));
     }
 
-    private void update(Network network, IFluidHandler source) {
+    private void update(Network network, World world, IFluidHandler source) {
         FluidStack drained = source.drain(type.getFluidsToExtract(), IFluidHandler.FluidAction.SIMULATE);
         if (drained.isEmpty()) {
             return;
@@ -143,6 +151,8 @@ public class ExtractorAttachmentType implements AttachmentType {
         drained = source.drain(toDrain, IFluidHandler.FluidAction.EXECUTE);
 
         network.getFluidTank().fill(drained, IFluidHandler.FluidAction.EXECUTE);
+
+        NetworkManager.get(world).markDirty();
     }
 
     private boolean isDestinationApplicable(Attachment attachment, BlockPos sourcePos, ItemStack extracted, ItemDestination destination) {
@@ -215,18 +225,35 @@ public class ExtractorAttachmentType implements AttachmentType {
             this.tier = tier;
         }
 
-        int getTickInterval() {
+        int getItemTickInterval() {
             switch (this) {
                 case BASIC:
-                    return RefinedPipes.SERVER_CONFIG.getBasicExtractorAttachment().getTickInterval();
+                    return RefinedPipes.SERVER_CONFIG.getBasicExtractorAttachment().getItemTickInterval();
                 case IMPROVED:
-                    return RefinedPipes.SERVER_CONFIG.getImprovedExtractorAttachment().getTickInterval();
+                    return RefinedPipes.SERVER_CONFIG.getImprovedExtractorAttachment().getItemTickInterval();
                 case ADVANCED:
-                    return RefinedPipes.SERVER_CONFIG.getAdvancedExtractorAttachment().getTickInterval();
+                    return RefinedPipes.SERVER_CONFIG.getAdvancedExtractorAttachment().getItemTickInterval();
                 case ELITE:
-                    return RefinedPipes.SERVER_CONFIG.getEliteExtractorAttachment().getTickInterval();
+                    return RefinedPipes.SERVER_CONFIG.getEliteExtractorAttachment().getItemTickInterval();
                 case ULTIMATE:
-                    return RefinedPipes.SERVER_CONFIG.getUltimateExtractorAttachment().getTickInterval();
+                    return RefinedPipes.SERVER_CONFIG.getUltimateExtractorAttachment().getItemTickInterval();
+                default:
+                    throw new RuntimeException("?");
+            }
+        }
+
+        int getFluidTickInterval() {
+            switch (this) {
+                case BASIC:
+                    return RefinedPipes.SERVER_CONFIG.getBasicExtractorAttachment().getFluidTickInterval();
+                case IMPROVED:
+                    return RefinedPipes.SERVER_CONFIG.getImprovedExtractorAttachment().getFluidTickInterval();
+                case ADVANCED:
+                    return RefinedPipes.SERVER_CONFIG.getAdvancedExtractorAttachment().getFluidTickInterval();
+                case ELITE:
+                    return RefinedPipes.SERVER_CONFIG.getEliteExtractorAttachment().getFluidTickInterval();
+                case ULTIMATE:
+                    return RefinedPipes.SERVER_CONFIG.getUltimateExtractorAttachment().getFluidTickInterval();
                 default:
                     throw new RuntimeException("?");
             }

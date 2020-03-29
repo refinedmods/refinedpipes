@@ -1,7 +1,6 @@
 package com.raoulvdberge.refinedpipes.config;
 
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.fluids.FluidAttributes;
 
 public class ServerConfig {
     private ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
@@ -26,11 +25,31 @@ public class ServerConfig {
 
         builder.push("attachment");
         builder.push("extractor");
-        basicExtractorAttachment = new ExtractorAttachment("basic", 20 * 3, 8, FluidAttributes.BUCKET_VOLUME);
-        improvedExtractorAttachment = new ExtractorAttachment("improved", 20 * 2, 16, FluidAttributes.BUCKET_VOLUME * 2);
-        advancedExtractorAttachment = new ExtractorAttachment("advanced", 20, 32, FluidAttributes.BUCKET_VOLUME * 3);
-        eliteExtractorAttachment = new ExtractorAttachment("elite", 10, 64, FluidAttributes.BUCKET_VOLUME * 4);
-        ultimateExtractorAttachment = new ExtractorAttachment("ultimate", 10, 64, FluidAttributes.BUCKET_VOLUME * 4);
+        basicExtractorAttachment = new ExtractorAttachment(
+            "basic",
+            20 * 3, 8,
+            0, 100
+        );
+        improvedExtractorAttachment = new ExtractorAttachment(
+            "improved",
+            20 * 2, 16,
+            0, 400
+        );
+        advancedExtractorAttachment = new ExtractorAttachment(
+            "advanced",
+            20, 32,
+            0, 800
+        );
+        eliteExtractorAttachment = new ExtractorAttachment(
+            "elite",
+            10, 64,
+            0, 1600
+        );
+        ultimateExtractorAttachment = new ExtractorAttachment(
+            "ultimate",
+            10, 64,
+            0, 3200
+        );
         builder.pop();
         builder.pop();
 
@@ -90,26 +109,32 @@ public class ServerConfig {
     }
 
     public class ExtractorAttachment {
-        private ForgeConfigSpec.IntValue tickInterval;
+        private ForgeConfigSpec.IntValue itemTickInterval;
         private ForgeConfigSpec.IntValue itemsToExtract;
+        private ForgeConfigSpec.IntValue fluidTickInterval;
         private ForgeConfigSpec.IntValue fluidsToExtract;
 
-        public ExtractorAttachment(String type, int defaultTickInterval, int defaultItemsToExtract, int defaultFluidsToExtract) {
+        public ExtractorAttachment(String type, int defaultItemTickInterval, int defaultItemsToExtract, int defaultFluidTickInterval, int defaultFluidsToExtract) {
             builder.push(type);
 
-            tickInterval = builder.comment("The interval between item extractions in ticks. Lower is faster.").defineInRange("tickInterval", defaultTickInterval, 0, Integer.MAX_VALUE);
+            itemTickInterval = builder.comment("The interval between item extractions in ticks. Lower is faster.").defineInRange("itemTickInterval", defaultItemTickInterval, 0, Integer.MAX_VALUE);
             itemsToExtract = builder.comment("The amount of items to extract per extraction.").defineInRange("itemsToExtract", defaultItemsToExtract, 0, 64);
+            fluidTickInterval = builder.comment("The interval between fluid extractions in ticks. Lower is faster.").defineInRange("fluidTickInterval", defaultFluidTickInterval, 0, Integer.MAX_VALUE);
             fluidsToExtract = builder.comment("The amount of fluids in mB to extract per extraction.").defineInRange("fluidsToExtract", defaultFluidsToExtract, 0, Integer.MAX_VALUE);
 
             builder.pop();
         }
 
-        public int getTickInterval() {
-            return tickInterval.get();
+        public int getItemTickInterval() {
+            return itemTickInterval.get();
         }
 
         public int getItemsToExtract() {
             return itemsToExtract.get();
+        }
+
+        public int getFluidTickInterval() {
+            return fluidTickInterval.get();
         }
 
         public int getFluidsToExtract() {
