@@ -2,11 +2,17 @@ package com.raoulvdberge.refinedpipes.network;
 
 import com.raoulvdberge.refinedpipes.network.graph.NetworkGraph;
 import com.raoulvdberge.refinedpipes.network.graph.scanner.NetworkGraphScannerResult;
+import com.raoulvdberge.refinedpipes.network.pipe.fluid.FluidDestination;
 import com.raoulvdberge.refinedpipes.util.StringUtil;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidAttributes;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -75,7 +81,45 @@ public class Network {
             scanGraph(world, originPos);
         }
 
+        if (!fluidTank.getFluid().isEmpty() && !graph.getFluidDestinations().isEmpty()) {
+            int toDistribute = (int) Math.floor((float) getThroughput() / (float) graph.getFluidDestinations().size());
+
+            for (FluidDestination fluidDestination : graph.getFluidDestinations()) {
+                TileEntity tile = fluidDestination.getConnectedPipe().getWorld().getTileEntity(fluidDestination.getReceiver());
+                if (tile == null) {
+                    continue;
+                }
+
+                IFluidHandler handler = tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, fluidDestination.getIncomingDirection().getOpposite()).orElse(null);
+                if (handler == null) {
+                    continue;
+                }
+
+                FluidStack drained = fluidTank.drain(toDistribute, IFluidHandler.FluidAction.EXECUTE);
+                if (drained.isEmpty()) {
+                    continue;
+                }
+
+                int filled = handler.fill(drained, IFluidHandler.FluidAction.EXECUTE);
+
+                int remainder = drained.getAmount() - filled;
+                if (remainder > 0) {
+                    drained = drained.copy();
+                    drained.setAmount(remainder);
+
+                    fluidTank.fill(drained, IFluidHandler.FluidAction.EXECUTE);
+                }
+            }
+        }
+
         graph.getPipes().forEach(p -> p.update(world));
+    }
+
+    private int getThroughput() {
+        int viscosity = fluidTank.getFluid().getFluid().getAttributes().getViscosity(fluidTank.getFluid());
+        viscosity = Math.max(100, viscosity);
+
+        return MathHelper.clamp(120000 / viscosity, 80, 600);
     }
 
     public NetworkGraph getGraph() {
