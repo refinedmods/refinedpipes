@@ -54,7 +54,7 @@ public class FluidPipeTileEntity extends PipeTileEntity {
     @Override
     public CompoundNBT writeUpdate(CompoundNBT tag) {
         Pipe pipe = NetworkManager.get(world).getPipe(pos);
-        if (pipe instanceof FluidPipe) {
+        if (pipe instanceof FluidPipe && pipe.getNetwork() != null) {
             tag.put("fluid", ((FluidNetwork) pipe.getNetwork()).getFluidTank().getFluid().writeToNBT(new CompoundNBT()));
             tag.putFloat("fullness", ((FluidPipe) pipe).getFullness());
         }

@@ -1,7 +1,10 @@
 # Refined Pipes Changelog
 
 ## 0.2.1
+Note: Due to refactoring of the network architecture, pipes from version 0.2 and earlier are incompatible and won't be functioning. This can be fixed by breaking and replacing all the pipes in a network.
+
 - Added ghost hitboxes when holding an attachment in hand (raoulvdberge)
+- Refactored network architecture (raoulvdberge)
 
 ## 0.2
 - Added fluid pipes (raoulvdberge)
