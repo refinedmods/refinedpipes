@@ -3,7 +3,6 @@ package com.raoulvdberge.refinedpipes.routing;
 import java.util.*;
 
 public class DijkstraAlgorithm<T> {
-    private final List<Node<T>> nodes;
     private final List<Edge<T>> edges;
     private Set<Node<T>> settledNodes;
     private Set<Node<T>> unSettledNodes;
@@ -11,7 +10,6 @@ public class DijkstraAlgorithm<T> {
     private Map<Node<T>, Integer> distance;
 
     public DijkstraAlgorithm(Graph<T> graph) {
-        this.nodes = new ArrayList<>(graph.getNodes());
         this.edges = new ArrayList<>(graph.getEdges());
     }
 

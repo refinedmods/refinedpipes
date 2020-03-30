@@ -10,7 +10,7 @@ import javax.annotation.Nullable;
 public class CubeBuilder {
     public static final CubeBuilder INSTANCE = new CubeBuilder();
 
-    private byte[] uvRotations = new byte[Direction.values().length];
+    private final byte[] uvRotations = new byte[Direction.values().length];
 
     private CubeBuilder() {
     }

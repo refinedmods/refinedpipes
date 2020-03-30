@@ -20,7 +20,7 @@ import net.minecraftforge.fluids.capability.templates.FluidTank;
 public class FluidNetwork extends Network {
     public static final ResourceLocation TYPE = new ResourceLocation(RefinedPipes.ID, "fluid");
 
-    private FluidTank fluidTank = new FluidTank(FluidAttributes.BUCKET_VOLUME);
+    private final FluidTank fluidTank = new FluidTank(FluidAttributes.BUCKET_VOLUME);
 
     public FluidNetwork(BlockPos originPos, String id) {
         super(originPos, id);

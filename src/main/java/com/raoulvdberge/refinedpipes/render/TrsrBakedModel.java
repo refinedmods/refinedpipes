@@ -23,7 +23,7 @@ import java.util.Random;
 
 public class TrsrBakedModel implements IBakedModel {
     protected final IBakedModel original;
-    protected TransformationMatrix transformation;
+    protected final TransformationMatrix transformation;
     private final int faceOffset;
 
     public TrsrBakedModel(IBakedModel original, float x, float y, float z, float scale) {

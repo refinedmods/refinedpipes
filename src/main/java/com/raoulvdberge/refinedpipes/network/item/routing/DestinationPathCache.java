@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.function.Predicate;
 
 public class DestinationPathCache {
-    private Map<BlockPos, Map<ItemDestination, Path<BlockPos>>> paths = new HashMap<>();
+    private final Map<BlockPos, Map<ItemDestination, Path<BlockPos>>> paths = new HashMap<>();
 
     public void addPath(BlockPos source, ItemDestination destination, Path<BlockPos> path) {
         paths.computeIfAbsent(source, s -> new HashMap<>()).put(destination, path);

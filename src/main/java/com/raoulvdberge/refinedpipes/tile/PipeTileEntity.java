@@ -24,7 +24,7 @@ import java.util.Map;
 public abstract class PipeTileEntity extends BaseTileEntity {
     public static final ModelProperty<Map<Direction, AttachmentType>> ATTACHMENTS_PROPERTY = new ModelProperty<>();
 
-    private Map<Direction, AttachmentType> attachments = new HashMap<>();
+    private final Map<Direction, AttachmentType> attachments = new HashMap<>();
 
     public PipeTileEntity(TileEntityType<?> type) {
         super(type);

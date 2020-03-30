@@ -21,8 +21,7 @@ public class NetworkGraphScanner {
     private final Set<ItemDestination> itemDestinations = new HashSet<>();
     private final Set<FluidDestination> fluidDestinations = new HashSet<>();
     private final Set<Pipe> currentPipes;
-
-    private ResourceLocation requiredNetworkType;
+    private final ResourceLocation requiredNetworkType;
 
     private final List<NetworkGraphScannerRequest> allRequests = new ArrayList<>();
     private final Queue<NetworkGraphScannerRequest> requests = new ArrayDeque<>();

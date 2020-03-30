@@ -13,8 +13,8 @@ import java.util.List;
 import java.util.function.Supplier;
 
 public class ItemTransportMessage {
-    private BlockPos pos;
-    private List<ItemTransportProps> props;
+    private final BlockPos pos;
+    private final List<ItemTransportProps> props;
 
     public ItemTransportMessage(BlockPos pos, List<ItemTransportProps> props) {
         this.pos = pos;

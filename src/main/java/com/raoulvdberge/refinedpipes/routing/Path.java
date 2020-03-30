@@ -5,7 +5,7 @@ import java.util.Deque;
 import java.util.List;
 
 public class Path<T> {
-    private List<Node<T>> path;
+    private final List<Node<T>> path;
 
     public Path(List<Node<T>> path) {
         this.path = path;

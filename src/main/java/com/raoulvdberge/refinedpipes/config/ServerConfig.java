@@ -4,22 +4,22 @@ import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fluids.FluidAttributes;
 
 public class ServerConfig {
-    private ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
-    private ForgeConfigSpec spec;
+    private final ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
+    private final ForgeConfigSpec spec;
 
-    private ItemPipe basicItemPipe;
-    private ItemPipe improvedItemPipe;
-    private ItemPipe advancedItemPipe;
+    private final ItemPipe basicItemPipe;
+    private final ItemPipe improvedItemPipe;
+    private final ItemPipe advancedItemPipe;
 
-    private FluidPipe basicFluidPipe;
-    private FluidPipe improvedFluidPipe;
-    private FluidPipe advancedFluidPipe;
+    private final FluidPipe basicFluidPipe;
+    private final FluidPipe improvedFluidPipe;
+    private final FluidPipe advancedFluidPipe;
 
-    private ExtractorAttachment basicExtractorAttachment;
-    private ExtractorAttachment improvedExtractorAttachment;
-    private ExtractorAttachment advancedExtractorAttachment;
-    private ExtractorAttachment eliteExtractorAttachment;
-    private ExtractorAttachment ultimateExtractorAttachment;
+    private final ExtractorAttachment basicExtractorAttachment;
+    private final ExtractorAttachment improvedExtractorAttachment;
+    private final ExtractorAttachment advancedExtractorAttachment;
+    private final ExtractorAttachment eliteExtractorAttachment;
+    private final ExtractorAttachment ultimateExtractorAttachment;
 
     public ServerConfig() {
         builder.push("pipe");
@@ -128,7 +128,7 @@ public class ServerConfig {
     }
 
     public class ItemPipe {
-        private ForgeConfigSpec.IntValue maxTicks;
+        private final ForgeConfigSpec.IntValue maxTicks;
 
         public ItemPipe(String type, int defaultMaxTicks) {
             builder.push(type);
@@ -144,7 +144,7 @@ public class ServerConfig {
     }
 
     public class FluidPipe {
-        private ForgeConfigSpec.IntValue capacity;
+        private final ForgeConfigSpec.IntValue capacity;
 
         public FluidPipe(String type, int defaultCapacity) {
             builder.push(type);
@@ -160,10 +160,10 @@ public class ServerConfig {
     }
 
     public class ExtractorAttachment {
-        private ForgeConfigSpec.IntValue itemTickInterval;
-        private ForgeConfigSpec.IntValue itemsToExtract;
-        private ForgeConfigSpec.IntValue fluidTickInterval;
-        private ForgeConfigSpec.IntValue fluidsToExtract;
+        private final ForgeConfigSpec.IntValue itemTickInterval;
+        private final ForgeConfigSpec.IntValue itemsToExtract;
+        private final ForgeConfigSpec.IntValue fluidTickInterval;
+        private final ForgeConfigSpec.IntValue fluidsToExtract;
 
         public ExtractorAttachment(String type, int defaultItemTickInterval, int defaultItemsToExtract, int defaultFluidTickInterval, int defaultFluidsToExtract) {
             builder.push(type);
