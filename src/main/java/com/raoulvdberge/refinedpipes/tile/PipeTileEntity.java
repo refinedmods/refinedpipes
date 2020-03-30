@@ -18,6 +18,7 @@ import net.minecraftforge.client.model.data.ModelDataMap;
 import net.minecraftforge.client.model.data.ModelProperty;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,6 +43,15 @@ public abstract class PipeTileEntity extends BaseTileEntity {
         }
 
         return attachments.containsKey(dir);
+    }
+
+    @Nullable
+    public AttachmentType getAttachment(Direction dir) {
+        if (!world.isRemote) {
+            throw new IllegalStateException("Client-side only");
+        }
+
+        return attachments.get(dir);
     }
 
     @Override
