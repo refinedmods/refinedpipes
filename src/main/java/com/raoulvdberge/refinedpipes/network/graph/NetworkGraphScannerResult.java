@@ -1,4 +1,4 @@
-package com.raoulvdberge.refinedpipes.network.graph.scanner;
+package com.raoulvdberge.refinedpipes.network.graph;
 
 import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
 import com.raoulvdberge.refinedpipes.network.pipe.fluid.FluidDestination;

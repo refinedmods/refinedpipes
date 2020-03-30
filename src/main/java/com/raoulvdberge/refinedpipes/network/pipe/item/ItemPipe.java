@@ -3,6 +3,7 @@ package com.raoulvdberge.refinedpipes.network.pipe.item;
 import com.raoulvdberge.refinedpipes.RefinedPipes;
 import com.raoulvdberge.refinedpipes.message.ItemTransportMessage;
 import com.raoulvdberge.refinedpipes.network.NetworkManager;
+import com.raoulvdberge.refinedpipes.network.item.ItemNetwork;
 import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.ItemTransport;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.ItemTransportProps;
@@ -95,6 +96,11 @@ public class ItemPipe extends Pipe {
     @Override
     public ResourceLocation getId() {
         return ID;
+    }
+
+    @Override
+    public ResourceLocation getNetworkType() {
+        return ItemNetwork.TYPE;
     }
 
     public int getMaxTicksInPipe() {

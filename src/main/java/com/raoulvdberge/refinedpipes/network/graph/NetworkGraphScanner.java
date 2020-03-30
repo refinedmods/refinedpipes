@@ -1,4 +1,4 @@
-package com.raoulvdberge.refinedpipes.network.graph.scanner;
+package com.raoulvdberge.refinedpipes.network.graph;
 
 import com.raoulvdberge.refinedpipes.network.NetworkManager;
 import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
@@ -6,6 +6,7 @@ import com.raoulvdberge.refinedpipes.network.pipe.fluid.FluidDestination;
 import com.raoulvdberge.refinedpipes.network.pipe.item.ItemDestination;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
@@ -21,12 +22,15 @@ public class NetworkGraphScanner {
     private final Set<FluidDestination> fluidDestinations = new HashSet<>();
     private final Set<Pipe> currentPipes;
 
+    private ResourceLocation requiredNetworkType;
+
     private final List<NetworkGraphScannerRequest> allRequests = new ArrayList<>();
     private final Queue<NetworkGraphScannerRequest> requests = new ArrayDeque<>();
 
-    public NetworkGraphScanner(Set<Pipe> currentPipes) {
+    public NetworkGraphScanner(Set<Pipe> currentPipes, ResourceLocation requiredNetworkType) {
         this.currentPipes = currentPipes;
         this.removedPipes.addAll(currentPipes);
+        this.requiredNetworkType = requiredNetworkType;
     }
 
     public NetworkGraphScannerResult scanAt(World world, BlockPos pos) {
@@ -51,6 +55,10 @@ public class NetworkGraphScanner {
         Pipe pipe = NetworkManager.get(request.getWorld()).getPipe(request.getPos());
 
         if (pipe != null) {
+            if (!requiredNetworkType.equals(pipe.getNetworkType())) {
+                return;
+            }
+
             if (foundPipes.add(pipe)) {
                 if (!currentPipes.contains(pipe)) {
                     newPipes.add(pipe);

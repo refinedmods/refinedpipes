@@ -1,4 +1,4 @@
-package com.raoulvdberge.refinedpipes.network.graph.scanner;
+package com.raoulvdberge.refinedpipes.network.graph;
 
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;

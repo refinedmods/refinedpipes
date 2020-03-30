@@ -1,7 +1,7 @@
-package com.raoulvdberge.refinedpipes.network.graph;
+package com.raoulvdberge.refinedpipes.network.item.routing;
 
 import com.raoulvdberge.refinedpipes.network.pipe.item.ItemDestination;
-import com.raoulvdberge.refinedpipes.network.route.Path;
+import com.raoulvdberge.refinedpipes.routing.Path;
 import net.minecraft.util.math.BlockPos;
 
 import javax.annotation.Nullable;

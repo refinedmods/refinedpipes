@@ -1,8 +1,8 @@
-package com.raoulvdberge.refinedpipes.network.graph;
+package com.raoulvdberge.refinedpipes.network.item.routing;
 
-import com.raoulvdberge.refinedpipes.network.graph.scanner.NetworkGraphScannerRequest;
-import com.raoulvdberge.refinedpipes.network.route.Edge;
-import com.raoulvdberge.refinedpipes.network.route.NodeIndex;
+import com.raoulvdberge.refinedpipes.network.graph.NetworkGraphScannerRequest;
+import com.raoulvdberge.refinedpipes.routing.Edge;
+import com.raoulvdberge.refinedpipes.routing.NodeIndex;
 import net.minecraft.util.math.BlockPos;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

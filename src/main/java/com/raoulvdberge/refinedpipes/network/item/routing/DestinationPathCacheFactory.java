@@ -1,8 +1,8 @@
-package com.raoulvdberge.refinedpipes.network.graph;
+package com.raoulvdberge.refinedpipes.network.item.routing;
 
 import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
 import com.raoulvdberge.refinedpipes.network.pipe.item.ItemDestination;
-import com.raoulvdberge.refinedpipes.network.route.*;
+import com.raoulvdberge.refinedpipes.routing.*;
 import net.minecraft.util.math.BlockPos;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

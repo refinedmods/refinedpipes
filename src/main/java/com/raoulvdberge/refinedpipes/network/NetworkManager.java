@@ -1,7 +1,7 @@
 package com.raoulvdberge.refinedpipes.network;
 
 import com.raoulvdberge.refinedpipes.RefinedPipes;
-import com.raoulvdberge.refinedpipes.network.graph.scanner.NetworkGraphScannerResult;
+import com.raoulvdberge.refinedpipes.network.graph.NetworkGraphScannerResult;
 import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
 import com.raoulvdberge.refinedpipes.network.pipe.PipeFactory;
 import com.raoulvdberge.refinedpipes.network.pipe.PipeRegistry;
@@ -16,7 +16,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.WorldSavedData;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fluids.capability.IFluidHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -71,8 +70,8 @@ public class NetworkManager extends WorldSavedData {
         markDirty();
     }
 
-    private void formNetworkAt(World world, BlockPos pos) {
-        Network network = new Network(pos);
+    private void formNetworkAt(World world, BlockPos pos, ResourceLocation type) {
+        Network network = NetworkRegistry.INSTANCE.getFactory(type).create(pos);
 
         addNetwork(network);
 
@@ -102,9 +101,13 @@ public class NetworkManager extends WorldSavedData {
             // Remove all the other networks.
             Network otherNetwork = networks.next();
 
-            mainNetwork.getFluidTank().fill(otherNetwork.getFluidTank().getFluid(), IFluidHandler.FluidAction.EXECUTE);
+            boolean canMerge = mainNetwork.getType().equals(otherNetwork.getType());
 
-            removeNetwork(otherNetwork.getId());
+            if (canMerge) {
+                otherNetwork.onMergedWith(mainNetwork);
+
+                removeNetwork(otherNetwork.getId());
+            }
         }
 
         mainNetwork.scanGraph(world, pos);
@@ -121,10 +124,10 @@ public class NetworkManager extends WorldSavedData {
 
         markDirty();
 
-        Set<Pipe> adjacentPipes = findAdjacentPipes(pipe.getPos());
+        Set<Pipe> adjacentPipes = findAdjacentPipes(pipe.getPos(), pipe.getNetworkType());
 
         if (adjacentPipes.isEmpty()) {
-            formNetworkAt(pipe.getWorld(), pipe.getPos());
+            formNetworkAt(pipe.getWorld(), pipe.getPos(), pipe.getNetworkType());
         } else {
             mergeNetworksIntoOne(adjacentPipes, pipe.getWorld(), pipe.getPos());
         }
@@ -151,7 +154,7 @@ public class NetworkManager extends WorldSavedData {
 
     private void splitNetworks(Pipe originPipe) {
         // Sanity checks
-        for (Pipe adjacent : findAdjacentPipes(originPipe.getPos())) {
+        for (Pipe adjacent : findAdjacentPipes(originPipe.getPos(), originPipe.getNetworkType())) {
             if (adjacent.getNetwork() == null) {
                 throw new RuntimeException("Adjacent pipe has no network");
             }
@@ -161,9 +164,9 @@ public class NetworkManager extends WorldSavedData {
             }
         }
 
-        // We can assume all adjacent pipes shared the same network with the removed pipe.
+        // We can assume all adjacent pipes (with the same network type) share the same network with the removed pipe.
         // That means it doesn't matter which pipe network we use for splitting, we'll take the first found one.
-        Pipe otherPipeInNetwork = findFirstAdjacentPipe(originPipe.getPos());
+        Pipe otherPipeInNetwork = findFirstAdjacentPipe(originPipe.getPos(), originPipe.getNetworkType());
 
         if (otherPipeInNetwork != null) {
             otherPipeInNetwork.getNetwork().setOriginPos(otherPipeInNetwork.getPos());
@@ -188,7 +191,7 @@ public class NetworkManager extends WorldSavedData {
                 // The formNetworkAt call below can let these removed pipes join a network again.
                 // We only have to form a new network when necessary, hence the null check.
                 if (removed.getNetwork() == null) {
-                    formNetworkAt(removed.getWorld(), removed.getPos());
+                    formNetworkAt(removed.getWorld(), removed.getPos(), removed.getNetworkType());
                 }
             }
 
@@ -202,13 +205,13 @@ public class NetworkManager extends WorldSavedData {
         }
     }
 
-    private Set<Pipe> findAdjacentPipes(BlockPos pos) {
+    private Set<Pipe> findAdjacentPipes(BlockPos pos, ResourceLocation networkType) {
         Set<Pipe> pipes = new HashSet<>();
 
         for (Direction dir : Direction.values()) {
             Pipe pipe = getPipe(pos.offset(dir));
 
-            if (pipe != null) {
+            if (pipe != null && pipe.getNetworkType().equals(networkType)) {
                 pipes.add(pipe);
             }
         }
@@ -217,11 +220,11 @@ public class NetworkManager extends WorldSavedData {
     }
 
     @Nullable
-    private Pipe findFirstAdjacentPipe(BlockPos pos) {
+    private Pipe findFirstAdjacentPipe(BlockPos pos, ResourceLocation networkType) {
         for (Direction dir : Direction.values()) {
             Pipe pipe = getPipe(pos.offset(dir));
 
-            if (pipe != null) {
+            if (pipe != null && pipe.getNetworkType().equals(networkType)) {
                 return pipe;
             }
         }
@@ -232,11 +235,6 @@ public class NetworkManager extends WorldSavedData {
     @Nullable
     public Pipe getPipe(BlockPos pos) {
         return pipes.get(pos);
-    }
-
-    @Nullable
-    public Network getNetwork(String id) {
-        return networks.get(id);
     }
 
     public Collection<Network> getNetworks() {
@@ -264,8 +262,22 @@ public class NetworkManager extends WorldSavedData {
         }
 
         ListNBT nets = tag.getList("networks", Constants.NBT.TAG_COMPOUND);
-        for (INBT item : nets) {
-            Network network = Network.fromNbt((CompoundNBT) item);
+        for (INBT netTag : nets) {
+            CompoundNBT netTagCompound = (CompoundNBT) netTag;
+            if (!netTagCompound.contains("type")) {
+                LOGGER.warn("Skipping network without type");
+                continue;
+            }
+
+            ResourceLocation type = new ResourceLocation(netTagCompound.getString("type"));
+
+            NetworkFactory factory = NetworkRegistry.INSTANCE.getFactory(type);
+            if (factory == null) {
+                LOGGER.warn("Unknown network type {}", type.toString());
+                continue;
+            }
+
+            Network network = factory.create(netTagCompound);
 
             networks.put(network.getId(), network);
         }
@@ -285,7 +297,11 @@ public class NetworkManager extends WorldSavedData {
         tag.put("pipes", pipes);
 
         ListNBT networks = new ListNBT();
-        this.networks.values().forEach(n -> networks.add(n.writeToNbt(new CompoundNBT())));
+        this.networks.values().forEach(n -> {
+            CompoundNBT networkTag = new CompoundNBT();
+            networkTag.putString("type", n.getType().toString());
+            networks.add(n.writeToNbt(networkTag));
+        });
         tag.put("networks", networks);
 
         return tag;

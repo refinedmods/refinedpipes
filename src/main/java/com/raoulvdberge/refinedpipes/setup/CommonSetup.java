@@ -8,6 +8,11 @@ import com.raoulvdberge.refinedpipes.item.AttachmentItem;
 import com.raoulvdberge.refinedpipes.item.FluidPipeBlockItem;
 import com.raoulvdberge.refinedpipes.item.ItemPipeBlockItem;
 import com.raoulvdberge.refinedpipes.network.NetworkManager;
+import com.raoulvdberge.refinedpipes.network.NetworkRegistry;
+import com.raoulvdberge.refinedpipes.network.fluid.FluidNetwork;
+import com.raoulvdberge.refinedpipes.network.fluid.FluidNetworkFactory;
+import com.raoulvdberge.refinedpipes.network.item.ItemNetwork;
+import com.raoulvdberge.refinedpipes.network.item.ItemNetworkFactory;
 import com.raoulvdberge.refinedpipes.network.pipe.PipeRegistry;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentRegistry;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
@@ -33,6 +38,9 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class CommonSetup {
     public CommonSetup() {
+        NetworkRegistry.INSTANCE.addFactory(ItemNetwork.TYPE, new ItemNetworkFactory());
+        NetworkRegistry.INSTANCE.addFactory(FluidNetwork.TYPE, new FluidNetworkFactory());
+
         PipeRegistry.INSTANCE.addFactory(ItemPipe.ID, new ItemPipeFactory());
         PipeRegistry.INSTANCE.addFactory(FluidPipe.ID, new FluidPipeFactory());
 

@@ -4,17 +4,18 @@ import com.raoulvdberge.refinedpipes.RefinedPipes;
 import com.raoulvdberge.refinedpipes.RefinedPipesItems;
 import com.raoulvdberge.refinedpipes.network.Network;
 import com.raoulvdberge.refinedpipes.network.NetworkManager;
+import com.raoulvdberge.refinedpipes.network.fluid.FluidNetwork;
+import com.raoulvdberge.refinedpipes.network.item.ItemNetwork;
 import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.Attachment;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
-import com.raoulvdberge.refinedpipes.network.pipe.fluid.FluidPipe;
 import com.raoulvdberge.refinedpipes.network.pipe.item.ItemDestination;
 import com.raoulvdberge.refinedpipes.network.pipe.item.ItemPipe;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.ItemTransport;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.callback.ItemBounceBackTransportCallback;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.callback.ItemInsertTransportCallback;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.callback.ItemPipeGoneTransportCallback;
-import com.raoulvdberge.refinedpipes.network.route.Path;
+import com.raoulvdberge.refinedpipes.routing.Path;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -52,9 +53,9 @@ public class ExtractorAttachmentType implements AttachmentType {
     @Override
     public void update(World world, Network network, Pipe pipe, Attachment attachment, int ticks) {
         int tickInterval = 0;
-        if (pipe instanceof ItemPipe) {
+        if (network instanceof ItemNetwork) {
             tickInterval = type.getItemTickInterval();
-        } else if (pipe instanceof FluidPipe) {
+        } else if (network instanceof FluidNetwork) {
             tickInterval = type.getFluidTickInterval();
         }
 
@@ -69,12 +70,12 @@ public class ExtractorAttachmentType implements AttachmentType {
             return;
         }
 
-        if (pipe instanceof ItemPipe) {
+        if (network instanceof ItemNetwork) {
             tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, attachment.getDirection().getOpposite())
-                .ifPresent(itemHandler -> update(network, pipe, attachment, destinationPos, itemHandler));
-        } else if (pipe instanceof FluidPipe) {
+                .ifPresent(itemHandler -> update((ItemNetwork) network, pipe, attachment, destinationPos, itemHandler));
+        } else if (network instanceof FluidNetwork) {
             tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, attachment.getDirection().getOpposite())
-                .ifPresent(fluidHandler -> update(network, world, fluidHandler));
+                .ifPresent(fluidHandler -> update((FluidNetwork) network, world, fluidHandler));
         }
     }
 
@@ -95,7 +96,7 @@ public class ExtractorAttachmentType implements AttachmentType {
         ).setStyle(new Style().setColor(TextFormatting.GRAY)));
     }
 
-    private void update(Network network, Pipe pipe, Attachment attachment, BlockPos sourcePos, IItemHandler source) {
+    private void update(ItemNetwork network, Pipe pipe, Attachment attachment, BlockPos sourcePos, IItemHandler source) {
         int firstSlot = getFirstSlot(source);
         if (firstSlot == -1) {
             return;
@@ -107,7 +108,6 @@ public class ExtractorAttachmentType implements AttachmentType {
         }
 
         ItemDestination destination = network
-            .getGraph()
             .getDestinationPathCache()
             .findNearestDestination(pipe.getPos(), d -> isDestinationApplicable(attachment, sourcePos, extracted, d));
 
@@ -117,7 +117,6 @@ public class ExtractorAttachmentType implements AttachmentType {
         }
 
         Path<BlockPos> path = network
-            .getGraph()
             .getDestinationPathCache()
             .getPath(pipe.getPos(), destination);
 
@@ -144,7 +143,7 @@ public class ExtractorAttachmentType implements AttachmentType {
         ));
     }
 
-    private void update(Network network, World world, IFluidHandler source) {
+    private void update(FluidNetwork network, World world, IFluidHandler source) {
         FluidStack drained = source.drain(type.getFluidsToExtract(), IFluidHandler.FluidAction.SIMULATE);
         if (drained.isEmpty()) {
             return;

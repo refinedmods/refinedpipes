@@ -107,7 +107,7 @@ public class ItemTransport {
                 return onDone(network, currentPipe.getWorld(), currentPipe);
             }
 
-            Pipe nextPipe = getPipe(network, nextPipePos);
+            Pipe nextPipe = network.getPipe(nextPipePos);
             if (nextPipe == null) {
                 return onPipeGone(network, currentPipe.getWorld(), nextPipePos);
             }
@@ -117,10 +117,6 @@ public class ItemTransport {
         }
 
         return false;
-    }
-
-    private Pipe getPipe(Network network, BlockPos pos) {
-        return network.getGraph().getPipes().stream().filter(p -> p.getPos().equals(pos)).findFirst().orElse(null);
     }
 
     private boolean isLastPipe() {

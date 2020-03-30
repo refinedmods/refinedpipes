@@ -1,4 +1,4 @@
-package com.raoulvdberge.refinedpipes.network.route;
+package com.raoulvdberge.refinedpipes.routing;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;

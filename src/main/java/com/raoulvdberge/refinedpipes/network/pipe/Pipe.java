@@ -81,6 +81,8 @@ public abstract class Pipe {
 
     public abstract ResourceLocation getId();
 
+    public abstract ResourceLocation getNetworkType();
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

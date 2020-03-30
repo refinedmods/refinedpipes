@@ -2,7 +2,6 @@ package com.raoulvdberge.refinedpipes.block;
 
 import com.raoulvdberge.refinedpipes.network.pipe.fluid.FluidPipeType;
 import com.raoulvdberge.refinedpipes.tile.FluidPipeTileEntity;
-import com.raoulvdberge.refinedpipes.tile.PipeTileEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
@@ -39,18 +38,18 @@ public class FluidPipeBlock extends PipeBlock {
     @Override
     protected boolean hasConnection(IWorld world, BlockPos pos, Direction direction) {
         TileEntity currentTile = world.getTileEntity(pos);
-        if (currentTile instanceof PipeTileEntity && ((PipeTileEntity) currentTile).hasAttachment(direction)) {
+        if (currentTile instanceof FluidPipeTileEntity && ((FluidPipeTileEntity) currentTile).hasAttachment(direction)) {
             return false;
         }
 
         BlockState facingState = world.getBlockState(pos.offset(direction));
         TileEntity facingTile = world.getTileEntity(pos.offset(direction));
 
-        if (facingTile instanceof PipeTileEntity && ((PipeTileEntity) facingTile).hasAttachment(direction.getOpposite())) {
+        if (facingTile instanceof FluidPipeTileEntity && ((FluidPipeTileEntity) facingTile).hasAttachment(direction.getOpposite())) {
             return false;
         }
 
-        return facingState.getBlock() instanceof PipeBlock;
+        return facingState.getBlock() instanceof FluidPipeBlock;
     }
 
     @Override

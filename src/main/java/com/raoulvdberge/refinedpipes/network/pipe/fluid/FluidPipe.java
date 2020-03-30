@@ -2,6 +2,7 @@ package com.raoulvdberge.refinedpipes.network.pipe.fluid;
 
 import com.raoulvdberge.refinedpipes.RefinedPipes;
 import com.raoulvdberge.refinedpipes.message.FluidPipeMessage;
+import com.raoulvdberge.refinedpipes.network.fluid.FluidNetwork;
 import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
@@ -33,12 +34,12 @@ public class FluidPipe extends Pipe {
     }
 
     public void sendFluidPipeUpdate() {
-        RefinedPipes.NETWORK.sendInArea(world, pos, 32, new FluidPipeMessage(pos, network.getFluidTank().getFluid(), getFullness()));
+        RefinedPipes.NETWORK.sendInArea(world, pos, 32, new FluidPipeMessage(pos, ((FluidNetwork) network).getFluidTank().getFluid(), getFullness()));
     }
 
     public float getFullness() {
-        int cap = network.getFluidTank().getCapacity();
-        int stored = network.getFluidTank().getFluidAmount();
+        int cap = ((FluidNetwork) network).getFluidTank().getCapacity();
+        int stored = ((FluidNetwork) network).getFluidTank().getFluidAmount();
 
         return (float) stored / (float) cap;
     }
@@ -59,5 +60,10 @@ public class FluidPipe extends Pipe {
     @Override
     public ResourceLocation getId() {
         return ID;
+    }
+
+    @Override
+    public ResourceLocation getNetworkType() {
+        return FluidNetwork.TYPE;
     }
 }

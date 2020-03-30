@@ -1,6 +1,7 @@
 package com.raoulvdberge.refinedpipes.tile;
 
 import com.raoulvdberge.refinedpipes.network.NetworkManager;
+import com.raoulvdberge.refinedpipes.network.fluid.FluidNetwork;
 import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
 import com.raoulvdberge.refinedpipes.network.pipe.fluid.FluidPipe;
 import com.raoulvdberge.refinedpipes.network.pipe.fluid.FluidPipeType;
@@ -54,7 +55,7 @@ public class FluidPipeTileEntity extends PipeTileEntity {
     public CompoundNBT writeUpdate(CompoundNBT tag) {
         Pipe pipe = NetworkManager.get(world).getPipe(pos);
         if (pipe instanceof FluidPipe) {
-            tag.put("fluid", pipe.getNetwork().getFluidTank().getFluid().writeToNBT(new CompoundNBT()));
+            tag.put("fluid", ((FluidNetwork) pipe.getNetwork()).getFluidTank().getFluid().writeToNBT(new CompoundNBT()));
             tag.putFloat("fullness", ((FluidPipe) pipe).getFullness());
         }
 

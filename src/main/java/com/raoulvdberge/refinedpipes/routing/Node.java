@@ -1,4 +1,4 @@
-package com.raoulvdberge.refinedpipes.network.route;
+package com.raoulvdberge.refinedpipes.routing;
 
 import java.util.Objects;
 
