@@ -5,6 +5,7 @@ import com.raoulvdberge.refinedpipes.RefinedPipesBlocks;
 import com.raoulvdberge.refinedpipes.RefinedPipesTileEntities;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentRegistry;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
+import com.raoulvdberge.refinedpipes.network.pipe.energy.EnergyPipeType;
 import com.raoulvdberge.refinedpipes.network.pipe.fluid.FluidPipeType;
 import com.raoulvdberge.refinedpipes.network.pipe.item.ItemPipeType;
 import com.raoulvdberge.refinedpipes.render.FluidPipeTileEntityRenderer;
@@ -51,6 +52,8 @@ public class ClientSetup {
         RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.IMPROVED_FLUID_PIPE, RenderType.getCutout());
         RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.ADVANCED_FLUID_PIPE, RenderType.getCutout());
 
+        RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.BASIC_ENERGY_PIPE, RenderType.getCutout());
+
         ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.BASIC_ITEM_PIPE, ItemPipeTileEntityRenderer::new);
         ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.IMPROVED_ITEM_PIPE, ItemPipeTileEntityRenderer::new);
         ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.ADVANCED_ITEM_PIPE, ItemPipeTileEntityRenderer::new);
@@ -59,7 +62,7 @@ public class ClientSetup {
         ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.IMPROVED_FLUID_PIPE, FluidPipeTileEntityRenderer::new);
         ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.ADVANCED_FLUID_PIPE, FluidPipeTileEntityRenderer::new);
 
-        for (String type : new String[]{"item", "fluid"}) {
+        for (String type : new String[]{"item", "fluid", "energy"}) {
             ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/" + type + "/basic/core"));
             ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/" + type + "/basic/extension"));
             ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/" + type + "/basic/straight"));
@@ -130,6 +133,14 @@ public class ClientSetup {
                     e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/fluid/advanced/core")),
                     e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/fluid/advanced/extension")),
                     e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/fluid/advanced/straight")),
+                    e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/attachment/inventory_attachment")),
+                    attachmentModels
+                ));
+            } else if (isPipeModel(id, EnergyPipeType.BASIC.getId())) {
+                e.getModelRegistry().put(id, new PipeBakedModel(
+                    e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/energy/basic/core")),
+                    e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/energy/basic/extension")),
+                    e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/energy/basic/straight")),
                     e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/attachment/inventory_attachment")),
                     attachmentModels
                 ));

@@ -12,16 +12,12 @@ import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ItemPipe extends Pipe {
     public static final ResourceLocation ID = new ResourceLocation(RefinedPipes.ID, "item");
-
-    private static final Logger LOGGER = LogManager.getLogger(ItemPipe.class);
 
     private final List<ItemTransport> transports = new ArrayList<>();
     private final List<ItemTransport> transportsToAdd = new ArrayList<>();

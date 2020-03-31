@@ -1,5 +1,6 @@
 package com.raoulvdberge.refinedpipes;
 
+import com.raoulvdberge.refinedpipes.tile.EnergyPipeTileEntity;
 import com.raoulvdberge.refinedpipes.tile.FluidPipeTileEntity;
 import com.raoulvdberge.refinedpipes.tile.ItemPipeTileEntity;
 import net.minecraft.tileentity.TileEntityType;
@@ -18,4 +19,6 @@ public class RefinedPipesTileEntities {
     public static final TileEntityType<FluidPipeTileEntity> IMPROVED_FLUID_PIPE = null;
     @ObjectHolder(RefinedPipes.ID + ":advanced_fluid_pipe")
     public static final TileEntityType<FluidPipeTileEntity> ADVANCED_FLUID_PIPE = null;
+    @ObjectHolder(RefinedPipes.ID + ":basic_energy_pipe")
+    public static final TileEntityType<EnergyPipeTileEntity> BASIC_ENERGY_PIPE = null;
 }

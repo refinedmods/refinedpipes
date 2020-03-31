@@ -1,5 +1,6 @@
 package com.raoulvdberge.refinedpipes;
 
+import com.raoulvdberge.refinedpipes.block.EnergyPipeBlock;
 import com.raoulvdberge.refinedpipes.block.FluidPipeBlock;
 import com.raoulvdberge.refinedpipes.block.ItemPipeBlock;
 import net.minecraftforge.registries.ObjectHolder;
@@ -17,4 +18,6 @@ public class RefinedPipesBlocks {
     public static final FluidPipeBlock IMPROVED_FLUID_PIPE = null;
     @ObjectHolder(RefinedPipes.ID + ":advanced_fluid_pipe")
     public static final FluidPipeBlock ADVANCED_FLUID_PIPE = null;
+    @ObjectHolder(RefinedPipes.ID + ":basic_energy_pipe")
+    public static final EnergyPipeBlock BASIC_ENERGY_PIPE = null;
 }

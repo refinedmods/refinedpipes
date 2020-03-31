@@ -2,13 +2,17 @@ package com.raoulvdberge.refinedpipes.setup;
 
 import com.raoulvdberge.refinedpipes.RefinedPipes;
 import com.raoulvdberge.refinedpipes.RefinedPipesBlocks;
+import com.raoulvdberge.refinedpipes.block.EnergyPipeBlock;
 import com.raoulvdberge.refinedpipes.block.FluidPipeBlock;
 import com.raoulvdberge.refinedpipes.block.ItemPipeBlock;
 import com.raoulvdberge.refinedpipes.item.AttachmentItem;
+import com.raoulvdberge.refinedpipes.item.EnergyPipeBlockItem;
 import com.raoulvdberge.refinedpipes.item.FluidPipeBlockItem;
 import com.raoulvdberge.refinedpipes.item.ItemPipeBlockItem;
 import com.raoulvdberge.refinedpipes.network.NetworkManager;
 import com.raoulvdberge.refinedpipes.network.NetworkRegistry;
+import com.raoulvdberge.refinedpipes.network.energy.EnergyNetwork;
+import com.raoulvdberge.refinedpipes.network.energy.EnergyNetworkFactory;
 import com.raoulvdberge.refinedpipes.network.fluid.FluidNetwork;
 import com.raoulvdberge.refinedpipes.network.fluid.FluidNetworkFactory;
 import com.raoulvdberge.refinedpipes.network.item.ItemNetwork;
@@ -17,6 +21,9 @@ import com.raoulvdberge.refinedpipes.network.pipe.PipeRegistry;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentRegistry;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor.ExtractorAttachmentType;
+import com.raoulvdberge.refinedpipes.network.pipe.energy.EnergyPipe;
+import com.raoulvdberge.refinedpipes.network.pipe.energy.EnergyPipeFactory;
+import com.raoulvdberge.refinedpipes.network.pipe.energy.EnergyPipeType;
 import com.raoulvdberge.refinedpipes.network.pipe.fluid.FluidPipe;
 import com.raoulvdberge.refinedpipes.network.pipe.fluid.FluidPipeFactory;
 import com.raoulvdberge.refinedpipes.network.pipe.fluid.FluidPipeType;
@@ -27,6 +34,7 @@ import com.raoulvdberge.refinedpipes.network.pipe.transport.callback.ItemBounceB
 import com.raoulvdberge.refinedpipes.network.pipe.transport.callback.ItemInsertTransportCallback;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.callback.ItemPipeGoneTransportCallback;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.callback.TransportCallbackFactoryRegistry;
+import com.raoulvdberge.refinedpipes.tile.EnergyPipeTileEntity;
 import com.raoulvdberge.refinedpipes.tile.FluidPipeTileEntity;
 import com.raoulvdberge.refinedpipes.tile.ItemPipeTileEntity;
 import net.minecraft.block.Block;
@@ -40,9 +48,11 @@ public class CommonSetup {
     public CommonSetup() {
         NetworkRegistry.INSTANCE.addFactory(ItemNetwork.TYPE, new ItemNetworkFactory());
         NetworkRegistry.INSTANCE.addFactory(FluidNetwork.TYPE, new FluidNetworkFactory());
+        NetworkRegistry.INSTANCE.addFactory(EnergyNetwork.TYPE, new EnergyNetworkFactory());
 
         PipeRegistry.INSTANCE.addFactory(ItemPipe.ID, new ItemPipeFactory());
         PipeRegistry.INSTANCE.addFactory(FluidPipe.ID, new FluidPipeFactory());
+        PipeRegistry.INSTANCE.addFactory(EnergyPipe.ID, new EnergyPipeFactory());
 
         AttachmentRegistry.INSTANCE.addType(new ExtractorAttachmentType(ExtractorAttachmentType.Type.BASIC));
         AttachmentRegistry.INSTANCE.addType(new ExtractorAttachmentType(ExtractorAttachmentType.Type.IMPROVED));
@@ -66,6 +76,8 @@ public class CommonSetup {
         e.getRegistry().register(new FluidPipeBlock(FluidPipeType.BASIC));
         e.getRegistry().register(new FluidPipeBlock(FluidPipeType.IMPROVED));
         e.getRegistry().register(new FluidPipeBlock(FluidPipeType.ADVANCED));
+
+        e.getRegistry().register(new EnergyPipeBlock(EnergyPipeType.BASIC));
     }
 
     @SubscribeEvent
@@ -77,6 +89,8 @@ public class CommonSetup {
         e.getRegistry().register(new FluidPipeBlockItem(RefinedPipesBlocks.BASIC_FLUID_PIPE));
         e.getRegistry().register(new FluidPipeBlockItem(RefinedPipesBlocks.IMPROVED_FLUID_PIPE));
         e.getRegistry().register(new FluidPipeBlockItem(RefinedPipesBlocks.ADVANCED_FLUID_PIPE));
+
+        e.getRegistry().register(new EnergyPipeBlockItem(RefinedPipesBlocks.BASIC_ENERGY_PIPE));
 
         for (AttachmentType type : AttachmentRegistry.INSTANCE.getTypes()) {
             e.getRegistry().register(new AttachmentItem(type));
@@ -92,6 +106,8 @@ public class CommonSetup {
         e.getRegistry().register(TileEntityType.Builder.create(() -> new FluidPipeTileEntity(FluidPipeType.BASIC), RefinedPipesBlocks.BASIC_FLUID_PIPE).build(null).setRegistryName(FluidPipeType.BASIC.getId()));
         e.getRegistry().register(TileEntityType.Builder.create(() -> new FluidPipeTileEntity(FluidPipeType.IMPROVED), RefinedPipesBlocks.IMPROVED_FLUID_PIPE).build(null).setRegistryName(FluidPipeType.IMPROVED.getId()));
         e.getRegistry().register(TileEntityType.Builder.create(() -> new FluidPipeTileEntity(FluidPipeType.ADVANCED), RefinedPipesBlocks.ADVANCED_FLUID_PIPE).build(null).setRegistryName(FluidPipeType.ADVANCED.getId()));
+
+        e.getRegistry().register(TileEntityType.Builder.create(() -> new EnergyPipeTileEntity(EnergyPipeType.BASIC), RefinedPipesBlocks.BASIC_ENERGY_PIPE).build(null).setRegistryName(EnergyPipeType.BASIC.getId()));
     }
 
     @SubscribeEvent
