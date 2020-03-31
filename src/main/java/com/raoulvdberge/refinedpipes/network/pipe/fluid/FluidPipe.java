@@ -26,7 +26,7 @@ public class FluidPipe extends Pipe {
         super.update(world);
 
         float f = getFullness();
-        if (lastFullness != f) {
+        if (Math.abs(lastFullness - f) >= 0.1) {
             lastFullness = f;
 
             sendFluidPipeUpdate();
