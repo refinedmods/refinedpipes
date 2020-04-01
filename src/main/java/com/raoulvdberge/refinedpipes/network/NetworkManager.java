@@ -97,6 +97,8 @@ public class NetworkManager extends WorldSavedData {
 
         Network mainNetwork = networks.next();
 
+        Set<Network> mergedNetworks = new HashSet<>();
+
         while (networks.hasNext()) {
             // Remove all the other networks.
             Network otherNetwork = networks.next();
@@ -104,13 +106,15 @@ public class NetworkManager extends WorldSavedData {
             boolean canMerge = mainNetwork.getType().equals(otherNetwork.getType());
 
             if (canMerge) {
-                otherNetwork.onMergedWith(mainNetwork);
+                mergedNetworks.add(otherNetwork);
 
                 removeNetwork(otherNetwork.getId());
             }
         }
 
         mainNetwork.scanGraph(world, pos);
+
+        mergedNetworks.forEach(n -> n.onMergedWith(mainNetwork));
     }
 
     public void addPipe(Pipe pipe) {

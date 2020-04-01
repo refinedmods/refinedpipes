@@ -1,19 +1,19 @@
 package com.raoulvdberge.refinedpipes.network.graph;
 
 import com.raoulvdberge.refinedpipes.network.Network;
+import com.raoulvdberge.refinedpipes.network.pipe.Destination;
+import com.raoulvdberge.refinedpipes.network.pipe.DestinationType;
 import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
-import com.raoulvdberge.refinedpipes.network.pipe.fluid.FluidDestination;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class NetworkGraph {
     private final Network network;
 
     private Set<Pipe> pipes = new HashSet<>();
-    private Set<FluidDestination> fluidDestinations = new HashSet<>();
+    private Map<DestinationType, Set<Destination>> destinations = new HashMap<>();
 
     public NetworkGraph(Network network) {
         this.network = network;
@@ -29,7 +29,9 @@ public class NetworkGraph {
         result.getNewPipes().forEach(p -> p.joinNetwork(network));
         result.getRemovedPipes().forEach(Pipe::leaveNetwork);
 
-        this.fluidDestinations = result.getFluidDestinations();
+        for (Destination destination : result.getDestinations()) {
+            destinations.computeIfAbsent(destination.getType(), type -> new HashSet<>()).add(destination);
+        }
 
         return result;
     }
@@ -38,7 +40,7 @@ public class NetworkGraph {
         return pipes;
     }
 
-    public Set<FluidDestination> getFluidDestinations() {
-        return fluidDestinations;
+    public Set<Destination> getDestinations(DestinationType type) {
+        return destinations.getOrDefault(type, Collections.emptySet());
     }
 }

@@ -1,6 +1,6 @@
 package com.raoulvdberge.refinedpipes.network.item.routing;
 
-import com.raoulvdberge.refinedpipes.network.pipe.item.ItemDestination;
+import com.raoulvdberge.refinedpipes.network.pipe.Destination;
 import com.raoulvdberge.refinedpipes.routing.Path;
 import net.minecraft.util.math.BlockPos;
 
@@ -10,15 +10,15 @@ import java.util.Map;
 import java.util.function.Predicate;
 
 public class DestinationPathCache {
-    private final Map<BlockPos, Map<ItemDestination, Path<BlockPos>>> paths = new HashMap<>();
+    private final Map<BlockPos, Map<Destination, Path<BlockPos>>> paths = new HashMap<>();
 
-    public void addPath(BlockPos source, ItemDestination destination, Path<BlockPos> path) {
+    public void addPath(BlockPos source, Destination destination, Path<BlockPos> path) {
         paths.computeIfAbsent(source, s -> new HashMap<>()).put(destination, path);
     }
 
     @Nullable
-    public Path<BlockPos> getPath(BlockPos source, ItemDestination destination) {
-        Map<ItemDestination, Path<BlockPos>> pathsFromSource = paths.get(source);
+    public Path<BlockPos> getPath(BlockPos source, Destination destination) {
+        Map<Destination, Path<BlockPos>> pathsFromSource = paths.get(source);
         if (pathsFromSource == null) {
             return null;
         }
@@ -27,17 +27,17 @@ public class DestinationPathCache {
     }
 
     @Nullable
-    public ItemDestination findNearestDestination(BlockPos source, Predicate<ItemDestination> filter) {
-        Map<ItemDestination, Path<BlockPos>> pathsFromSource = paths.get(source);
+    public Destination findNearestDestination(BlockPos source, Predicate<Destination> filter) {
+        Map<Destination, Path<BlockPos>> pathsFromSource = paths.get(source);
         if (pathsFromSource == null) {
             return null;
         }
 
-        ItemDestination foundDestination = null;
+        Destination foundDestination = null;
         int shortestDistance = -1;
 
-        for (Map.Entry<ItemDestination, Path<BlockPos>> destinationAndPath : pathsFromSource.entrySet()) {
-            ItemDestination destination = destinationAndPath.getKey();
+        for (Map.Entry<Destination, Path<BlockPos>> destinationAndPath : pathsFromSource.entrySet()) {
+            Destination destination = destinationAndPath.getKey();
             if (!filter.test(destination)) {
                 continue;
             }

@@ -6,10 +6,10 @@ import com.raoulvdberge.refinedpipes.network.Network;
 import com.raoulvdberge.refinedpipes.network.NetworkManager;
 import com.raoulvdberge.refinedpipes.network.fluid.FluidNetwork;
 import com.raoulvdberge.refinedpipes.network.item.ItemNetwork;
+import com.raoulvdberge.refinedpipes.network.pipe.Destination;
 import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.Attachment;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
-import com.raoulvdberge.refinedpipes.network.pipe.item.ItemDestination;
 import com.raoulvdberge.refinedpipes.network.pipe.item.ItemPipe;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.ItemTransport;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.callback.ItemBounceBackTransportCallback;
@@ -83,16 +83,33 @@ public class ExtractorAttachmentType implements AttachmentType {
     public void addInformation(List<ITextComponent> tooltip) {
         tooltip.add(new TranslationTextComponent("misc.refinedpipes.tier", new TranslationTextComponent("enchantment.level." + type.tier)).setStyle(new Style().setColor(TextFormatting.YELLOW)));
 
+        ITextComponent itemsToExtract = new StringTextComponent(type.getItemsToExtract() + " ")
+            .appendSibling(new TranslationTextComponent("misc.refinedpipes.item" + (type.getItemsToExtract() == 1 ? "" : "s")))
+            .setStyle(new Style().setColor(TextFormatting.WHITE));
+
+        float itemSecondsInterval = type.getItemTickInterval() / 20F;
+        ITextComponent itemTickInterval = new StringTextComponent(itemSecondsInterval + " ")
+            .appendSibling(new TranslationTextComponent("misc.refinedpipes.second" + (itemSecondsInterval == 1 ? "" : "s")))
+            .setStyle(new Style().setColor(TextFormatting.WHITE));
+
         tooltip.add(new TranslationTextComponent(
             "tooltip.refinedpipes.extractor_attachment.item_extraction_rate",
-            new StringTextComponent("" + type.getItemsToExtract()).setStyle(new Style().setColor(TextFormatting.WHITE)),
-            new StringTextComponent("" + (float) type.getItemTickInterval() / 20F).setStyle(new Style().setColor(TextFormatting.WHITE))
+            itemsToExtract,
+            itemTickInterval
         ).setStyle(new Style().setColor(TextFormatting.GRAY)));
+
+        ITextComponent fluidsToExtract = new StringTextComponent(type.getFluidsToExtract() + " mB")
+            .setStyle(new Style().setColor(TextFormatting.WHITE));
+
+        float fluidSecondsInterval = type.getFluidTickInterval() / 20F;
+        ITextComponent fluidTickInterval = new StringTextComponent(fluidSecondsInterval + " ")
+            .appendSibling(new TranslationTextComponent("misc.refinedpipes.second" + (fluidSecondsInterval == 1 ? "" : "s")))
+            .setStyle(new Style().setColor(TextFormatting.WHITE));
 
         tooltip.add(new TranslationTextComponent(
             "tooltip.refinedpipes.extractor_attachment.fluid_extraction_rate",
-            new StringTextComponent("" + type.getFluidsToExtract()).setStyle(new Style().setColor(TextFormatting.WHITE)),
-            new StringTextComponent("" + (float) type.getFluidTickInterval() / 20F).setStyle(new Style().setColor(TextFormatting.WHITE))
+            fluidsToExtract,
+            fluidTickInterval
         ).setStyle(new Style().setColor(TextFormatting.GRAY)));
     }
 
@@ -107,7 +124,7 @@ public class ExtractorAttachmentType implements AttachmentType {
             return;
         }
 
-        ItemDestination destination = network
+        Destination destination = network
             .getDestinationPathCache()
             .findNearestDestination(pipe.getPos(), d -> isDestinationApplicable(attachment, sourcePos, extracted, d));
 
@@ -163,7 +180,7 @@ public class ExtractorAttachmentType implements AttachmentType {
         NetworkManager.get(world).markDirty();
     }
 
-    private boolean isDestinationApplicable(Attachment attachment, BlockPos sourcePos, ItemStack extracted, ItemDestination destination) {
+    private boolean isDestinationApplicable(Attachment attachment, BlockPos sourcePos, ItemStack extracted, Destination destination) {
         TileEntity tile = destination.getConnectedPipe().getWorld().getTileEntity(destination.getReceiver());
         if (tile == null) {
             return false;

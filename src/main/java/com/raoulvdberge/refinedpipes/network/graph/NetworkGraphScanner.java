@@ -1,14 +1,15 @@
 package com.raoulvdberge.refinedpipes.network.graph;
 
 import com.raoulvdberge.refinedpipes.network.NetworkManager;
+import com.raoulvdberge.refinedpipes.network.pipe.Destination;
+import com.raoulvdberge.refinedpipes.network.pipe.DestinationType;
 import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
-import com.raoulvdberge.refinedpipes.network.pipe.fluid.FluidDestination;
-import com.raoulvdberge.refinedpipes.network.pipe.item.ItemDestination;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
 
@@ -18,8 +19,7 @@ public class NetworkGraphScanner {
     private final Set<Pipe> foundPipes = new HashSet<>();
     private final Set<Pipe> newPipes = new HashSet<>();
     private final Set<Pipe> removedPipes = new HashSet<>();
-    private final Set<ItemDestination> itemDestinations = new HashSet<>();
-    private final Set<FluidDestination> fluidDestinations = new HashSet<>();
+    private final Set<Destination> destinations = new HashSet<>();
     private final Set<Pipe> currentPipes;
     private final ResourceLocation requiredNetworkType;
 
@@ -44,8 +44,7 @@ public class NetworkGraphScanner {
             foundPipes,
             newPipes,
             removedPipes,
-            itemDestinations,
-            fluidDestinations,
+            destinations,
             allRequests
         );
     }
@@ -85,10 +84,13 @@ public class NetworkGraphScanner {
 
                 if (tile != null) {
                     tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, request.getDirection().getOpposite())
-                        .ifPresent(itemHandler -> itemDestinations.add(new ItemDestination(request.getPos(), request.getDirection(), connectedPipe)));
+                        .ifPresent(itemHandler -> destinations.add(new Destination(DestinationType.ITEM_HANDLER, request.getPos(), request.getDirection(), connectedPipe)));
 
                     tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, request.getDirection().getOpposite())
-                        .ifPresent(fluidHandler -> fluidDestinations.add(new FluidDestination(request.getPos(), request.getDirection(), connectedPipe)));
+                        .ifPresent(fluidHandler -> destinations.add(new Destination(DestinationType.FLUID_HANDLER, request.getPos(), request.getDirection(), connectedPipe)));
+
+                    tile.getCapability(CapabilityEnergy.ENERGY, request.getDirection().getOpposite())
+                        .ifPresent(energyStorage -> destinations.add(new Destination(DestinationType.ENERGY_STORAGE, request.getPos(), request.getDirection(), connectedPipe)));
                 }
             }
         }

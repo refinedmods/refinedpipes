@@ -6,6 +6,8 @@ import com.raoulvdberge.refinedpipes.network.graph.NetworkGraphScannerResult;
 import com.raoulvdberge.refinedpipes.network.item.routing.DestinationPathCache;
 import com.raoulvdberge.refinedpipes.network.item.routing.DestinationPathCacheFactory;
 import com.raoulvdberge.refinedpipes.network.item.routing.EdgeFactory;
+import com.raoulvdberge.refinedpipes.network.pipe.Destination;
+import com.raoulvdberge.refinedpipes.network.pipe.DestinationType;
 import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
 import com.raoulvdberge.refinedpipes.routing.Edge;
 import com.raoulvdberge.refinedpipes.routing.Graph;
@@ -32,7 +34,7 @@ public class ItemNetwork extends Network {
     public NetworkGraphScannerResult scanGraph(World world, BlockPos pos) {
         NetworkGraphScannerResult result = super.scanGraph(world, pos);
 
-        updateRouting(result);
+        updateRouting(result, graph.getDestinations(DestinationType.ITEM_HANDLER));
 
         return result;
     }
@@ -47,7 +49,7 @@ public class ItemNetwork extends Network {
         return TYPE;
     }
 
-    private void updateRouting(NetworkGraphScannerResult result) {
+    private void updateRouting(NetworkGraphScannerResult result, Set<Destination> destinations) {
         List<Node<BlockPos>> nodes = buildNodes(result.getFoundPipes());
 
         NodeIndex<BlockPos> nodeIndex = NodeIndex.of(nodes);
@@ -57,7 +59,7 @@ public class ItemNetwork extends Network {
 
         Graph<BlockPos> graph = new Graph<>(nodes, edges);
 
-        DestinationPathCacheFactory destinationPathCacheFactory = new DestinationPathCacheFactory(graph, nodeIndex, result.getItemDestinations());
+        DestinationPathCacheFactory destinationPathCacheFactory = new DestinationPathCacheFactory(graph, nodeIndex, destinations);
 
         this.destinationPathCache = destinationPathCacheFactory.create();
     }

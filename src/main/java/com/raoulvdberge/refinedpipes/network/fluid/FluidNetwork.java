@@ -3,7 +3,8 @@ package com.raoulvdberge.refinedpipes.network.fluid;
 import com.raoulvdberge.refinedpipes.RefinedPipes;
 import com.raoulvdberge.refinedpipes.network.Network;
 import com.raoulvdberge.refinedpipes.network.graph.NetworkGraphScannerResult;
-import com.raoulvdberge.refinedpipes.network.pipe.fluid.FluidDestination;
+import com.raoulvdberge.refinedpipes.network.pipe.Destination;
+import com.raoulvdberge.refinedpipes.network.pipe.DestinationType;
 import com.raoulvdberge.refinedpipes.network.pipe.fluid.FluidPipe;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
@@ -16,6 +17,8 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
+
+import java.util.Set;
 
 public class FluidNetwork extends Network {
     public static final ResourceLocation TYPE = new ResourceLocation(RefinedPipes.ID, "fluid");
@@ -47,16 +50,18 @@ public class FluidNetwork extends Network {
     public void update(World world) {
         super.update(world);
 
-        if (!fluidTank.getFluid().isEmpty() && !graph.getFluidDestinations().isEmpty()) {
-            int toDistribute = (int) Math.floor((float) getThroughput() / (float) graph.getFluidDestinations().size());
+        Set<Destination> destinations = graph.getDestinations(DestinationType.FLUID_HANDLER);
 
-            for (FluidDestination fluidDestination : graph.getFluidDestinations()) {
-                TileEntity tile = fluidDestination.getConnectedPipe().getWorld().getTileEntity(fluidDestination.getReceiver());
+        if (!fluidTank.getFluid().isEmpty() && !destinations.isEmpty()) {
+            int toDistribute = (int) Math.floor((float) getThroughput() / (float) destinations.size());
+
+            for (Destination destination : destinations) {
+                TileEntity tile = destination.getConnectedPipe().getWorld().getTileEntity(destination.getReceiver());
                 if (tile == null) {
                     continue;
                 }
 
-                IFluidHandler handler = tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, fluidDestination.getIncomingDirection().getOpposite()).orElse(null);
+                IFluidHandler handler = tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, destination.getIncomingDirection().getOpposite()).orElse(null);
                 if (handler == null) {
                     continue;
                 }

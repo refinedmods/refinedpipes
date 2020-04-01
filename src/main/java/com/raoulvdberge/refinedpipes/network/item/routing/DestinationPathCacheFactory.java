@@ -1,7 +1,7 @@
 package com.raoulvdberge.refinedpipes.network.item.routing;
 
+import com.raoulvdberge.refinedpipes.network.pipe.Destination;
 import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
-import com.raoulvdberge.refinedpipes.network.pipe.item.ItemDestination;
 import com.raoulvdberge.refinedpipes.routing.*;
 import net.minecraft.util.math.BlockPos;
 import org.apache.logging.log4j.LogManager;
@@ -16,9 +16,9 @@ public class DestinationPathCacheFactory {
 
     private final Graph<BlockPos> graph;
     private final NodeIndex<BlockPos> nodeIndex;
-    private final Set<ItemDestination> destinations;
+    private final Set<Destination> destinations;
 
-    public DestinationPathCacheFactory(Graph<BlockPos> graph, NodeIndex<BlockPos> nodeIndex, Set<ItemDestination> destinations) {
+    public DestinationPathCacheFactory(Graph<BlockPos> graph, NodeIndex<BlockPos> nodeIndex, Set<Destination> destinations) {
         this.graph = graph;
         this.nodeIndex = nodeIndex;
         this.destinations = destinations;
@@ -32,7 +32,7 @@ public class DestinationPathCacheFactory {
 
             dijkstra.execute(node);
 
-            for (ItemDestination destination : destinations) {
+            for (Destination destination : destinations) {
                 if (destination.getConnectedPipe().getPos().equals(node.getId())) {
                     List<Node<BlockPos>> nodes = new ArrayList<>();
                     nodes.add(node);

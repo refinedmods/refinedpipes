@@ -27,7 +27,7 @@ public class ItemPipeBlockItem extends BaseBlockItem {
 
         tooltip.add(new TranslationTextComponent(
             "tooltip.refinedpipes.item_pipe.speed",
-            new StringTextComponent("" + type.getSpeedComparedToBasicTier()).setStyle(new Style().setColor(TextFormatting.WHITE))
+            new StringTextComponent(type.getSpeedComparedToBasicTier() + "%").setStyle(new Style().setColor(TextFormatting.WHITE))
         ).setStyle(new Style().setColor(TextFormatting.GRAY)));
     }
 }

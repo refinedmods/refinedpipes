@@ -13,9 +13,13 @@
   "item.refinedpipes.elite_extractor_attachment": "Elite Extractor Attachment",
   "item.refinedpipes.ultimate_extractor_attachment": "Ultimate Extractor Attachment",
   "misc.refinedpipes.tier": "Tier %s",
-  "tooltip.refinedpipes.fluid_pipe.capacity": "Capacity: %d mB",
-  "tooltip.refinedpipes.item_pipe.speed": "Speed: %d%%",
+  "tooltip.refinedpipes.fluid_pipe.capacity": "Capacity: %s",
+  "tooltip.refinedpipes.item_pipe.speed": "Speed: %s",
   "tooltip.refinedpipes.fluid_pipe.speed": "Speed varies by fluid.",
-  "tooltip.refinedpipes.extractor_attachment.item_extraction_rate": "Extracts %d item(s) every %d second(s).",
-  "tooltip.refinedpipes.extractor_attachment.fluid_extraction_rate": "Extracts %d mB every %d second(s)."
+  "tooltip.refinedpipes.extractor_attachment.item_extraction_rate": "Extracts %s every %s",
+  "tooltip.refinedpipes.extractor_attachment.fluid_extraction_rate": "Extracts %s every %s",
+  "misc.refinedpipes.second": "second",
+  "misc.refinedpipes.seconds": "seconds",
+  "misc.refinedpipes.item": "item",
+  "misc.refinedpipes.items": "items"
 }
