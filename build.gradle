@@ -96,7 +96,11 @@ processResources {
 dependencies {
     minecraft 'net.minecraftforge:forge:1.15.2-31.1.25'
     runtimeOnly fg.deobf("mezz.jei:jei-1.15.2:6.0.0.2")
-    runtimeOnly fg.deobf("not_used:Mekanism-1.15.2:9.9.17.409")
+    //runtimeOnly fg.deobf("not_used:Mekanism-1.15.2:9.9.17.409")
+
+    runtimeOnly fg.deobf("com.github.mcjty:mcjtylib:1.15-4.0.3-alpha")
+    runtimeOnly fg.deobf("com.github.mcjty:rftoolsbase:1.15-1.0.1-alpha")
+    runtimeOnly fg.deobf("com.github.mcjty:rftoolspower:1.15-2.0.1-alpha")
 }
 
 jar {

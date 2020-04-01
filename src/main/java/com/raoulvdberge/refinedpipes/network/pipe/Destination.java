@@ -41,11 +41,12 @@ public class Destination {
         Destination that = (Destination) o;
         return Objects.equals(receiver, that.receiver) &&
             incomingDirection == that.incomingDirection &&
-            Objects.equals(connectedPipe.getPos(), that.connectedPipe.getPos());
+            Objects.equals(connectedPipe.getPos(), that.connectedPipe.getPos()) &&
+            type == that.type;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(receiver, incomingDirection, connectedPipe.getPos());
+        return Objects.hash(receiver, incomingDirection, connectedPipe.getPos(), type);
     }
 }

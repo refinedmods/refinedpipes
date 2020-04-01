@@ -81,22 +81,7 @@ public class EnergyNetwork extends Network {
     }
 
     private int getThroughput() {
-        float stored = energyStorage.getEnergyStored();
-        if (stored == 0) {
-            return 0;
-        }
-
-        float capacity = energyStorage.getMaxEnergyStored();
-
-        if (stored > capacity * 3 / 4) {
-            return (int) stored;
-        }
-
-        if (stored > capacity * 2 / 4) {
-            return (int) (stored / 2F);
-        }
-
-        return (int) (stored / 3F);
+        return energyStorage.getMaxEnergyStored();
     }
 
     @Override

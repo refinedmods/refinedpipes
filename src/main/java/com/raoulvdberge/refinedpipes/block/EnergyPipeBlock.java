@@ -1,5 +1,6 @@
 package com.raoulvdberge.refinedpipes.block;
 
+import com.raoulvdberge.refinedpipes.network.pipe.energy.EnergyPipeEnergyStorage;
 import com.raoulvdberge.refinedpipes.network.pipe.energy.EnergyPipeType;
 import com.raoulvdberge.refinedpipes.tile.EnergyPipeTileEntity;
 import net.minecraft.block.BlockState;
@@ -57,6 +58,7 @@ public class EnergyPipeBlock extends PipeBlock {
         TileEntity facingTile = world.getTileEntity(pos.offset(direction));
 
         return facingTile != null
-            && facingTile.getCapability(CapabilityEnergy.ENERGY, direction.getOpposite()).isPresent();
+            && facingTile.getCapability(CapabilityEnergy.ENERGY, direction.getOpposite()).isPresent()
+            && !(facingTile.getCapability(CapabilityEnergy.ENERGY, direction.getOpposite()).orElse(null) instanceof EnergyPipeEnergyStorage);
     }
 }
