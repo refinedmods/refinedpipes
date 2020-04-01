@@ -2,6 +2,7 @@
 
 ## 0.2.2
 - Implemented pick block on attachments (raoulvdberge)
+- Improved performance of calculating pipe shapes (raoulvdberge)
 
 ## 0.2.1
 Note: Due to refactoring of the network architecture, pipes from version 0.2 and earlier are incompatible and won't be functioning. This can be fixed by breaking and replacing all the pipes in a network.
