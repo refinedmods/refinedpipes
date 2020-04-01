@@ -15,7 +15,9 @@ import javax.annotation.Nullable;
 public class FluidPipeBlock extends PipeBlock {
     private final FluidPipeType type;
 
-    public FluidPipeBlock(FluidPipeType type) {
+    public FluidPipeBlock(PipeShapeCache shapeCache, FluidPipeType type) {
+        super(shapeCache);
+
         this.type = type;
         this.setRegistryName(type.getId());
     }
@@ -38,14 +40,16 @@ public class FluidPipeBlock extends PipeBlock {
     @Override
     protected boolean hasConnection(IWorld world, BlockPos pos, Direction direction) {
         TileEntity currentTile = world.getTileEntity(pos);
-        if (currentTile instanceof FluidPipeTileEntity && ((FluidPipeTileEntity) currentTile).hasAttachment(direction)) {
+        if (currentTile instanceof FluidPipeTileEntity &&
+            ((FluidPipeTileEntity) currentTile).getAttachmentManager().hasAttachment(direction)) {
             return false;
         }
 
         BlockState facingState = world.getBlockState(pos.offset(direction));
         TileEntity facingTile = world.getTileEntity(pos.offset(direction));
 
-        if (facingTile instanceof FluidPipeTileEntity && ((FluidPipeTileEntity) facingTile).hasAttachment(direction.getOpposite())) {
+        if (facingTile instanceof FluidPipeTileEntity &&
+            ((FluidPipeTileEntity) facingTile).getAttachmentManager().hasAttachment(direction.getOpposite())) {
             return false;
         }
 

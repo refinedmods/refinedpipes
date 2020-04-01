@@ -2,9 +2,7 @@ package com.raoulvdberge.refinedpipes.setup;
 
 import com.raoulvdberge.refinedpipes.RefinedPipes;
 import com.raoulvdberge.refinedpipes.RefinedPipesBlocks;
-import com.raoulvdberge.refinedpipes.block.EnergyPipeBlock;
-import com.raoulvdberge.refinedpipes.block.FluidPipeBlock;
-import com.raoulvdberge.refinedpipes.block.ItemPipeBlock;
+import com.raoulvdberge.refinedpipes.block.*;
 import com.raoulvdberge.refinedpipes.item.AttachmentItem;
 import com.raoulvdberge.refinedpipes.item.EnergyPipeBlockItem;
 import com.raoulvdberge.refinedpipes.item.FluidPipeBlockItem;
@@ -45,6 +43,8 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class CommonSetup {
+    private final PipeShapeCache pipeShapeCache = new PipeShapeCache(new PipeShapeFactory());
+
     public CommonSetup() {
         NetworkRegistry.INSTANCE.addFactory(ItemNetwork.TYPE, new ItemNetworkFactory());
         NetworkRegistry.INSTANCE.addFactory(FluidNetwork.TYPE, new FluidNetworkFactory());
@@ -69,15 +69,15 @@ public class CommonSetup {
 
     @SubscribeEvent
     public void onRegisterBlocks(RegistryEvent.Register<Block> e) {
-        e.getRegistry().register(new ItemPipeBlock(ItemPipeType.BASIC));
-        e.getRegistry().register(new ItemPipeBlock(ItemPipeType.IMPROVED));
-        e.getRegistry().register(new ItemPipeBlock(ItemPipeType.ADVANCED));
+        e.getRegistry().register(new ItemPipeBlock(pipeShapeCache, ItemPipeType.BASIC));
+        e.getRegistry().register(new ItemPipeBlock(pipeShapeCache, ItemPipeType.IMPROVED));
+        e.getRegistry().register(new ItemPipeBlock(pipeShapeCache, ItemPipeType.ADVANCED));
 
-        e.getRegistry().register(new FluidPipeBlock(FluidPipeType.BASIC));
-        e.getRegistry().register(new FluidPipeBlock(FluidPipeType.IMPROVED));
-        e.getRegistry().register(new FluidPipeBlock(FluidPipeType.ADVANCED));
+        e.getRegistry().register(new FluidPipeBlock(pipeShapeCache, FluidPipeType.BASIC));
+        e.getRegistry().register(new FluidPipeBlock(pipeShapeCache, FluidPipeType.IMPROVED));
+        e.getRegistry().register(new FluidPipeBlock(pipeShapeCache, FluidPipeType.ADVANCED));
 
-        e.getRegistry().register(new EnergyPipeBlock(EnergyPipeType.BASIC));
+        e.getRegistry().register(new EnergyPipeBlock(pipeShapeCache, EnergyPipeType.BASIC));
     }
 
     @SubscribeEvent

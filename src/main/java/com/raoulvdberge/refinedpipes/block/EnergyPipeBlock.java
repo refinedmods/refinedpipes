@@ -16,7 +16,9 @@ import javax.annotation.Nullable;
 public class EnergyPipeBlock extends PipeBlock {
     private final EnergyPipeType type;
 
-    public EnergyPipeBlock(EnergyPipeType type) {
+    public EnergyPipeBlock(PipeShapeCache shapeCache, EnergyPipeType type) {
+        super(shapeCache);
+
         this.type = type;
         this.setRegistryName(type.getId());
     }
@@ -39,14 +41,16 @@ public class EnergyPipeBlock extends PipeBlock {
     @Override
     protected boolean hasConnection(IWorld world, BlockPos pos, Direction direction) {
         TileEntity currentTile = world.getTileEntity(pos);
-        if (currentTile instanceof EnergyPipeTileEntity && ((EnergyPipeTileEntity) currentTile).hasAttachment(direction)) {
+        if (currentTile instanceof EnergyPipeTileEntity &&
+            ((EnergyPipeTileEntity) currentTile).getAttachmentManager().hasAttachment(direction)) {
             return false;
         }
 
         BlockState facingState = world.getBlockState(pos.offset(direction));
         TileEntity facingTile = world.getTileEntity(pos.offset(direction));
 
-        if (facingTile instanceof EnergyPipeTileEntity && ((EnergyPipeTileEntity) facingTile).hasAttachment(direction.getOpposite())) {
+        if (facingTile instanceof EnergyPipeTileEntity &&
+            ((EnergyPipeTileEntity) facingTile).getAttachmentManager().hasAttachment(direction.getOpposite())) {
             return false;
         }
 

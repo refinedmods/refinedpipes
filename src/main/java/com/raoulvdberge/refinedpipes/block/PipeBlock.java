@@ -19,19 +19,17 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
-import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Predicate;
 
 public abstract class PipeBlock extends Block {
     public static final BooleanProperty NORTH = BooleanProperty.create("north");
@@ -48,37 +46,17 @@ public abstract class PipeBlock extends Block {
     public static final BooleanProperty INV_UP = BooleanProperty.create("inv_up");
     public static final BooleanProperty INV_DOWN = BooleanProperty.create("inv_down");
 
-    public static final VoxelShape CORE_SHAPE = makeCuboidShape(4, 4, 4, 12, 12, 12);
-    public static final VoxelShape NORTH_EXTENSION_SHAPE = makeCuboidShape(4, 4, 0, 12, 12, 4);
-    public static final VoxelShape EAST_EXTENSION_SHAPE = makeCuboidShape(12, 4, 4, 16, 12, 12);
-    public static final VoxelShape SOUTH_EXTENSION_SHAPE = makeCuboidShape(4, 4, 12, 12, 12, 16);
-    public static final VoxelShape WEST_EXTENSION_SHAPE = makeCuboidShape(0, 4, 4, 4, 12, 12);
-    public static final VoxelShape UP_EXTENSION_SHAPE = makeCuboidShape(4, 12, 4, 12, 16, 12);
-    public static final VoxelShape DOWN_EXTENSION_SHAPE = makeCuboidShape(4, 0, 4, 12, 4, 12);
+    private final PipeShapeCache shapeCache;
 
-    private static final VoxelShape NORTH_ATTACHMENT_SHAPE = makeCuboidShape(3, 3, 0, 13, 13, 3);
-    private static final VoxelShape EAST_ATTACHMENT_SHAPE = makeCuboidShape(13, 3, 3, 16, 13, 13);
-    private static final VoxelShape SOUTH_ATTACHMENT_SHAPE = makeCuboidShape(3, 3, 13, 13, 13, 16);
-    private static final VoxelShape WEST_ATTACHMENT_SHAPE = makeCuboidShape(0, 3, 3, 3, 13, 13);
-    private static final VoxelShape UP_ATTACHMENT_SHAPE = makeCuboidShape(3, 13, 3, 13, 16, 13);
-    private static final VoxelShape DOWN_ATTACHMENT_SHAPE = makeCuboidShape(3, 0, 3, 13, 3, 13);
-
-    private final List<AxisAlignedBB> attachmentShapes = new ArrayList<>();
-
-    public PipeBlock() {
+    public PipeBlock(PipeShapeCache shapeCache) {
         super(Block.Properties.create(Material.ROCK).hardnessAndResistance(0.35F));
+
+        this.shapeCache = shapeCache;
 
         this.setDefaultState(getDefaultState()
             .with(NORTH, false).with(EAST, false).with(SOUTH, false).with(WEST, false).with(UP, false).with(DOWN, false)
             .with(INV_NORTH, false).with(INV_EAST, false).with(INV_SOUTH, false).with(INV_WEST, false).with(INV_UP, false).with(INV_DOWN, false)
         );
-
-        attachmentShapes.add(NORTH_ATTACHMENT_SHAPE.getBoundingBox());
-        attachmentShapes.add(EAST_ATTACHMENT_SHAPE.getBoundingBox());
-        attachmentShapes.add(SOUTH_ATTACHMENT_SHAPE.getBoundingBox());
-        attachmentShapes.add(WEST_ATTACHMENT_SHAPE.getBoundingBox());
-        attachmentShapes.add(UP_ATTACHMENT_SHAPE.getBoundingBox());
-        attachmentShapes.add(DOWN_ATTACHMENT_SHAPE.getBoundingBox());
     }
 
     @Override
@@ -110,12 +88,14 @@ public abstract class PipeBlock extends Block {
     public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
         Direction dirClicked = getAttachmentDirectionClicked(pos, hit.getHitVec());
 
-        ItemStack held = player.getHeldItemMainhand();
+        if (dirClicked != null) {
+            ItemStack held = player.getHeldItemMainhand();
 
-        if (held.getItem() instanceof AttachmentItem) {
-            return addAttachment(player, world, pos, held, dirClicked);
-        } else if (held.isEmpty() && player.isCrouching()) {
-            return removeAttachment(world, pos, dirClicked);
+            if (held.getItem() instanceof AttachmentItem) {
+                return addAttachment(player, world, pos, held, dirClicked);
+            } else if (held.isEmpty() && player.isCrouching()) {
+                return removeAttachment(world, pos, dirClicked);
+            }
         }
 
         return super.onBlockActivated(state, world, pos, player, hand, hit);
@@ -169,38 +149,8 @@ public abstract class PipeBlock extends Block {
 
             return ActionResultType.SUCCESS;
         } else {
-            return ((PipeTileEntity) world.getTileEntity(pos)).hasAttachment(dir) ? ActionResultType.SUCCESS : ActionResultType.FAIL;
+            return ((PipeTileEntity) world.getTileEntity(pos)).getAttachmentManager().hasAttachment(dir) ? ActionResultType.SUCCESS : ActionResultType.FAIL;
         }
-    }
-
-    @Nullable
-    private Direction getAttachmentDirectionClicked(BlockPos pos, Vec3d hit) {
-        // We need to grow by 0.01 to make the contains() check inclusive instead of exclusive on the higher bound
-        if (NORTH_ATTACHMENT_SHAPE.getBoundingBox().grow(0.01).offset(pos).contains(hit)) {
-            return Direction.NORTH;
-        }
-
-        if (EAST_ATTACHMENT_SHAPE.getBoundingBox().grow(0.01).offset(pos).contains(hit)) {
-            return Direction.EAST;
-        }
-
-        if (SOUTH_ATTACHMENT_SHAPE.getBoundingBox().grow(0.01).offset(pos).contains(hit)) {
-            return Direction.SOUTH;
-        }
-
-        if (WEST_ATTACHMENT_SHAPE.getBoundingBox().grow(0.01).offset(pos).contains(hit)) {
-            return Direction.WEST;
-        }
-
-        if (UP_ATTACHMENT_SHAPE.getBoundingBox().grow(0.01).offset(pos).contains(hit)) {
-            return Direction.UP;
-        }
-
-        if (DOWN_ATTACHMENT_SHAPE.getBoundingBox().grow(0.01).offset(pos).contains(hit)) {
-            return Direction.DOWN;
-        }
-
-        return null;
     }
 
     @Nullable
@@ -218,73 +168,7 @@ public abstract class PipeBlock extends Block {
     @Override
     @SuppressWarnings("deprecation")
     public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext ctx) {
-        VoxelShape shape = CORE_SHAPE;
-
-        if (state.get(NORTH)) {
-            shape = VoxelShapes.or(shape, NORTH_EXTENSION_SHAPE);
-        }
-
-        if (state.get(EAST)) {
-            shape = VoxelShapes.or(shape, EAST_EXTENSION_SHAPE);
-        }
-
-        if (state.get(SOUTH)) {
-            shape = VoxelShapes.or(shape, SOUTH_EXTENSION_SHAPE);
-        }
-
-        if (state.get(WEST)) {
-            shape = VoxelShapes.or(shape, WEST_EXTENSION_SHAPE);
-        }
-
-        if (state.get(UP)) {
-            shape = VoxelShapes.or(shape, UP_EXTENSION_SHAPE);
-        }
-
-        if (state.get(DOWN)) {
-            shape = VoxelShapes.or(shape, DOWN_EXTENSION_SHAPE);
-        }
-
-        Predicate<Direction> hasAttachment = (dir) -> false;
-
-        TileEntity tile = world.getTileEntity(pos);
-        if (tile instanceof PipeTileEntity) {
-            hasAttachment = ((PipeTileEntity) tile)::hasAttachment;
-        }
-
-        if (ctx.getEntity() instanceof PlayerEntity && ((PlayerEntity) ctx.getEntity()).getHeldItemMainhand().getItem() instanceof AttachmentItem) {
-            Pair<Vec3d, Vec3d> vec = Raytracer.getVectors(ctx.getEntity());
-
-            Raytracer.AdvancedRayTraceResult<BlockRayTraceResult> result = Raytracer.collisionRayTrace(pos, vec.getLeft(), vec.getRight(), attachmentShapes);
-            if (result != null) {
-                shape = VoxelShapes.or(shape, VoxelShapes.create(result.bounds));
-            }
-        }
-
-        if (hasAttachment.test(Direction.NORTH) || state.get(INV_NORTH)) {
-            shape = VoxelShapes.or(shape, NORTH_ATTACHMENT_SHAPE);
-        }
-
-        if (hasAttachment.test(Direction.EAST) || state.get(INV_EAST)) {
-            shape = VoxelShapes.or(shape, EAST_ATTACHMENT_SHAPE);
-        }
-
-        if (hasAttachment.test(Direction.SOUTH) || state.get(INV_SOUTH)) {
-            shape = VoxelShapes.or(shape, SOUTH_ATTACHMENT_SHAPE);
-        }
-
-        if (hasAttachment.test(Direction.WEST) || state.get(INV_WEST)) {
-            shape = VoxelShapes.or(shape, WEST_ATTACHMENT_SHAPE);
-        }
-
-        if (hasAttachment.test(Direction.UP) || state.get(INV_UP)) {
-            shape = VoxelShapes.or(shape, UP_ATTACHMENT_SHAPE);
-        }
-
-        if (hasAttachment.test(Direction.DOWN) || state.get(INV_DOWN)) {
-            shape = VoxelShapes.or(shape, DOWN_ATTACHMENT_SHAPE);
-        }
-
-        return shape;
+        return shapeCache.getShape(state, world, pos, ctx);
     }
 
     private BlockState getState(BlockState currentState, IWorld world, BlockPos pos) {
@@ -310,7 +194,7 @@ public abstract class PipeBlock extends Block {
         if (dirClicked != null) {
             TileEntity tile = world.getTileEntity(pos);
             if (tile instanceof PipeTileEntity) {
-                AttachmentType type = ((PipeTileEntity) tile).getAttachment(dirClicked);
+                AttachmentType type = ((PipeTileEntity) tile).getAttachmentManager().getAttachmentType(dirClicked);
                 if (type != null) {
                     return type.toStack();
                 }
@@ -318,6 +202,35 @@ public abstract class PipeBlock extends Block {
         }
 
         return super.getPickBlock(state, target, world, pos, player);
+    }
+
+    @Nullable
+    public Direction getAttachmentDirectionClicked(BlockPos pos, Vec3d hit) {
+        if (Raytracer.inclusiveContains(PipeShapeProps.NORTH_ATTACHMENT_SHAPE.getBoundingBox().offset(pos), hit)) {
+            return Direction.NORTH;
+        }
+
+        if (Raytracer.inclusiveContains(PipeShapeProps.EAST_ATTACHMENT_SHAPE.getBoundingBox().offset(pos), hit)) {
+            return Direction.EAST;
+        }
+
+        if (Raytracer.inclusiveContains(PipeShapeProps.SOUTH_ATTACHMENT_SHAPE.getBoundingBox().offset(pos), hit)) {
+            return Direction.SOUTH;
+        }
+
+        if (Raytracer.inclusiveContains(PipeShapeProps.WEST_ATTACHMENT_SHAPE.getBoundingBox().offset(pos), hit)) {
+            return Direction.WEST;
+        }
+
+        if (Raytracer.inclusiveContains(PipeShapeProps.UP_ATTACHMENT_SHAPE.getBoundingBox().offset(pos), hit)) {
+            return Direction.UP;
+        }
+
+        if (Raytracer.inclusiveContains(PipeShapeProps.DOWN_ATTACHMENT_SHAPE.getBoundingBox().offset(pos), hit)) {
+            return Direction.DOWN;
+        }
+
+        return null;
     }
 
     protected abstract boolean hasConnection(IWorld world, BlockPos pos, Direction direction);

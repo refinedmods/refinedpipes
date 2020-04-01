@@ -2,7 +2,7 @@ package com.raoulvdberge.refinedpipes.network.pipe;
 
 import com.raoulvdberge.refinedpipes.network.Network;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.Attachment;
-import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentManager;
+import com.raoulvdberge.refinedpipes.network.pipe.attachment.ServerAttachmentManager;
 import com.raoulvdberge.refinedpipes.network.pipe.item.ItemPipe;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
@@ -19,7 +19,7 @@ public abstract class Pipe {
 
     protected final World world;
     protected final BlockPos pos;
-    protected final AttachmentManager attachmentManager = new AttachmentManager();
+    protected final ServerAttachmentManager attachmentManager = new ServerAttachmentManager();
 
     protected Network network;
 
@@ -34,7 +34,7 @@ public abstract class Pipe {
         }
     }
 
-    public AttachmentManager getAttachmentManager() {
+    public ServerAttachmentManager getAttachmentManager() {
         return attachmentManager;
     }
 

@@ -78,4 +78,13 @@ public class Raytracer {
             return hit.getHitVec().squareDistanceTo(vec);
         }
     }
+
+    public static boolean inclusiveContains(AxisAlignedBB aabb, Vec3d hit) {
+        return hit.x >= aabb.minX
+            && hit.x <= aabb.maxX
+            && hit.y >= aabb.minY
+            && hit.y <= aabb.maxY
+            && hit.z >= aabb.minZ
+            && hit.z <= aabb.maxZ;
+    }
 }
