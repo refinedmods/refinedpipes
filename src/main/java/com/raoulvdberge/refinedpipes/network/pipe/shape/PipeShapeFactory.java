@@ -1,5 +1,6 @@
-package com.raoulvdberge.refinedpipes.block;
+package com.raoulvdberge.refinedpipes.network.pipe.shape;
 
+import com.raoulvdberge.refinedpipes.block.PipeBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.shapes.VoxelShape;

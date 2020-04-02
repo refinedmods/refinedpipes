@@ -1,6 +1,7 @@
 package com.raoulvdberge.refinedpipes.block;
 
 import com.raoulvdberge.refinedpipes.network.pipe.fluid.FluidPipeType;
+import com.raoulvdberge.refinedpipes.network.pipe.shape.PipeShapeCache;
 import com.raoulvdberge.refinedpipes.tile.FluidPipeTileEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.tileentity.TileEntity;

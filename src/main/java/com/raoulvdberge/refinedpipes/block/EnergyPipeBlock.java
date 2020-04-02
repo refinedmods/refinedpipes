@@ -2,6 +2,7 @@ package com.raoulvdberge.refinedpipes.block;
 
 import com.raoulvdberge.refinedpipes.network.pipe.energy.EnergyPipeEnergyStorage;
 import com.raoulvdberge.refinedpipes.network.pipe.energy.EnergyPipeType;
+import com.raoulvdberge.refinedpipes.network.pipe.shape.PipeShapeCache;
 import com.raoulvdberge.refinedpipes.tile.EnergyPipeTileEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.tileentity.TileEntity;

@@ -23,10 +23,6 @@ public enum EnergyPipeType {
         return 1000;
     }
 
-    public int getToExtract() {
-        return 10;
-    }
-
     public ResourceLocation getId() {
         switch (this) {
             case BASIC:

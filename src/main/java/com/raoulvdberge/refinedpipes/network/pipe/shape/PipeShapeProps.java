@@ -1,4 +1,4 @@
-package com.raoulvdberge.refinedpipes.block;
+package com.raoulvdberge.refinedpipes.network.pipe.shape;
 
 import net.minecraft.block.Block;
 import net.minecraft.util.math.shapes.VoxelShape;

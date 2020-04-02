@@ -1,4 +1,4 @@
-package com.raoulvdberge.refinedpipes.block;
+package com.raoulvdberge.refinedpipes.network.pipe.shape;
 
 import com.raoulvdberge.refinedpipes.item.AttachmentItem;
 import com.raoulvdberge.refinedpipes.tile.PipeTileEntity;

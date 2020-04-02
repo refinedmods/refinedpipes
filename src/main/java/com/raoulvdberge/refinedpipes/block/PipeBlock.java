@@ -5,6 +5,8 @@ import com.raoulvdberge.refinedpipes.network.NetworkManager;
 import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.Attachment;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
+import com.raoulvdberge.refinedpipes.network.pipe.shape.PipeShapeCache;
+import com.raoulvdberge.refinedpipes.network.pipe.shape.PipeShapeProps;
 import com.raoulvdberge.refinedpipes.tile.PipeTileEntity;
 import com.raoulvdberge.refinedpipes.util.Raytracer;
 import net.minecraft.block.Block;
