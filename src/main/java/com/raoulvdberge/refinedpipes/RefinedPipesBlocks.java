@@ -20,4 +20,12 @@ public class RefinedPipesBlocks {
     public static final FluidPipeBlock ADVANCED_FLUID_PIPE = null;
     @ObjectHolder(RefinedPipes.ID + ":basic_energy_pipe")
     public static final EnergyPipeBlock BASIC_ENERGY_PIPE = null;
+    @ObjectHolder(RefinedPipes.ID + ":improved_energy_pipe")
+    public static final EnergyPipeBlock IMPROVED_ENERGY_PIPE = null;
+    @ObjectHolder(RefinedPipes.ID + ":advanced_energy_pipe")
+    public static final EnergyPipeBlock ADVANCED_ENERGY_PIPE = null;
+    @ObjectHolder(RefinedPipes.ID + ":elite_energy_pipe")
+    public static final EnergyPipeBlock ELITE_ENERGY_PIPE = null;
+    @ObjectHolder(RefinedPipes.ID + ":ultimate_energy_pipe")
+    public static final EnergyPipeBlock ULTIMATE_ENERGY_PIPE = null;
 }

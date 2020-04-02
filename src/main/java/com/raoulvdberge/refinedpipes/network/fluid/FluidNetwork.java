@@ -37,7 +37,13 @@ public class FluidNetwork extends Network {
     public NetworkGraphScannerResult scanGraph(World world, BlockPos pos) {
         NetworkGraphScannerResult result = super.scanGraph(world, pos);
 
-        fluidTank.setCapacity(result.getFoundPipes().stream().filter(p -> p instanceof FluidPipe).mapToInt(p -> ((FluidPipe) p).getType().getCapacity()).sum());
+        fluidTank.setCapacity(
+            result.getFoundPipes()
+                .stream()
+                .filter(p -> p instanceof FluidPipe)
+                .mapToInt(p -> ((FluidPipe) p).getType().getCapacity())
+                .sum()
+        );
 
         if (fluidTank.getFluidAmount() > fluidTank.getCapacity()) {
             fluidTank.getFluid().setAmount(fluidTank.getCapacity());

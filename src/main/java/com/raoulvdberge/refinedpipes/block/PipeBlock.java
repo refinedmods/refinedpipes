@@ -109,6 +109,9 @@ public abstract class PipeBlock extends Block {
 
             if (pipe != null && !pipe.getAttachmentManager().hasAttachment(dir)) {
                 AttachmentType type = ((AttachmentItem) attachment.getItem()).getType();
+                if (!type.canPlaceOnPipe(this)) {
+                    return ActionResultType.SUCCESS;
+                }
 
                 pipe.getAttachmentManager().setAttachment(dir, type);
                 pipe.sendBlockUpdate();

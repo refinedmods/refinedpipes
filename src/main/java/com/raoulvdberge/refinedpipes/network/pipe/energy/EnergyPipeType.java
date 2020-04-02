@@ -7,7 +7,11 @@ import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 
 public enum EnergyPipeType {
-    BASIC(1);
+    BASIC(1),
+    IMPROVED(2),
+    ADVANCED(3),
+    ELITE(4),
+    ULTIMATE(5);
 
     private final int tier;
 
@@ -20,13 +24,34 @@ public enum EnergyPipeType {
     }
 
     public int getCapacity() {
-        return 1000;
+        switch (this) {
+            case BASIC:
+                return RefinedPipes.SERVER_CONFIG.getBasicEnergyPipe().getCapacity();
+            case IMPROVED:
+                return RefinedPipes.SERVER_CONFIG.getImprovedEnergyPipe().getCapacity();
+            case ADVANCED:
+                return RefinedPipes.SERVER_CONFIG.getAdvancedEnergyPipe().getCapacity();
+            case ELITE:
+                return RefinedPipes.SERVER_CONFIG.getEliteEnergyPipe().getCapacity();
+            case ULTIMATE:
+                return RefinedPipes.SERVER_CONFIG.getUltimateEnergyPipe().getCapacity();
+            default:
+                throw new RuntimeException("?");
+        }
     }
 
     public ResourceLocation getId() {
         switch (this) {
             case BASIC:
                 return new ResourceLocation(RefinedPipes.ID, "basic_energy_pipe");
+            case IMPROVED:
+                return new ResourceLocation(RefinedPipes.ID, "improved_energy_pipe");
+            case ADVANCED:
+                return new ResourceLocation(RefinedPipes.ID, "advanced_energy_pipe");
+            case ELITE:
+                return new ResourceLocation(RefinedPipes.ID, "elite_energy_pipe");
+            case ULTIMATE:
+                return new ResourceLocation(RefinedPipes.ID, "ultimate_energy_pipe");
             default:
                 throw new RuntimeException("?");
         }
@@ -36,6 +61,14 @@ public enum EnergyPipeType {
         switch (this) {
             case BASIC:
                 return RefinedPipesTileEntities.BASIC_ENERGY_PIPE;
+            case IMPROVED:
+                return RefinedPipesTileEntities.IMPROVED_ENERGY_PIPE;
+            case ADVANCED:
+                return RefinedPipesTileEntities.ADVANCED_ENERGY_PIPE;
+            case ELITE:
+                return RefinedPipesTileEntities.ELITE_ENERGY_PIPE;
+            case ULTIMATE:
+                return RefinedPipesTileEntities.ULTIMATE_ENERGY_PIPE;
             default:
                 throw new RuntimeException("?");
         }

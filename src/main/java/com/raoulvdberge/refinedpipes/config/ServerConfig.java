@@ -15,6 +15,12 @@ public class ServerConfig {
     private final FluidPipe improvedFluidPipe;
     private final FluidPipe advancedFluidPipe;
 
+    private final EnergyPipe basicEnergyPipe;
+    private final EnergyPipe improvedEnergyPipe;
+    private final EnergyPipe advancedEnergyPipe;
+    private final EnergyPipe eliteEnergyPipe;
+    private final EnergyPipe ultimateEnergyPipe;
+
     private final ExtractorAttachment basicExtractorAttachment;
     private final ExtractorAttachment improvedExtractorAttachment;
     private final ExtractorAttachment advancedExtractorAttachment;
@@ -37,6 +43,16 @@ public class ServerConfig {
                 basicFluidPipe = new FluidPipe("basic", FluidAttributes.BUCKET_VOLUME);
                 improvedFluidPipe = new FluidPipe("improved", FluidAttributes.BUCKET_VOLUME * 4);
                 advancedFluidPipe = new FluidPipe("advanced", FluidAttributes.BUCKET_VOLUME * 8);
+            }
+            builder.pop();
+
+            builder.push("energy");
+            {
+                basicEnergyPipe = new EnergyPipe("basic", 1000);
+                improvedEnergyPipe = new EnergyPipe("improved", 4000);
+                advancedEnergyPipe = new EnergyPipe("advanced", 8000);
+                eliteEnergyPipe = new EnergyPipe("elite", 16_000);
+                ultimateEnergyPipe = new EnergyPipe("ultimate", 32_000);
             }
             builder.pop();
 
@@ -107,6 +123,26 @@ public class ServerConfig {
         return advancedFluidPipe;
     }
 
+    public EnergyPipe getBasicEnergyPipe() {
+        return basicEnergyPipe;
+    }
+
+    public EnergyPipe getImprovedEnergyPipe() {
+        return improvedEnergyPipe;
+    }
+
+    public EnergyPipe getAdvancedEnergyPipe() {
+        return advancedEnergyPipe;
+    }
+
+    public EnergyPipe getEliteEnergyPipe() {
+        return eliteEnergyPipe;
+    }
+
+    public EnergyPipe getUltimateEnergyPipe() {
+        return ultimateEnergyPipe;
+    }
+
     public ExtractorAttachment getBasicExtractorAttachment() {
         return basicExtractorAttachment;
     }
@@ -150,6 +186,22 @@ public class ServerConfig {
             builder.push(type);
 
             capacity = builder.comment("The capacity in mB of the pipe.").defineInRange("capacity", defaultCapacity, 0, Integer.MAX_VALUE);
+
+            builder.pop();
+        }
+
+        public int getCapacity() {
+            return capacity.get();
+        }
+    }
+
+    public class EnergyPipe {
+        private final ForgeConfigSpec.IntValue capacity;
+
+        public EnergyPipe(String type, int defaultCapacity) {
+            builder.push(type);
+
+            capacity = builder.comment("The capacity in FE of the pipe.").defineInRange("capacity", defaultCapacity, 0, Integer.MAX_VALUE);
 
             builder.pop();
         }

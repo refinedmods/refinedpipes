@@ -4,10 +4,7 @@ import com.raoulvdberge.refinedpipes.block.EnergyPipeBlock;
 import com.raoulvdberge.refinedpipes.network.pipe.energy.EnergyPipeType;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.util.text.*;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -27,5 +24,10 @@ public class EnergyPipeBlockItem extends BaseBlockItem {
         super.addInformation(stack, world, tooltip, flag);
 
         tooltip.add(new TranslationTextComponent("misc.refinedpipes.tier", new TranslationTextComponent("enchantment.level." + type.getTier())).setStyle(new Style().setColor(TextFormatting.YELLOW)));
+
+        tooltip.add(new TranslationTextComponent(
+            "tooltip.refinedpipes.energy_pipe.capacity",
+            new StringTextComponent(type.getCapacity() + " FE").setStyle(new Style().setColor(TextFormatting.WHITE))
+        ).setStyle(new Style().setColor(TextFormatting.GRAY)));
     }
 }

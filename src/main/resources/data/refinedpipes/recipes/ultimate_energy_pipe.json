@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "DQD",
+    "GRG",
+    "DQD"
+  ],
+  "key": {
+    "D": {
+      "item": "minecraft:popped_chorus_fruit"
+    },
+    "Q": {
+      "item": "minecraft:prismarine_shard"
+    },
+    "G": {
+      "item": "minecraft:glass"
+    },
+    "R": {
+      "item": "minecraft:redstone_block"
+    }
+  },
+  "result": {
+    "item": "refinedpipes:ultimate_energy_pipe",
+    "count": 6
+  }
+}

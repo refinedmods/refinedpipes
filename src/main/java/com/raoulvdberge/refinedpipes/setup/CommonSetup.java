@@ -82,6 +82,10 @@ public class CommonSetup {
         e.getRegistry().register(new FluidPipeBlock(pipeShapeCache, FluidPipeType.ADVANCED));
 
         e.getRegistry().register(new EnergyPipeBlock(pipeShapeCache, EnergyPipeType.BASIC));
+        e.getRegistry().register(new EnergyPipeBlock(pipeShapeCache, EnergyPipeType.IMPROVED));
+        e.getRegistry().register(new EnergyPipeBlock(pipeShapeCache, EnergyPipeType.ADVANCED));
+        e.getRegistry().register(new EnergyPipeBlock(pipeShapeCache, EnergyPipeType.ELITE));
+        e.getRegistry().register(new EnergyPipeBlock(pipeShapeCache, EnergyPipeType.ULTIMATE));
     }
 
     @SubscribeEvent
@@ -95,6 +99,10 @@ public class CommonSetup {
         e.getRegistry().register(new FluidPipeBlockItem(RefinedPipesBlocks.ADVANCED_FLUID_PIPE));
 
         e.getRegistry().register(new EnergyPipeBlockItem(RefinedPipesBlocks.BASIC_ENERGY_PIPE));
+        e.getRegistry().register(new EnergyPipeBlockItem(RefinedPipesBlocks.IMPROVED_ENERGY_PIPE));
+        e.getRegistry().register(new EnergyPipeBlockItem(RefinedPipesBlocks.ADVANCED_ENERGY_PIPE));
+        e.getRegistry().register(new EnergyPipeBlockItem(RefinedPipesBlocks.ELITE_ENERGY_PIPE));
+        e.getRegistry().register(new EnergyPipeBlockItem(RefinedPipesBlocks.ULTIMATE_ENERGY_PIPE));
 
         for (AttachmentType type : AttachmentRegistry.INSTANCE.getTypes()) {
             e.getRegistry().register(new AttachmentItem(type));
@@ -112,6 +120,10 @@ public class CommonSetup {
         e.getRegistry().register(TileEntityType.Builder.create(() -> new FluidPipeTileEntity(FluidPipeType.ADVANCED), RefinedPipesBlocks.ADVANCED_FLUID_PIPE).build(null).setRegistryName(FluidPipeType.ADVANCED.getId()));
 
         e.getRegistry().register(TileEntityType.Builder.create(() -> new EnergyPipeTileEntity(EnergyPipeType.BASIC), RefinedPipesBlocks.BASIC_ENERGY_PIPE).build(null).setRegistryName(EnergyPipeType.BASIC.getId()));
+        e.getRegistry().register(TileEntityType.Builder.create(() -> new EnergyPipeTileEntity(EnergyPipeType.IMPROVED), RefinedPipesBlocks.IMPROVED_ENERGY_PIPE).build(null).setRegistryName(EnergyPipeType.IMPROVED.getId()));
+        e.getRegistry().register(TileEntityType.Builder.create(() -> new EnergyPipeTileEntity(EnergyPipeType.ADVANCED), RefinedPipesBlocks.ADVANCED_ENERGY_PIPE).build(null).setRegistryName(EnergyPipeType.ADVANCED.getId()));
+        e.getRegistry().register(TileEntityType.Builder.create(() -> new EnergyPipeTileEntity(EnergyPipeType.ELITE), RefinedPipesBlocks.ELITE_ENERGY_PIPE).build(null).setRegistryName(EnergyPipeType.ELITE.getId()));
+        e.getRegistry().register(TileEntityType.Builder.create(() -> new EnergyPipeTileEntity(EnergyPipeType.ULTIMATE), RefinedPipesBlocks.ULTIMATE_ENERGY_PIPE).build(null).setRegistryName(EnergyPipeType.ULTIMATE.getId()));
     }
 
     @SubscribeEvent

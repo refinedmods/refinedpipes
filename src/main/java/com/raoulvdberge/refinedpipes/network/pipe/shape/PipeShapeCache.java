@@ -1,11 +1,14 @@
 package com.raoulvdberge.refinedpipes.network.pipe.shape;
 
 import com.raoulvdberge.refinedpipes.item.AttachmentItem;
+import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
 import com.raoulvdberge.refinedpipes.tile.PipeTileEntity;
 import com.raoulvdberge.refinedpipes.util.Raytracer;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -44,15 +47,22 @@ public class PipeShapeCache {
     public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext ctx) {
         VoxelShape shape = createShapeIfNeeded(state, world, pos);
 
-        if (ctx.getEntity() instanceof PlayerEntity &&
-            ((PlayerEntity) ctx.getEntity()).getHeldItemMainhand().getItem() instanceof AttachmentItem) {
-            shape = addFakeAttachmentShape(pos, ctx.getEntity(), shape);
+        if (ctx.getEntity() instanceof PlayerEntity) {
+            Item inHand = ((PlayerEntity) ctx.getEntity()).getHeldItemMainhand().getItem();
+
+            if (inHand instanceof AttachmentItem) {
+                shape = addFakeAttachmentShape(state.getBlock(), pos, ctx.getEntity(), shape, ((AttachmentItem) inHand).getType());
+            }
         }
 
         return shape;
     }
 
-    private VoxelShape addFakeAttachmentShape(BlockPos pos, Entity entity, VoxelShape shape) {
+    private VoxelShape addFakeAttachmentShape(Block block, BlockPos pos, Entity entity, VoxelShape shape, AttachmentType type) {
+        if (!type.canPlaceOnPipe(block)) {
+            return shape;
+        }
+
         Pair<Vec3d, Vec3d> vec = Raytracer.getVectors(entity);
 
         Raytracer.AdvancedRayTraceResult<BlockRayTraceResult> result = Raytracer.collisionRayTrace(pos, vec.getLeft(), vec.getRight(), attachmentShapes);

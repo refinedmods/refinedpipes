@@ -2,6 +2,8 @@ package com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor;
 
 import com.raoulvdberge.refinedpipes.RefinedPipes;
 import com.raoulvdberge.refinedpipes.RefinedPipesItems;
+import com.raoulvdberge.refinedpipes.block.FluidPipeBlock;
+import com.raoulvdberge.refinedpipes.block.ItemPipeBlock;
 import com.raoulvdberge.refinedpipes.network.Network;
 import com.raoulvdberge.refinedpipes.network.NetworkManager;
 import com.raoulvdberge.refinedpipes.network.fluid.FluidNetwork;
@@ -16,6 +18,7 @@ import com.raoulvdberge.refinedpipes.network.pipe.transport.callback.ItemBounceB
 import com.raoulvdberge.refinedpipes.network.pipe.transport.callback.ItemInsertTransportCallback;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.callback.ItemPipeGoneTransportCallback;
 import com.raoulvdberge.refinedpipes.routing.Path;
+import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -111,6 +114,12 @@ public class ExtractorAttachmentType implements AttachmentType {
             fluidsToExtract,
             fluidTickInterval
         ).setStyle(new Style().setColor(TextFormatting.GRAY)));
+    }
+
+    @Override
+    public boolean canPlaceOnPipe(Block pipe) {
+        return pipe instanceof ItemPipeBlock
+            || pipe instanceof FluidPipeBlock;
     }
 
     private void update(ItemNetwork network, Pipe pipe, Attachment attachment, BlockPos sourcePos, IItemHandler source) {

@@ -28,7 +28,13 @@ public class EnergyNetwork extends Network {
     public NetworkGraphScannerResult scanGraph(World world, BlockPos pos) {
         NetworkGraphScannerResult result = super.scanGraph(world, pos);
 
-        energyStorage.setCapacity(result.getFoundPipes().stream().filter(p -> p instanceof EnergyPipe).mapToInt(p -> ((EnergyPipe) p).getType().getCapacity()).sum());
+        energyStorage.setCapacity(
+            result.getFoundPipes()
+                .stream()
+                .filter(p -> p instanceof EnergyPipe)
+                .mapToInt(p -> ((EnergyPipe) p).getType().getCapacity())
+                .sum()
+        );
 
         if (energyStorage.getEnergyStored() > energyStorage.getMaxEnergyStored()) {
             energyStorage.setStored(energyStorage.getMaxEnergyStored());
@@ -48,7 +54,7 @@ public class EnergyNetwork extends Network {
         Set<Destination> destinations = graph.getDestinations(DestinationType.ENERGY_STORAGE);
 
         if (!destinations.isEmpty()) {
-            int toDistribute = (int) Math.floor((float) getThroughput() / (float) destinations.size());
+            int toDistribute = (int) Math.floor((float) energyStorage.getEnergyStored() / (float) destinations.size());
 
             for (Destination destination : destinations) {
                 TileEntity tile = destination.getConnectedPipe().getWorld().getTileEntity(destination.getReceiver());
@@ -78,10 +84,6 @@ public class EnergyNetwork extends Network {
                 }
             }
         }
-    }
-
-    private int getThroughput() {
-        return energyStorage.getMaxEnergyStored();
     }
 
     @Override
