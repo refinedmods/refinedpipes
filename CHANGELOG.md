@@ -1,6 +1,6 @@
 # Refined Pipes Changelog
 
-## 0.2.2
+## 0.3
 - Implemented pick block on attachments (raoulvdberge)
 - Improved performance of calculating pipe shapes (raoulvdberge)
 - Added energy pipes (raoulvdberge)
