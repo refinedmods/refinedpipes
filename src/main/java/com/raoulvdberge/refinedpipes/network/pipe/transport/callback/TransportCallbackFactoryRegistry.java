@@ -15,6 +15,10 @@ public class TransportCallbackFactoryRegistry {
     }
 
     public void addFactory(ResourceLocation id, TransportCallbackFactory factory) {
+        if (factories.containsKey(id)) {
+            throw new RuntimeException("Cannot register duplicate transport callback factory " + id.toString());
+        }
+
         factories.put(id, factory);
     }
 

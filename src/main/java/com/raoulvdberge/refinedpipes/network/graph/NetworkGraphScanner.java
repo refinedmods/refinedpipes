@@ -52,30 +52,29 @@ public class NetworkGraphScanner {
     private void singleScanAt(NetworkGraphScannerRequest request) {
         Pipe pipe = NetworkManager.get(request.getWorld()).getPipe(request.getPos());
 
-        if (pipe != null) {
-            if (!requiredNetworkType.equals(pipe.getNetworkType())) {
-                return;
+        if (pipe != null
+            && requiredNetworkType.equals(pipe.getNetworkType())
+            && foundPipes.add(pipe)) {
+
+            if (!currentPipes.contains(pipe)) {
+                newPipes.add(pipe);
             }
 
-            if (foundPipes.add(pipe)) {
-                if (!currentPipes.contains(pipe)) {
-                    newPipes.add(pipe);
-                }
+            removedPipes.remove(pipe);
 
-                removedPipes.remove(pipe);
+            request.setSuccessful(true);
 
-                request.setSuccessful(true);
-
-                for (Direction dir : Direction.values()) {
-                    addRequest(new NetworkGraphScannerRequest(
-                        request.getWorld(),
-                        request.getPos().offset(dir),
-                        dir,
-                        request
-                    ));
-                }
+            for (Direction dir : Direction.values()) {
+                addRequest(new NetworkGraphScannerRequest(
+                    request.getWorld(),
+                    request.getPos().offset(dir),
+                    dir,
+                    request
+                ));
             }
-        } else if (request.getParent() != null) {
+        }
+
+        if (request.getParent() != null) {
             Pipe connectedPipe = NetworkManager.get(request.getWorld()).getPipe(request.getParent().getPos());
 
             // If this item handler is connected to a pipe with an attachment, then this is not a valid destination.

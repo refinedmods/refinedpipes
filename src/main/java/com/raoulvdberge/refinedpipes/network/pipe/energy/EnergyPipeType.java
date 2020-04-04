@@ -57,6 +57,11 @@ public enum EnergyPipeType {
         }
     }
 
+    public ResourceLocation getNetworkType() {
+        ResourceLocation id = getId();
+        return new ResourceLocation(id.getNamespace(), id.getPath().replace("pipe", "network"));
+    }
+
     public TileEntityType<EnergyPipeTileEntity> getTileType() {
         switch (this) {
             case BASIC:

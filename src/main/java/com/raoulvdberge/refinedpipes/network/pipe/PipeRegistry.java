@@ -15,6 +15,10 @@ public class PipeRegistry {
     }
 
     public void addFactory(ResourceLocation id, PipeFactory factory) {
+        if (factories.containsKey(id)) {
+            throw new RuntimeException("Cannot register duplicate pipe factory " + id.toString());
+        }
+
         factories.put(id, factory);
     }
 

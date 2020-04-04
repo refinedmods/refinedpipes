@@ -52,12 +52,6 @@ public class ClientSetup {
         RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.IMPROVED_FLUID_PIPE, RenderType.getCutout());
         RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.ADVANCED_FLUID_PIPE, RenderType.getCutout());
 
-        RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.BASIC_ENERGY_PIPE, RenderType.getCutout());
-        RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.IMPROVED_ENERGY_PIPE, RenderType.getCutout());
-        RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.ADVANCED_ENERGY_PIPE, RenderType.getCutout());
-        RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.ELITE_ENERGY_PIPE, RenderType.getCutout());
-        RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.ULTIMATE_ENERGY_PIPE, RenderType.getCutout());
-
         ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.BASIC_ITEM_PIPE, ItemPipeTileEntityRenderer::new);
         ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.IMPROVED_ITEM_PIPE, ItemPipeTileEntityRenderer::new);
         ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.ADVANCED_ITEM_PIPE, ItemPipeTileEntityRenderer::new);

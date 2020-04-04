@@ -1,11 +1,11 @@
 package com.raoulvdberge.refinedpipes.network.energy;
 
-import com.raoulvdberge.refinedpipes.RefinedPipes;
 import com.raoulvdberge.refinedpipes.network.Network;
 import com.raoulvdberge.refinedpipes.network.graph.NetworkGraphScannerResult;
 import com.raoulvdberge.refinedpipes.network.pipe.Destination;
 import com.raoulvdberge.refinedpipes.network.pipe.DestinationType;
 import com.raoulvdberge.refinedpipes.network.pipe.energy.EnergyPipe;
+import com.raoulvdberge.refinedpipes.network.pipe.energy.EnergyPipeType;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -16,19 +16,22 @@ import net.minecraftforge.energy.IEnergyStorage;
 import java.util.Set;
 
 public class EnergyNetwork extends Network {
-    public static final ResourceLocation TYPE = new ResourceLocation(RefinedPipes.ID, "energy");
+    private final EnergyStorage energyStorage;
+    private final EnergyPipeType pipeType;
 
-    private final EnergyStorage energyStorage = new EnergyStorage(0);
-
-    public EnergyNetwork(BlockPos originPos, String id) {
+    public EnergyNetwork(BlockPos originPos, String id, EnergyPipeType pipeType) {
         super(originPos, id);
+
+        this.pipeType = pipeType;
+        this.energyStorage = new EnergyStorage(0);
+        this.energyStorage.setMaxReceive(pipeType.getCapacity());
     }
 
     @Override
     public NetworkGraphScannerResult scanGraph(World world, BlockPos pos) {
         NetworkGraphScannerResult result = super.scanGraph(world, pos);
 
-        energyStorage.setCapacity(
+        energyStorage.setCapacityAndMaxExtract(
             result.getFoundPipes()
                 .stream()
                 .filter(p -> p instanceof EnergyPipe)
@@ -54,7 +57,7 @@ public class EnergyNetwork extends Network {
         Set<Destination> destinations = graph.getDestinations(DestinationType.ENERGY_STORAGE);
 
         if (!destinations.isEmpty()) {
-            int toDistribute = (int) Math.floor((float) energyStorage.getEnergyStored() / (float) destinations.size());
+            int toDistribute = (int) ((float) Math.min(energyStorage.getEnergyStored(), pipeType.getCapacity()) / (float) destinations.size());
 
             for (Destination destination : destinations) {
                 TileEntity tile = destination.getConnectedPipe().getWorld().getTileEntity(destination.getReceiver());
@@ -93,6 +96,10 @@ public class EnergyNetwork extends Network {
 
     @Override
     public ResourceLocation getType() {
-        return TYPE;
+        return pipeType.getNetworkType();
+    }
+
+    public EnergyPipeType getPipeType() {
+        return pipeType;
     }
 }

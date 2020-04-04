@@ -15,7 +15,7 @@ public class EnergyPipe extends Pipe {
 
     private final EnergyPipeType type;
 
-    private LazyOptional<EnergyPipeEnergyStorage> energyStorage = LazyOptional.empty();
+    private LazyOptional<ServerEnergyPipeEnergyStorage> energyStorage = LazyOptional.empty();
 
     public EnergyPipe(World world, BlockPos pos, EnergyPipeType type) {
         super(world, pos);
@@ -26,7 +26,7 @@ public class EnergyPipe extends Pipe {
     public void joinNetwork(Network network) {
         super.joinNetwork(network);
 
-        this.energyStorage = LazyOptional.of(() -> new EnergyPipeEnergyStorage(((EnergyNetwork) network).getEnergyStorage()));
+        this.energyStorage = LazyOptional.of(() -> new ServerEnergyPipeEnergyStorage((EnergyNetwork) network));
     }
 
     @Override
@@ -36,7 +36,7 @@ public class EnergyPipe extends Pipe {
         this.energyStorage = LazyOptional.empty();
     }
 
-    public LazyOptional<EnergyPipeEnergyStorage> getEnergyStorage() {
+    public LazyOptional<ServerEnergyPipeEnergyStorage> getEnergyStorage() {
         return energyStorage;
     }
 
@@ -60,6 +60,6 @@ public class EnergyPipe extends Pipe {
 
     @Override
     public ResourceLocation getNetworkType() {
-        return EnergyNetwork.TYPE;
+        return type.getNetworkType();
     }
 }

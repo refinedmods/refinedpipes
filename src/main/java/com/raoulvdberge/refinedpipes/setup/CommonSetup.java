@@ -11,7 +11,6 @@ import com.raoulvdberge.refinedpipes.item.FluidPipeBlockItem;
 import com.raoulvdberge.refinedpipes.item.ItemPipeBlockItem;
 import com.raoulvdberge.refinedpipes.network.NetworkManager;
 import com.raoulvdberge.refinedpipes.network.NetworkRegistry;
-import com.raoulvdberge.refinedpipes.network.energy.EnergyNetwork;
 import com.raoulvdberge.refinedpipes.network.energy.EnergyNetworkFactory;
 import com.raoulvdberge.refinedpipes.network.fluid.FluidNetwork;
 import com.raoulvdberge.refinedpipes.network.fluid.FluidNetworkFactory;
@@ -52,7 +51,10 @@ public class CommonSetup {
     public CommonSetup() {
         NetworkRegistry.INSTANCE.addFactory(ItemNetwork.TYPE, new ItemNetworkFactory());
         NetworkRegistry.INSTANCE.addFactory(FluidNetwork.TYPE, new FluidNetworkFactory());
-        NetworkRegistry.INSTANCE.addFactory(EnergyNetwork.TYPE, new EnergyNetworkFactory());
+
+        for (EnergyPipeType pipeType : EnergyPipeType.values()) {
+            NetworkRegistry.INSTANCE.addFactory(pipeType.getNetworkType(), new EnergyNetworkFactory(pipeType));
+        }
 
         PipeRegistry.INSTANCE.addFactory(ItemPipe.ID, new ItemPipeFactory());
         PipeRegistry.INSTANCE.addFactory(FluidPipe.ID, new FluidPipeFactory());

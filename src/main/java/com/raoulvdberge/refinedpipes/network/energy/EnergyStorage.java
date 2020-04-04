@@ -5,10 +5,13 @@ public class EnergyStorage extends net.minecraftforge.energy.EnergyStorage {
         super(capacity);
     }
 
-    public void setCapacity(int cap) {
-        this.capacity = cap;
-        this.maxExtract = cap;
-        this.maxReceive = cap;
+    public void setCapacityAndMaxExtract(int capacity) {
+        this.capacity = capacity;
+        this.maxExtract = capacity;
+    }
+
+    public void setMaxReceive(int maxReceive) {
+        this.maxReceive = maxReceive;
     }
 
     public void setStored(int stored) {

@@ -11,6 +11,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.energy.IEnergyStorage;
 
 import javax.annotation.Nullable;
 
@@ -55,15 +56,27 @@ public class EnergyPipeBlock extends PipeBlock {
             return false;
         }
 
-        return facingState.getBlock() instanceof EnergyPipeBlock;
+        return facingState.getBlock() instanceof EnergyPipeBlock
+            && ((EnergyPipeBlock) facingState.getBlock()).getType() == type;
     }
 
     @Override
     protected boolean hasInvConnection(IWorld world, BlockPos pos, Direction direction) {
         TileEntity facingTile = world.getTileEntity(pos.offset(direction));
+        if (facingTile == null) {
+            return false;
+        }
 
-        return facingTile != null
-            && facingTile.getCapability(CapabilityEnergy.ENERGY, direction.getOpposite()).isPresent()
-            && !(facingTile.getCapability(CapabilityEnergy.ENERGY, direction.getOpposite()).orElse(null) instanceof EnergyPipeEnergyStorage);
+        IEnergyStorage energyStorage = facingTile.getCapability(CapabilityEnergy.ENERGY, direction.getOpposite()).orElse(null);
+        if (energyStorage == null) {
+            return false;
+        }
+
+        if (energyStorage instanceof EnergyPipeEnergyStorage
+            && ((EnergyPipeEnergyStorage) energyStorage).getEnergyPipeType() == type) {
+            return false;
+        }
+
+        return true;
     }
 }
