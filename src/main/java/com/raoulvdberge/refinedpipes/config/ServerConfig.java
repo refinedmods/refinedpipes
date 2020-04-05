@@ -48,11 +48,11 @@ public class ServerConfig {
 
             builder.push("energy");
             {
-                basicEnergyPipe = new EnergyPipe("basic", 1000);
-                improvedEnergyPipe = new EnergyPipe("improved", 4000);
-                advancedEnergyPipe = new EnergyPipe("advanced", 8000);
-                eliteEnergyPipe = new EnergyPipe("elite", 16_000);
-                ultimateEnergyPipe = new EnergyPipe("ultimate", 32_000);
+                basicEnergyPipe = new EnergyPipe("basic", 1000, 1000);
+                improvedEnergyPipe = new EnergyPipe("improved", 4000, 4000);
+                advancedEnergyPipe = new EnergyPipe("advanced", 8000, 8000);
+                eliteEnergyPipe = new EnergyPipe("elite", 16_000, 16_000);
+                ultimateEnergyPipe = new EnergyPipe("ultimate", 32_000, 32_000);
             }
             builder.pop();
 
@@ -197,17 +197,23 @@ public class ServerConfig {
 
     public class EnergyPipe {
         private final ForgeConfigSpec.IntValue capacity;
+        private final ForgeConfigSpec.IntValue transferRate;
 
-        public EnergyPipe(String type, int defaultCapacity) {
+        public EnergyPipe(String type, int defaultCapacity, int defaultTransferRate) {
             builder.push(type);
 
             capacity = builder.comment("The capacity in FE of the pipe.").defineInRange("capacity", defaultCapacity, 0, Integer.MAX_VALUE);
+            transferRate = builder.comment("The transfer rate in FE/t of this pipe.").defineInRange("transferRate", defaultTransferRate, 0, Integer.MAX_VALUE);
 
             builder.pop();
         }
 
         public int getCapacity() {
             return capacity.get();
+        }
+
+        public int getTransferRate() {
+            return transferRate.get();
         }
     }
 

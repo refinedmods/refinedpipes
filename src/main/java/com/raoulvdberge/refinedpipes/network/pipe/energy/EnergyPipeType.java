@@ -40,6 +40,23 @@ public enum EnergyPipeType {
         }
     }
 
+    public int getTransferRate() {
+        switch (this) {
+            case BASIC:
+                return RefinedPipes.SERVER_CONFIG.getBasicEnergyPipe().getTransferRate();
+            case IMPROVED:
+                return RefinedPipes.SERVER_CONFIG.getImprovedEnergyPipe().getTransferRate();
+            case ADVANCED:
+                return RefinedPipes.SERVER_CONFIG.getAdvancedEnergyPipe().getTransferRate();
+            case ELITE:
+                return RefinedPipes.SERVER_CONFIG.getEliteEnergyPipe().getTransferRate();
+            case ULTIMATE:
+                return RefinedPipes.SERVER_CONFIG.getUltimateEnergyPipe().getTransferRate();
+            default:
+                throw new RuntimeException("?");
+        }
+    }
+
     public ResourceLocation getId() {
         switch (this) {
             case BASIC:

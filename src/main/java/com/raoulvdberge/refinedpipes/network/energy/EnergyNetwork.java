@@ -57,7 +57,9 @@ public class EnergyNetwork extends Network {
         Set<Destination> destinations = graph.getDestinations(DestinationType.ENERGY_STORAGE);
 
         if (!destinations.isEmpty()) {
-            int toDistribute = (int) ((float) Math.min(energyStorage.getEnergyStored(), pipeType.getCapacity()) / (float) destinations.size());
+            if (energyStorage.getEnergyStored() <= 0) {
+                return;
+            }
 
             for (Destination destination : destinations) {
                 TileEntity tile = destination.getConnectedPipe().getWorld().getTileEntity(destination.getReceiver());
@@ -74,14 +76,19 @@ public class EnergyNetwork extends Network {
                     continue;
                 }
 
-                int energyDrained = energyStorage.extractEnergy(toDistribute, false);
-                if (energyDrained == 0) {
-                    continue;
+                int toOffer = Math.min(pipeType.getTransferRate(), energyStorage.getEnergyStored());
+                if (toOffer <= 0) {
+                    break;
                 }
 
-                int energyReceived = handler.receiveEnergy(energyDrained, false);
+                toOffer = energyStorage.extractEnergy(toOffer, false);
+                if (toOffer <= 0) {
+                    break;
+                }
 
-                int remainder = energyDrained - energyReceived;
+                int accepted = handler.receiveEnergy(toOffer, false);
+
+                int remainder = toOffer - accepted;
                 if (remainder > 0) {
                     energyStorage.receiveEnergy(remainder, false);
                 }

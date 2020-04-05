@@ -29,5 +29,10 @@ public class EnergyPipeBlockItem extends BaseBlockItem {
             "tooltip.refinedpipes.energy_pipe.capacity",
             new StringTextComponent(type.getCapacity() + " FE").setStyle(new Style().setColor(TextFormatting.WHITE))
         ).setStyle(new Style().setColor(TextFormatting.GRAY)));
+
+        tooltip.add(new TranslationTextComponent(
+            "tooltip.refinedpipes.energy_pipe.transfer_rate",
+            new StringTextComponent(type.getTransferRate() + " FE/t").setStyle(new Style().setColor(TextFormatting.WHITE))
+        ).setStyle(new Style().setColor(TextFormatting.GRAY)));
     }
 }
