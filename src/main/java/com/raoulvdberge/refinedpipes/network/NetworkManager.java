@@ -144,7 +144,7 @@ public class NetworkManager extends WorldSavedData {
         }
 
         if (pipe.getNetwork() == null) {
-            throw new RuntimeException("Pipe has no network");
+            LOGGER.warn("Removed pipe at {} has no associated network", pipe.getPos());
         }
 
         pipes.remove(pipe.getPos());
@@ -153,7 +153,9 @@ public class NetworkManager extends WorldSavedData {
 
         markDirty();
 
-        splitNetworks(pipe);
+        if (pipe.getNetwork() != null) {
+            splitNetworks(pipe);
+        }
     }
 
     private void splitNetworks(Pipe originPipe) {

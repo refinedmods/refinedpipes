@@ -1,6 +1,8 @@
 # Refined Pipes Changelog
 
 ## 0.3
+Note: Due to fluid networks now being split up by their tier, all fluid pipes from version 0.2.1 and earlier are incompatible and won't be functioning. This can be fixed by breaking and replacing all the fluid pipes in a network.
+
 - Implemented pick block on attachments (raoulvdberge)
 - Improved performance of calculating pipe shapes (raoulvdberge)
 - Added energy pipes (raoulvdberge)
