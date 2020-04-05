@@ -42,11 +42,11 @@ public class ServerConfig {
 
             builder.push("fluid");
             {
-                basicFluidPipe = new FluidPipe("basic", FluidAttributes.BUCKET_VOLUME, 400);
-                improvedFluidPipe = new FluidPipe("improved", FluidAttributes.BUCKET_VOLUME * 4, 800);
-                advancedFluidPipe = new FluidPipe("advanced", FluidAttributes.BUCKET_VOLUME * 8, 1600);
-                eliteFluidPipe = new FluidPipe("elite", FluidAttributes.BUCKET_VOLUME * 16, 3200);
-                ultimateFluidPipe = new FluidPipe("ultimate", FluidAttributes.BUCKET_VOLUME * 32, 6400);
+                basicFluidPipe = new FluidPipe("basic", FluidAttributes.BUCKET_VOLUME, 100);
+                improvedFluidPipe = new FluidPipe("improved", FluidAttributes.BUCKET_VOLUME * 4, 400);
+                advancedFluidPipe = new FluidPipe("advanced", FluidAttributes.BUCKET_VOLUME * 8, 800);
+                eliteFluidPipe = new FluidPipe("elite", FluidAttributes.BUCKET_VOLUME * 16, 1600);
+                ultimateFluidPipe = new FluidPipe("ultimate", FluidAttributes.BUCKET_VOLUME * 32, 3200);
             }
             builder.pop();
 
