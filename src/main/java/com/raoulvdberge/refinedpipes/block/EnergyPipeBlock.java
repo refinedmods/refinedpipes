@@ -72,8 +72,7 @@ public class EnergyPipeBlock extends PipeBlock {
             return false;
         }
 
-        if (energyStorage instanceof EnergyPipeEnergyStorage
-            && ((EnergyPipeEnergyStorage) energyStorage).getEnergyPipeType() == type) {
+        if (energyStorage instanceof EnergyPipeEnergyStorage) {
             return false;
         }
 

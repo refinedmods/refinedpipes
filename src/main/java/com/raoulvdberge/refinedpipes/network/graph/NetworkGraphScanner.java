@@ -4,7 +4,7 @@ import com.raoulvdberge.refinedpipes.network.NetworkManager;
 import com.raoulvdberge.refinedpipes.network.pipe.Destination;
 import com.raoulvdberge.refinedpipes.network.pipe.DestinationType;
 import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
-import com.raoulvdberge.refinedpipes.network.pipe.energy.EnergyPipe;
+import com.raoulvdberge.refinedpipes.network.pipe.energy.EnergyPipeEnergyStorage;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
@@ -74,18 +74,11 @@ public class NetworkGraphScanner {
                     ));
                 }
             }
-
-            // This is a workaround.
-            // We can NOT have the bottom TE capability checks always run regardless of whether there was a pipe or not.
+        } else if (request.getParent() != null) { // This can NOT be called on pipe positions! (causes problems with tiles getting invalidated/validates when it shouldn't)
+            // We can NOT have the TE capability checks always run regardless of whether there was a pipe or not.
             // Otherwise we have this loop: pipe gets placed -> network gets scanned -> TEs get checked -> it might check the TE we just placed
             // -> the newly created TE can be created in immediate mode -> TE#validate is called again -> TE#remove is called again!
-            // So just do this ugly check for now.
-            if (!isSameNetworkType && pipe instanceof EnergyPipe) {
-                ((EnergyPipe) pipe)
-                    .getEnergyStorage()
-                    .ifPresent(energyStorage -> destinations.add(new Destination(DestinationType.ENERGY_STORAGE, request.getPos(), request.getDirection(), pipe)));
-            }
-        } else if (request.getParent() != null) { // This can NOT be called on pipe positions! (causes problems with tiles getting invalidated/validates when it shouldn't)
+
             Pipe connectedPipe = NetworkManager.get(request.getWorld()).getPipe(request.getParent().getPos());
 
             // If this item handler is connected to a pipe with an attachment, then this is not a valid destination.
@@ -100,7 +93,11 @@ public class NetworkGraphScanner {
                         .ifPresent(fluidHandler -> destinations.add(new Destination(DestinationType.FLUID_HANDLER, request.getPos(), request.getDirection(), connectedPipe)));
 
                     tile.getCapability(CapabilityEnergy.ENERGY, request.getDirection().getOpposite())
-                        .ifPresent(energyStorage -> destinations.add(new Destination(DestinationType.ENERGY_STORAGE, request.getPos(), request.getDirection(), connectedPipe)));
+                        .ifPresent(energyStorage -> {
+                            if (!(energyStorage instanceof EnergyPipeEnergyStorage)) {
+                                destinations.add(new Destination(DestinationType.ENERGY_STORAGE, request.getPos(), request.getDirection(), connectedPipe));
+                            }
+                        });
                 }
             }
         }
