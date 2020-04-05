@@ -51,6 +51,8 @@ public class ClientSetup {
         RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.BASIC_FLUID_PIPE, RenderType.getCutout());
         RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.IMPROVED_FLUID_PIPE, RenderType.getCutout());
         RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.ADVANCED_FLUID_PIPE, RenderType.getCutout());
+        RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.ELITE_FLUID_PIPE, RenderType.getCutout());
+        RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.ULTIMATE_FLUID_PIPE, RenderType.getCutout());
 
         ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.BASIC_ITEM_PIPE, ItemPipeTileEntityRenderer::new);
         ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.IMPROVED_ITEM_PIPE, ItemPipeTileEntityRenderer::new);
@@ -59,6 +61,8 @@ public class ClientSetup {
         ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.BASIC_FLUID_PIPE, FluidPipeTileEntityRenderer::new);
         ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.IMPROVED_FLUID_PIPE, FluidPipeTileEntityRenderer::new);
         ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.ADVANCED_FLUID_PIPE, FluidPipeTileEntityRenderer::new);
+        ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.ELITE_FLUID_PIPE, FluidPipeTileEntityRenderer::new);
+        ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.ULTIMATE_FLUID_PIPE, FluidPipeTileEntityRenderer::new);
 
         for (String type : new String[]{"item", "fluid", "energy"}) {
             ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/" + type + "/basic/core"));
@@ -73,7 +77,7 @@ public class ClientSetup {
             ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/" + type + "/advanced/extension"));
             ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/" + type + "/advanced/straight"));
 
-            if (type.equals("energy")) {
+            if (type.equals("fluid") || type.equals("energy")) {
                 ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/" + type + "/elite/core"));
                 ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/" + type + "/elite/extension"));
                 ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/" + type + "/elite/straight"));
@@ -141,6 +145,22 @@ public class ClientSetup {
                     e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/fluid/advanced/core")),
                     e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/fluid/advanced/extension")),
                     e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/fluid/advanced/straight")),
+                    e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/attachment/inventory_attachment")),
+                    attachmentModels
+                ));
+            } else if (isPipeModel(id, FluidPipeType.ELITE.getId())) {
+                e.getModelRegistry().put(id, new PipeBakedModel(
+                    e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/fluid/elite/core")),
+                    e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/fluid/elite/extension")),
+                    e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/fluid/elite/straight")),
+                    e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/attachment/inventory_attachment")),
+                    attachmentModels
+                ));
+            } else if (isPipeModel(id, FluidPipeType.ULTIMATE.getId())) {
+                e.getModelRegistry().put(id, new PipeBakedModel(
+                    e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/fluid/ultimate/core")),
+                    e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/fluid/ultimate/extension")),
+                    e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/fluid/ultimate/straight")),
                     e.getModelRegistry().get(new ResourceLocation(RefinedPipes.ID + ":block/pipe/attachment/inventory_attachment")),
                     attachmentModels
                 ));

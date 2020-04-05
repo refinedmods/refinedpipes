@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "DQD",
+    "SGS",
+    "DQD"
+  ],
+  "key": {
+    "D": {
+      "item": "minecraft:popped_chorus_fruit"
+    },
+    "Q": {
+      "item": "minecraft:prismarine_shard"
+    },
+    "G": {
+      "item": "minecraft:glass"
+    },
+    "S": {
+      "item": "minecraft:slime_ball"
+    }
+  },
+  "result": {
+    "item": "refinedpipes:ultimate_fluid_pipe",
+    "count": 6
+  }
+}

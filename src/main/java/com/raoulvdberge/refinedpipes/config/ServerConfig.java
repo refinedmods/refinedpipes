@@ -14,6 +14,8 @@ public class ServerConfig {
     private final FluidPipe basicFluidPipe;
     private final FluidPipe improvedFluidPipe;
     private final FluidPipe advancedFluidPipe;
+    private final FluidPipe eliteFluidPipe;
+    private final FluidPipe ultimateFluidPipe;
 
     private final EnergyPipe basicEnergyPipe;
     private final EnergyPipe improvedEnergyPipe;
@@ -40,9 +42,11 @@ public class ServerConfig {
 
             builder.push("fluid");
             {
-                basicFluidPipe = new FluidPipe("basic", FluidAttributes.BUCKET_VOLUME, 100);
-                improvedFluidPipe = new FluidPipe("improved", FluidAttributes.BUCKET_VOLUME * 4, 400);
-                advancedFluidPipe = new FluidPipe("advanced", FluidAttributes.BUCKET_VOLUME * 8, 800);
+                basicFluidPipe = new FluidPipe("basic", FluidAttributes.BUCKET_VOLUME, 400);
+                improvedFluidPipe = new FluidPipe("improved", FluidAttributes.BUCKET_VOLUME * 4, 800);
+                advancedFluidPipe = new FluidPipe("advanced", FluidAttributes.BUCKET_VOLUME * 8, 1600);
+                eliteFluidPipe = new FluidPipe("elite", FluidAttributes.BUCKET_VOLUME * 16, 3200);
+                ultimateFluidPipe = new FluidPipe("ultimate", FluidAttributes.BUCKET_VOLUME * 32, 6400);
             }
             builder.pop();
 
@@ -121,6 +125,14 @@ public class ServerConfig {
 
     public FluidPipe getAdvancedFluidPipe() {
         return advancedFluidPipe;
+    }
+
+    public FluidPipe getEliteFluidPipe() {
+        return eliteFluidPipe;
+    }
+
+    public FluidPipe getUltimateFluidPipe() {
+        return ultimateFluidPipe;
     }
 
     public EnergyPipe getBasicEnergyPipe() {

@@ -4,6 +4,7 @@
 - Implemented pick block on attachments (raoulvdberge)
 - Improved performance of calculating pipe shapes (raoulvdberge)
 - Added energy pipes (raoulvdberge)
+- Added new tiers for the Fluid Pipe: Elite and Ultimate (raoulvdberge)
 
 ## 0.2.1
 Note: Due to refactoring of the network architecture, pipes from version 0.2 and earlier are incompatible and won't be functioning. This can be fixed by breaking and replacing all the pipes in a network.
