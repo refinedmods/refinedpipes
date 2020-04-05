@@ -1,16 +1,15 @@
 package com.raoulvdberge.refinedpipes.network.fluid;
 
-import com.raoulvdberge.refinedpipes.RefinedPipes;
 import com.raoulvdberge.refinedpipes.network.Network;
 import com.raoulvdberge.refinedpipes.network.graph.NetworkGraphScannerResult;
 import com.raoulvdberge.refinedpipes.network.pipe.Destination;
 import com.raoulvdberge.refinedpipes.network.pipe.DestinationType;
 import com.raoulvdberge.refinedpipes.network.pipe.fluid.FluidPipe;
+import com.raoulvdberge.refinedpipes.network.pipe.fluid.FluidPipeType;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
@@ -21,12 +20,14 @@ import net.minecraftforge.fluids.capability.templates.FluidTank;
 import java.util.Set;
 
 public class FluidNetwork extends Network {
-    public static final ResourceLocation TYPE = new ResourceLocation(RefinedPipes.ID, "fluid");
-
     private final FluidTank fluidTank = new FluidTank(FluidAttributes.BUCKET_VOLUME);
 
-    public FluidNetwork(BlockPos originPos, String id) {
+    private final FluidPipeType pipeType;
+
+    public FluidNetwork(BlockPos originPos, String id, FluidPipeType pipeType) {
         super(originPos, id);
+
+        this.pipeType = pipeType;
     }
 
     public FluidTank getFluidTank() {
@@ -58,34 +59,39 @@ public class FluidNetwork extends Network {
 
         Set<Destination> destinations = graph.getDestinations(DestinationType.FLUID_HANDLER);
 
-        if (!fluidTank.getFluid().isEmpty() && !destinations.isEmpty()) {
-            int toDistribute = (int) Math.floor((float) getThroughput() / (float) destinations.size());
+        if (fluidTank.getFluid().isEmpty() || destinations.isEmpty()) {
+            return;
+        }
 
-            for (Destination destination : destinations) {
-                TileEntity tile = destination.getConnectedPipe().getWorld().getTileEntity(destination.getReceiver());
-                if (tile == null) {
-                    continue;
-                }
+        for (Destination destination : destinations) {
+            TileEntity tile = destination.getConnectedPipe().getWorld().getTileEntity(destination.getReceiver());
+            if (tile == null) {
+                continue;
+            }
 
-                IFluidHandler handler = tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, destination.getIncomingDirection().getOpposite()).orElse(null);
-                if (handler == null) {
-                    continue;
-                }
+            IFluidHandler handler = tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, destination.getIncomingDirection().getOpposite()).orElse(null);
+            if (handler == null) {
+                continue;
+            }
 
-                FluidStack drained = fluidTank.drain(toDistribute, IFluidHandler.FluidAction.EXECUTE);
-                if (drained.isEmpty()) {
-                    continue;
-                }
+            int toOfferAmount = Math.min(pipeType.getTransferRate(), fluidTank.getFluidAmount());
+            if (toOfferAmount <= 0) {
+                break;
+            }
 
-                int filled = handler.fill(drained, IFluidHandler.FluidAction.EXECUTE);
+            FluidStack toOffer = fluidTank.drain(toOfferAmount, IFluidHandler.FluidAction.EXECUTE);
+            if (toOffer.isEmpty()) {
+                break;
+            }
 
-                int remainder = drained.getAmount() - filled;
-                if (remainder > 0) {
-                    drained = drained.copy();
-                    drained.setAmount(remainder);
+            int accepted = handler.fill(toOffer, IFluidHandler.FluidAction.EXECUTE);
 
-                    fluidTank.fill(drained, IFluidHandler.FluidAction.EXECUTE);
-                }
+            int remainder = toOffer.getAmount() - accepted;
+            if (remainder > 0) {
+                FluidStack remainderStack = toOffer.copy();
+                remainderStack.setAmount(remainder);
+
+                fluidTank.fill(remainderStack, IFluidHandler.FluidAction.EXECUTE);
             }
         }
     }
@@ -97,14 +103,7 @@ public class FluidNetwork extends Network {
 
     @Override
     public ResourceLocation getType() {
-        return TYPE;
-    }
-
-    private int getThroughput() {
-        int viscosity = fluidTank.getFluid().getFluid().getAttributes().getViscosity(fluidTank.getFluid());
-        viscosity = Math.max(100, viscosity);
-
-        return MathHelper.clamp(120000 / viscosity, 80, 600);
+        return pipeType.getNetworkType();
     }
 
     @Override

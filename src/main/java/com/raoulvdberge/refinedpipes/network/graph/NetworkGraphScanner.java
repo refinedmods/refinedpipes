@@ -54,9 +54,11 @@ public class NetworkGraphScanner {
         Pipe pipe = NetworkManager.get(request.getWorld()).getPipe(request.getPos());
 
         if (pipe != null) {
-            boolean isSameNetworkType = requiredNetworkType.equals(pipe.getNetworkType());
+            if (!requiredNetworkType.equals(pipe.getNetworkType())) {
+                return;
+            }
 
-            if (isSameNetworkType && foundPipes.add(pipe)) {
+            if (foundPipes.add(pipe)) {
                 if (!currentPipes.contains(pipe)) {
                     newPipes.add(pipe);
                 }
@@ -81,7 +83,7 @@ public class NetworkGraphScanner {
 
             Pipe connectedPipe = NetworkManager.get(request.getWorld()).getPipe(request.getParent().getPos());
 
-            // If this item handler is connected to a pipe with an attachment, then this is not a valid destination.
+            // If this destination is connected to a pipe with an attachment, then this is not a valid destination.
             if (!connectedPipe.getAttachmentManager().hasAttachment(request.getDirection())) {
                 TileEntity tile = request.getWorld().getTileEntity(request.getPos());
 

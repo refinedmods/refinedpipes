@@ -19,7 +19,7 @@
   "misc.refinedpipes.tier": "Tier %s",
   "tooltip.refinedpipes.fluid_pipe.capacity": "Capacity: %s",
   "tooltip.refinedpipes.item_pipe.speed": "Speed: %s",
-  "tooltip.refinedpipes.fluid_pipe.speed": "Speed varies by fluid.",
+  "tooltip.refinedpipes.fluid_pipe.transfer_rate": "Transfer rate: %s",
   "tooltip.refinedpipes.energy_pipe.capacity": "Capacity: %s",
   "tooltip.refinedpipes.energy_pipe.transfer_rate": "Transfer rate: %s",
   "tooltip.refinedpipes.extractor_attachment.item_extraction_rate": "Extracts %s every %s",

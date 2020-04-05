@@ -29,6 +29,8 @@ public class NetworkGraph {
         result.getNewPipes().forEach(p -> p.joinNetwork(network));
         result.getRemovedPipes().forEach(Pipe::leaveNetwork);
 
+        destinations.clear();
+
         for (Destination destination : result.getDestinations()) {
             destinations.computeIfAbsent(destination.getType(), type -> new HashSet<>()).add(destination);
         }

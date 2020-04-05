@@ -40,9 +40,9 @@ public class ServerConfig {
 
             builder.push("fluid");
             {
-                basicFluidPipe = new FluidPipe("basic", FluidAttributes.BUCKET_VOLUME);
-                improvedFluidPipe = new FluidPipe("improved", FluidAttributes.BUCKET_VOLUME * 4);
-                advancedFluidPipe = new FluidPipe("advanced", FluidAttributes.BUCKET_VOLUME * 8);
+                basicFluidPipe = new FluidPipe("basic", FluidAttributes.BUCKET_VOLUME, 100);
+                improvedFluidPipe = new FluidPipe("improved", FluidAttributes.BUCKET_VOLUME * 4, 400);
+                advancedFluidPipe = new FluidPipe("advanced", FluidAttributes.BUCKET_VOLUME * 8, 800);
             }
             builder.pop();
 
@@ -181,17 +181,23 @@ public class ServerConfig {
 
     public class FluidPipe {
         private final ForgeConfigSpec.IntValue capacity;
+        private final ForgeConfigSpec.IntValue transferRate;
 
-        public FluidPipe(String type, int defaultCapacity) {
+        public FluidPipe(String type, int defaultCapacity, int defaultTransferRate) {
             builder.push(type);
 
             capacity = builder.comment("The capacity in mB of the pipe.").defineInRange("capacity", defaultCapacity, 0, Integer.MAX_VALUE);
+            transferRate = builder.comment("The transfer rate in mB/t of the pipe.").defineInRange("transferRate", defaultTransferRate, 0, Integer.MAX_VALUE);
 
             builder.pop();
         }
 
         public int getCapacity() {
             return capacity.get();
+        }
+
+        public int getTransferRate() {
+            return transferRate.get();
         }
     }
 
@@ -203,7 +209,7 @@ public class ServerConfig {
             builder.push(type);
 
             capacity = builder.comment("The capacity in FE of the pipe.").defineInRange("capacity", defaultCapacity, 0, Integer.MAX_VALUE);
-            transferRate = builder.comment("The transfer rate in FE/t of this pipe.").defineInRange("transferRate", defaultTransferRate, 0, Integer.MAX_VALUE);
+            transferRate = builder.comment("The transfer rate in FE/t of the pipe.").defineInRange("transferRate", defaultTransferRate, 0, Integer.MAX_VALUE);
 
             builder.pop();
         }

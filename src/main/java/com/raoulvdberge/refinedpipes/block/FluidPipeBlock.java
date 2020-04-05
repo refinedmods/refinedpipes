@@ -54,7 +54,8 @@ public class FluidPipeBlock extends PipeBlock {
             return false;
         }
 
-        return facingState.getBlock() instanceof FluidPipeBlock;
+        return facingState.getBlock() instanceof FluidPipeBlock
+            && ((FluidPipeBlock) facingState.getBlock()).getType() == type;
     }
 
     @Override

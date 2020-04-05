@@ -75,8 +75,20 @@ public enum EnergyPipeType {
     }
 
     public ResourceLocation getNetworkType() {
-        ResourceLocation id = getId();
-        return new ResourceLocation(id.getNamespace(), id.getPath().replace("pipe", "network"));
+        switch (this) {
+            case BASIC:
+                return new ResourceLocation(RefinedPipes.ID, "basic_energy_network");
+            case IMPROVED:
+                return new ResourceLocation(RefinedPipes.ID, "improved_energy_network");
+            case ADVANCED:
+                return new ResourceLocation(RefinedPipes.ID, "advanced_energy_network");
+            case ELITE:
+                return new ResourceLocation(RefinedPipes.ID, "elite_energy_network");
+            case ULTIMATE:
+                return new ResourceLocation(RefinedPipes.ID, "ultimate_energy_network");
+            default:
+                throw new RuntimeException("?");
+        }
     }
 
     public TileEntityType<EnergyPipeTileEntity> getTileType() {

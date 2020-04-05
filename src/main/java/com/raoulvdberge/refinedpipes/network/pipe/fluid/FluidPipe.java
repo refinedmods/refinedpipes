@@ -64,6 +64,6 @@ public class FluidPipe extends Pipe {
 
     @Override
     public ResourceLocation getNetworkType() {
-        return FluidNetwork.TYPE;
+        return type.getNetworkType();
     }
 }

@@ -30,6 +30,9 @@ public class FluidPipeBlockItem extends BaseBlockItem {
             new StringTextComponent(type.getCapacity() + " mB").setStyle(new Style().setColor(TextFormatting.WHITE))
         ).setStyle(new Style().setColor(TextFormatting.GRAY)));
 
-        tooltip.add(new TranslationTextComponent("tooltip.refinedpipes.fluid_pipe.speed").setStyle(new Style().setColor(TextFormatting.GRAY)));
+        tooltip.add(new TranslationTextComponent(
+            "tooltip.refinedpipes.fluid_pipe.transfer_rate",
+            new StringTextComponent(type.getTransferRate() + " mB/t").setStyle(new Style().setColor(TextFormatting.WHITE))
+        ).setStyle(new Style().setColor(TextFormatting.GRAY)));
     }
 }

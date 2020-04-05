@@ -47,6 +47,19 @@ public enum FluidPipeType {
         }
     }
 
+    public int getTransferRate() {
+        switch (this) {
+            case BASIC:
+                return RefinedPipes.SERVER_CONFIG.getBasicFluidPipe().getTransferRate();
+            case IMPROVED:
+                return RefinedPipes.SERVER_CONFIG.getImprovedFluidPipe().getTransferRate();
+            case ADVANCED:
+                return RefinedPipes.SERVER_CONFIG.getAdvancedFluidPipe().getTransferRate();
+            default:
+                throw new RuntimeException("?");
+        }
+    }
+
     public ResourceLocation getId() {
         switch (this) {
             case BASIC:
@@ -55,6 +68,19 @@ public enum FluidPipeType {
                 return new ResourceLocation(RefinedPipes.ID, "improved_fluid_pipe");
             case ADVANCED:
                 return new ResourceLocation(RefinedPipes.ID, "advanced_fluid_pipe");
+            default:
+                throw new RuntimeException("?");
+        }
+    }
+
+    public ResourceLocation getNetworkType() {
+        switch (this) {
+            case BASIC:
+                return new ResourceLocation(RefinedPipes.ID, "basic_fluid_network");
+            case IMPROVED:
+                return new ResourceLocation(RefinedPipes.ID, "improved_fluid_network");
+            case ADVANCED:
+                return new ResourceLocation(RefinedPipes.ID, "advanced_fluid_network");
             default:
                 throw new RuntimeException("?");
         }
