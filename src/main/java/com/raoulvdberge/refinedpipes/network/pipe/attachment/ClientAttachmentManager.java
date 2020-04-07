@@ -1,11 +1,13 @@
 package com.raoulvdberge.refinedpipes.network.pipe.attachment;
 
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,6 +24,12 @@ public class ClientAttachmentManager implements AttachmentManager {
     @Override
     public boolean hasAttachment(Direction dir) {
         return attachments.containsKey(dir);
+    }
+
+    @Nullable
+    @Override
+    public INamedContainerProvider getContainerProvider(Direction dir) {
+        throw new RuntimeException("Server-side only");
     }
 
     @Nonnull

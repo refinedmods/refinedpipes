@@ -2,11 +2,14 @@ package com.raoulvdberge.refinedpipes.network.pipe.attachment;
 
 import com.raoulvdberge.refinedpipes.network.Network;
 import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+
+import javax.annotation.Nullable;
 
 public abstract class Attachment {
     private final Direction direction;
@@ -23,6 +26,11 @@ public abstract class Attachment {
         tag.putInt("dir", direction.ordinal());
 
         return tag;
+    }
+
+    @Nullable
+    public INamedContainerProvider getContainerProvider() {
+        return null;
     }
 
     public abstract void update(World world, Network network, Pipe pipe);

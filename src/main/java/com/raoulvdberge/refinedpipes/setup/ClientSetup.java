@@ -2,6 +2,7 @@ package com.raoulvdberge.refinedpipes.setup;
 
 import com.raoulvdberge.refinedpipes.RefinedPipes;
 import com.raoulvdberge.refinedpipes.RefinedPipesBlocks;
+import com.raoulvdberge.refinedpipes.RefinedPipesContainers;
 import com.raoulvdberge.refinedpipes.RefinedPipesTileEntities;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentFactory;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentRegistry;
@@ -11,6 +12,8 @@ import com.raoulvdberge.refinedpipes.network.pipe.item.ItemPipeType;
 import com.raoulvdberge.refinedpipes.render.FluidPipeTileEntityRenderer;
 import com.raoulvdberge.refinedpipes.render.ItemPipeTileEntityRenderer;
 import com.raoulvdberge.refinedpipes.render.PipeBakedModel;
+import com.raoulvdberge.refinedpipes.screen.ExtractorAttachmentScreen;
+import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.model.IBakedModel;
@@ -44,6 +47,8 @@ public class ClientSetup {
 
     @SubscribeEvent
     public void onClientSetup(FMLClientSetupEvent e) {
+        ScreenManager.registerFactory(RefinedPipesContainers.EXTRACTOR_ATTACHMENT, ExtractorAttachmentScreen::new);
+
         RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.BASIC_ITEM_PIPE, RenderType.getCutout());
         RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.IMPROVED_ITEM_PIPE, RenderType.getCutout());
         RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.ADVANCED_ITEM_PIPE, RenderType.getCutout());

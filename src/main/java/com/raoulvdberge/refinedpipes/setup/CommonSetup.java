@@ -5,6 +5,8 @@ import com.raoulvdberge.refinedpipes.RefinedPipesBlocks;
 import com.raoulvdberge.refinedpipes.block.EnergyPipeBlock;
 import com.raoulvdberge.refinedpipes.block.FluidPipeBlock;
 import com.raoulvdberge.refinedpipes.block.ItemPipeBlock;
+import com.raoulvdberge.refinedpipes.container.ExtractorAttachmentContainer;
+import com.raoulvdberge.refinedpipes.container.factory.TileEntityContainerFactory;
 import com.raoulvdberge.refinedpipes.item.AttachmentItem;
 import com.raoulvdberge.refinedpipes.item.EnergyPipeBlockItem;
 import com.raoulvdberge.refinedpipes.item.FluidPipeBlockItem;
@@ -39,8 +41,10 @@ import com.raoulvdberge.refinedpipes.tile.EnergyPipeTileEntity;
 import com.raoulvdberge.refinedpipes.tile.FluidPipeTileEntity;
 import com.raoulvdberge.refinedpipes.tile.ItemPipeTileEntity;
 import net.minecraft.block.Block;
+import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraftforge.common.extensions.IForgeContainerType;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -135,6 +139,15 @@ public class CommonSetup {
         e.getRegistry().register(TileEntityType.Builder.create(() -> new EnergyPipeTileEntity(EnergyPipeType.ADVANCED), RefinedPipesBlocks.ADVANCED_ENERGY_PIPE).build(null).setRegistryName(EnergyPipeType.ADVANCED.getId()));
         e.getRegistry().register(TileEntityType.Builder.create(() -> new EnergyPipeTileEntity(EnergyPipeType.ELITE), RefinedPipesBlocks.ELITE_ENERGY_PIPE).build(null).setRegistryName(EnergyPipeType.ELITE.getId()));
         e.getRegistry().register(TileEntityType.Builder.create(() -> new EnergyPipeTileEntity(EnergyPipeType.ULTIMATE), RefinedPipesBlocks.ULTIMATE_ENERGY_PIPE).build(null).setRegistryName(EnergyPipeType.ULTIMATE.getId()));
+    }
+
+    @SubscribeEvent
+    public void onRegisterContainers(RegistryEvent.Register<ContainerType<?>> e) {
+        e.getRegistry().register(IForgeContainerType.create(
+            new TileEntityContainerFactory<>(
+                (windowId, inv, tile) -> new ExtractorAttachmentContainer(windowId, inv.player)
+            )
+        ).setRegistryName(RefinedPipes.ID, "extractor_attachment"));
     }
 
     @SubscribeEvent

@@ -1,5 +1,7 @@
 package com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor;
 
+import com.raoulvdberge.refinedpipes.RefinedPipes;
+import com.raoulvdberge.refinedpipes.container.ExtractorAttachmentContainer;
 import com.raoulvdberge.refinedpipes.network.Network;
 import com.raoulvdberge.refinedpipes.network.NetworkManager;
 import com.raoulvdberge.refinedpipes.network.fluid.FluidNetwork;
@@ -13,11 +15,17 @@ import com.raoulvdberge.refinedpipes.network.pipe.transport.callback.ItemBounceB
 import com.raoulvdberge.refinedpipes.network.pipe.transport.callback.ItemInsertTransportCallback;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.callback.ItemPipeGoneTransportCallback;
 import com.raoulvdberge.refinedpipes.routing.Path;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
@@ -27,6 +35,8 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import javax.annotation.Nullable;
 
 public class ExtractorAttachment extends Attachment {
     private static final Logger LOGGER = LogManager.getLogger(ExtractorAttachment.class);
@@ -165,6 +175,23 @@ public class ExtractorAttachment extends Attachment {
         }
 
         return -1;
+    }
+
+    @Nullable
+    @Override
+    public INamedContainerProvider getContainerProvider() {
+        return new INamedContainerProvider() {
+            @Override
+            public ITextComponent getDisplayName() {
+                return new TranslationTextComponent("item." + RefinedPipes.ID + "." + type.getId().getPath() + "_attachment");
+            }
+
+            @Nullable
+            @Override
+            public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity player) {
+                return new ExtractorAttachmentContainer(windowId, player);
+            }
+        };
     }
 
     @Override

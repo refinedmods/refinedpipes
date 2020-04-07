@@ -1,11 +1,13 @@
 package com.raoulvdberge.refinedpipes.network.pipe.attachment;
 
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.Map;
 
@@ -25,6 +27,12 @@ public class DummyAttachmentManager implements AttachmentManager {
     @Override
     public boolean hasAttachment(Direction dir) {
         return false;
+    }
+
+    @Nullable
+    @Override
+    public INamedContainerProvider getContainerProvider(Direction dir) {
+        return null;
     }
 
     @Nonnull

@@ -5,6 +5,7 @@ import com.raoulvdberge.refinedpipes.network.NetworkManager;
 import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.Attachment;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentFactory;
+import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentManager;
 import com.raoulvdberge.refinedpipes.network.pipe.shape.PipeShapeCache;
 import com.raoulvdberge.refinedpipes.network.pipe.shape.PipeShapeProps;
 import com.raoulvdberge.refinedpipes.tile.PipeTileEntity;
@@ -13,6 +14,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.BooleanProperty;
@@ -30,6 +33,7 @@ import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 
@@ -92,11 +96,14 @@ public abstract class PipeBlock extends Block {
 
         if (dirClicked != null) {
             ItemStack held = player.getHeldItemMainhand();
+            TileEntity tile = world.getTileEntity(pos);
 
-            if (held.getItem() instanceof AttachmentItem) {
-                return addAttachment(player, world, pos, held, dirClicked);
-            } else if (held.isEmpty() && player.isCrouching()) {
+            if (held.isEmpty() && player.isCrouching()) {
                 return removeAttachment(world, pos, dirClicked);
+            } else if (tile instanceof PipeTileEntity && ((PipeTileEntity) tile).getAttachmentManager().hasAttachment(dirClicked)) {
+                return openAttachmentContainer(player, pos, ((PipeTileEntity) tile).getAttachmentManager(), dirClicked);
+            } else if (held.getItem() instanceof AttachmentItem) {
+                return addAttachment(player, world, pos, held, dirClicked);
             }
         }
 
@@ -156,6 +163,17 @@ public abstract class PipeBlock extends Block {
         } else {
             return ((PipeTileEntity) world.getTileEntity(pos)).getAttachmentManager().hasAttachment(dir) ? ActionResultType.SUCCESS : ActionResultType.FAIL;
         }
+    }
+
+    private ActionResultType openAttachmentContainer(PlayerEntity player, BlockPos pos, AttachmentManager attachmentManager, Direction dir) {
+        if (player instanceof ServerPlayerEntity) {
+            INamedContainerProvider provider = attachmentManager.getContainerProvider(dir);
+            if (provider != null) {
+                NetworkHooks.openGui((ServerPlayerEntity) player, provider, pos);
+            }
+        }
+
+        return ActionResultType.SUCCESS;
     }
 
     @Nullable

@@ -1,5 +1,6 @@
 package com.raoulvdberge.refinedpipes.network.pipe.attachment;
 
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
@@ -25,6 +26,12 @@ public class ServerAttachmentManager implements AttachmentManager {
     @Override
     public boolean hasAttachment(Direction dir) {
         return attachments.containsKey(dir);
+    }
+
+    @Nullable
+    @Override
+    public INamedContainerProvider getContainerProvider(Direction dir) {
+        return hasAttachment(dir) ? getAttachment(dir).getContainerProvider() : null;
     }
 
     @Nonnull
