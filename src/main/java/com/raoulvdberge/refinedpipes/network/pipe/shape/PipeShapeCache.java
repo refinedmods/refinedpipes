@@ -1,7 +1,7 @@
 package com.raoulvdberge.refinedpipes.network.pipe.shape;
 
 import com.raoulvdberge.refinedpipes.item.AttachmentItem;
-import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
+import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentFactory;
 import com.raoulvdberge.refinedpipes.tile.PipeTileEntity;
 import com.raoulvdberge.refinedpipes.util.Raytracer;
 import net.minecraft.block.Block;
@@ -51,14 +51,14 @@ public class PipeShapeCache {
             Item inHand = ((PlayerEntity) ctx.getEntity()).getHeldItemMainhand().getItem();
 
             if (inHand instanceof AttachmentItem) {
-                shape = addFakeAttachmentShape(state.getBlock(), pos, ctx.getEntity(), shape, ((AttachmentItem) inHand).getType());
+                shape = addFakeAttachmentShape(state.getBlock(), pos, ctx.getEntity(), shape, ((AttachmentItem) inHand).getFactory());
             }
         }
 
         return shape;
     }
 
-    private VoxelShape addFakeAttachmentShape(Block block, BlockPos pos, Entity entity, VoxelShape shape, AttachmentType type) {
+    private VoxelShape addFakeAttachmentShape(Block block, BlockPos pos, Entity entity, VoxelShape shape, AttachmentFactory type) {
         if (!type.canPlaceOnPipe(block)) {
             return shape;
         }

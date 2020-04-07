@@ -3,8 +3,8 @@ package com.raoulvdberge.refinedpipes.setup;
 import com.raoulvdberge.refinedpipes.RefinedPipes;
 import com.raoulvdberge.refinedpipes.RefinedPipesBlocks;
 import com.raoulvdberge.refinedpipes.RefinedPipesTileEntities;
+import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentFactory;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentRegistry;
-import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
 import com.raoulvdberge.refinedpipes.network.pipe.energy.EnergyPipeType;
 import com.raoulvdberge.refinedpipes.network.pipe.fluid.FluidPipeType;
 import com.raoulvdberge.refinedpipes.network.pipe.item.ItemPipeType;
@@ -32,10 +32,10 @@ public class ClientSetup {
     private static final Logger LOGGER = LogManager.getLogger(ClientSetup.class);
 
     public ClientSetup() {
-        for (AttachmentType type : AttachmentRegistry.INSTANCE.getTypes()) {
-            LOGGER.debug("Registering attachment model {} for {}", type.getModelLocation(), type.getId());
+        for (AttachmentFactory factory : AttachmentRegistry.INSTANCE.all()) {
+            LOGGER.debug("Registering attachment model {}", factory.getModelLocation());
 
-            ModelLoader.addSpecialModel(type.getModelLocation());
+            ModelLoader.addSpecialModel(factory.getModelLocation());
         }
 
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onClientSetup);
@@ -93,10 +93,10 @@ public class ClientSetup {
 
     @SubscribeEvent
     public void onModelBake(ModelBakeEvent e) {
-        Map<AttachmentType, IBakedModel> attachmentModels = new HashMap<>();
+        Map<ResourceLocation, IBakedModel> attachmentModels = new HashMap<>();
 
-        for (AttachmentType type : AttachmentRegistry.INSTANCE.getTypes()) {
-            attachmentModels.put(type, e.getModelRegistry().get(type.getModelLocation()));
+        for (AttachmentFactory factory : AttachmentRegistry.INSTANCE.all()) {
+            attachmentModels.put(factory.getId(), e.getModelRegistry().get(factory.getModelLocation()));
         }
 
         for (ResourceLocation id : e.getModelRegistry().keySet()) {

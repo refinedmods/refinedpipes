@@ -1,15 +1,17 @@
 package com.raoulvdberge.refinedpipes.network.pipe.attachment;
 
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ClientAttachmentManager implements AttachmentManager {
-    private final Map<Direction, AttachmentType> attachments = new HashMap<>();
+    private final Map<Direction, ResourceLocation> attachments = new HashMap<>();
+    private final Map<Direction, ItemStack> pickBlocks = new HashMap<>();
     private final boolean[] attachmentState = new boolean[Direction.values().length];
 
     @Override
@@ -22,14 +24,14 @@ public class ClientAttachmentManager implements AttachmentManager {
         return attachments.containsKey(dir);
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public AttachmentType getAttachmentType(Direction dir) {
-        return attachments.get(dir);
+    public ItemStack getPickBlock(Direction dir) {
+        return pickBlocks.getOrDefault(dir, ItemStack.EMPTY);
     }
 
     @Override
-    public Map<Direction, AttachmentType> getAttachmentsPerDirection() {
+    public Map<Direction, ResourceLocation> getAttachmentsPerDirection() {
         return attachments;
     }
 
@@ -41,11 +43,16 @@ public class ClientAttachmentManager implements AttachmentManager {
     @Override
     public void readUpdate(CompoundNBT tag) {
         this.attachments.clear();
-        for (Direction dir : Direction.values()) {
-            String key = "attch_" + dir.ordinal();
+        this.pickBlocks.clear();
 
-            if (tag.contains(key)) {
-                attachments.put(dir, AttachmentRegistry.INSTANCE.getType(new ResourceLocation(tag.getString(key))));
+        for (Direction dir : Direction.values()) {
+            String attachmentKey = "attch_" + dir.ordinal();
+            String pickBlockKey = "pb_" + dir.ordinal();
+
+            if (tag.contains(attachmentKey) || tag.contains(pickBlockKey)) {
+                attachments.put(dir, new ResourceLocation(tag.getString(attachmentKey)));
+                pickBlocks.put(dir, ItemStack.read(tag.getCompound(pickBlockKey)));
+
                 attachmentState[dir.ordinal()] = true;
             } else {
                 attachmentState[dir.ordinal()] = false;

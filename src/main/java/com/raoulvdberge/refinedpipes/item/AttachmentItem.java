@@ -1,7 +1,7 @@
 package com.raoulvdberge.refinedpipes.item;
 
 import com.raoulvdberge.refinedpipes.RefinedPipes;
-import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
+import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentFactory;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -12,9 +12,9 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class AttachmentItem extends Item {
-    private final AttachmentType type;
+    private final AttachmentFactory type;
 
-    public AttachmentItem(AttachmentType type) {
+    public AttachmentItem(AttachmentFactory type) {
         super(new Item.Properties().group(RefinedPipes.MAIN_GROUP));
 
         this.type = type;
@@ -29,7 +29,7 @@ public class AttachmentItem extends Item {
         type.addInformation(tooltip);
     }
 
-    public AttachmentType getType() {
+    public AttachmentFactory getFactory() {
         return type;
     }
 }

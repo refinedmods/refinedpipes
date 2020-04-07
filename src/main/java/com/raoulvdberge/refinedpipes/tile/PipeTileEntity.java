@@ -2,12 +2,16 @@ package com.raoulvdberge.refinedpipes.tile;
 
 import com.raoulvdberge.refinedpipes.network.NetworkManager;
 import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
-import com.raoulvdberge.refinedpipes.network.pipe.attachment.*;
+import com.raoulvdberge.refinedpipes.network.pipe.attachment.Attachment;
+import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentManager;
+import com.raoulvdberge.refinedpipes.network.pipe.attachment.ClientAttachmentManager;
+import com.raoulvdberge.refinedpipes.network.pipe.attachment.DummyAttachmentManager;
 import net.minecraft.block.BlockState;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.data.IModelData;
@@ -18,7 +22,7 @@ import javax.annotation.Nonnull;
 import java.util.Map;
 
 public abstract class PipeTileEntity extends BaseTileEntity {
-    public static final ModelProperty<Map<Direction, AttachmentType>> ATTACHMENTS_PROPERTY = new ModelProperty<>();
+    public static final ModelProperty<Map<Direction, ResourceLocation>> ATTACHMENTS_PROPERTY = new ModelProperty<>();
 
     public PipeTileEntity(TileEntityType<?> type) {
         super(type);
@@ -65,7 +69,7 @@ public abstract class PipeTileEntity extends BaseTileEntity {
                 spawnDrops(pipe);
 
                 for (Attachment attachment : pipe.getAttachmentManager().getAttachments()) {
-                    InventoryHelper.spawnItemStack(world, pos.getX(), pos.getY(), pos.getZ(), attachment.getType().toStack());
+                    InventoryHelper.spawnItemStack(world, pos.getX(), pos.getY(), pos.getZ(), attachment.getDrop());
                 }
             }
 

@@ -1,9 +1,11 @@
 package com.raoulvdberge.refinedpipes.network.pipe.attachment;
 
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 import java.util.Map;
 
 public interface AttachmentManager {
@@ -11,10 +13,10 @@ public interface AttachmentManager {
 
     boolean hasAttachment(Direction dir);
 
-    @Nullable
-    AttachmentType getAttachmentType(Direction dir);
+    @Nonnull
+    ItemStack getPickBlock(Direction dir);
 
-    Map<Direction, AttachmentType> getAttachmentsPerDirection();
+    Map<Direction, ResourceLocation> getAttachmentsPerDirection();
 
     void writeUpdate(CompoundNBT tag);
 

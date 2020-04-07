@@ -1,5 +1,6 @@
 package com.raoulvdberge.refinedpipes.network.pipe.attachment;
 
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
@@ -9,6 +10,7 @@ import net.minecraftforge.common.util.Constants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.HashMap;
@@ -25,14 +27,14 @@ public class ServerAttachmentManager implements AttachmentManager {
         return attachments.containsKey(dir);
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public AttachmentType getAttachmentType(Direction dir) {
-        return hasAttachment(dir) ? getAttachment(dir).getType() : null;
+    public ItemStack getPickBlock(Direction dir) {
+        throw new RuntimeException("Shouldn't be called on the server");
     }
 
     @Override
-    public Map<Direction, AttachmentType> getAttachmentsPerDirection() {
+    public Map<Direction, ResourceLocation> getAttachmentsPerDirection() {
         throw new RuntimeException("Shouldn't be called on the server");
     }
 
@@ -50,11 +52,6 @@ public class ServerAttachmentManager implements AttachmentManager {
         return attachments.values();
     }
 
-    public void setAttachment(Direction dir, AttachmentType type) {
-        attachments.put(dir, type.createNew(dir));
-        attachmentState[dir.ordinal()] = true;
-    }
-
     public void setAttachment(Direction dir, Attachment attachment) {
         attachments.put(dir, attachment);
         attachmentState[dir.ordinal()] = true;
@@ -64,7 +61,7 @@ public class ServerAttachmentManager implements AttachmentManager {
         ListNBT attch = new ListNBT();
         getAttachments().forEach(a -> {
             CompoundNBT attchTag = new CompoundNBT();
-            attchTag.putString("typ", a.getType().getId().toString());
+            attchTag.putString("typ", a.getId().toString());
             attch.add(a.writeToNbt(attchTag));
         });
         tag.put("attch", attch);
@@ -76,9 +73,9 @@ public class ServerAttachmentManager implements AttachmentManager {
         for (INBT item : attch) {
             CompoundNBT attchTag = (CompoundNBT) item;
 
-            AttachmentType type = AttachmentRegistry.INSTANCE.getType(new ResourceLocation(attchTag.getString("typ")));
-            if (type != null) {
-                Attachment attachment = type.createFromNbt(attchTag);
+            AttachmentFactory factory = AttachmentRegistry.INSTANCE.getFactory(new ResourceLocation(attchTag.getString("typ")));
+            if (factory != null) {
+                Attachment attachment = factory.createFromNbt(attchTag);
                 setAttachment(attachment.getDirection(), attachment);
             } else {
                 LOGGER.warn("Attachment {} no longer exists", attchTag.getString("typ"));
@@ -95,7 +92,8 @@ public class ServerAttachmentManager implements AttachmentManager {
     public void writeUpdate(CompoundNBT tag) {
         for (Direction dir : Direction.values()) {
             if (hasAttachment(dir)) {
-                tag.putString("attch_" + dir.ordinal(), getAttachment(dir).getType().getId().toString());
+                tag.putString("attch_" + dir.ordinal(), getAttachment(dir).getId().toString());
+                tag.put("pb_" + dir.ordinal(), getAttachment(dir).getDrop().write(new CompoundNBT()));
             }
         }
     }

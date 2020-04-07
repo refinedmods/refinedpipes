@@ -2,23 +2,17 @@ package com.raoulvdberge.refinedpipes.network.pipe.attachment;
 
 import com.raoulvdberge.refinedpipes.network.Network;
 import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
-public class Attachment {
-    private final AttachmentType type;
+public abstract class Attachment {
     private final Direction direction;
-    
-    private int ticks;
 
-    public Attachment(AttachmentType type, Direction direction) {
-        this.type = type;
+    public Attachment(Direction direction) {
         this.direction = direction;
-    }
-
-    public AttachmentType getType() {
-        return type;
     }
 
     public Direction getDirection() {
@@ -31,9 +25,9 @@ public class Attachment {
         return tag;
     }
 
-    public void update(World world, Network network, Pipe pipe) {
-        ++ticks;
+    public abstract void update(World world, Network network, Pipe pipe);
 
-        type.update(world, network, pipe, this, ticks);
-    }
+    public abstract ResourceLocation getId();
+
+    public abstract ItemStack getDrop();
 }

@@ -4,7 +4,7 @@ import com.raoulvdberge.refinedpipes.item.AttachmentItem;
 import com.raoulvdberge.refinedpipes.network.NetworkManager;
 import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.Attachment;
-import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
+import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentFactory;
 import com.raoulvdberge.refinedpipes.network.pipe.shape.PipeShapeCache;
 import com.raoulvdberge.refinedpipes.network.pipe.shape.PipeShapeProps;
 import com.raoulvdberge.refinedpipes.tile.PipeTileEntity;
@@ -108,12 +108,12 @@ public abstract class PipeBlock extends Block {
             Pipe pipe = NetworkManager.get(world).getPipe(pos);
 
             if (pipe != null && !pipe.getAttachmentManager().hasAttachment(dir)) {
-                AttachmentType type = ((AttachmentItem) attachment.getItem()).getType();
+                AttachmentFactory type = ((AttachmentItem) attachment.getItem()).getFactory();
                 if (!type.canPlaceOnPipe(this)) {
                     return ActionResultType.SUCCESS;
                 }
 
-                pipe.getAttachmentManager().setAttachment(dir, type);
+                pipe.getAttachmentManager().setAttachment(dir, type.create(dir));
                 pipe.sendBlockUpdate();
 
                 world.setBlockState(pos, getState(world.getBlockState(pos), world, pos));
@@ -149,7 +149,7 @@ public abstract class PipeBlock extends Block {
 
                 NetworkManager.get(world).markDirty();
 
-                Block.spawnAsEntity(world, pos.offset(dir), attachment.getType().toStack());
+                Block.spawnAsEntity(world, pos.offset(dir), attachment.getDrop());
             }
 
             return ActionResultType.SUCCESS;
@@ -199,10 +199,7 @@ public abstract class PipeBlock extends Block {
         if (dirClicked != null) {
             TileEntity tile = world.getTileEntity(pos);
             if (tile instanceof PipeTileEntity) {
-                AttachmentType type = ((PipeTileEntity) tile).getAttachmentManager().getAttachmentType(dirClicked);
-                if (type != null) {
-                    return type.toStack();
-                }
+                return ((PipeTileEntity) tile).getAttachmentManager().getPickBlock(dirClicked);
             }
         }
 

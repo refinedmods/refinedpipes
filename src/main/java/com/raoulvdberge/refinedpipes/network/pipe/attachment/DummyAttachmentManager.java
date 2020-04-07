@@ -1,9 +1,11 @@
 package com.raoulvdberge.refinedpipes.network.pipe.attachment;
 
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.Map;
 
@@ -25,14 +27,14 @@ public class DummyAttachmentManager implements AttachmentManager {
         return false;
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public AttachmentType getAttachmentType(Direction dir) {
-        return null;
+    public ItemStack getPickBlock(Direction dir) {
+        return ItemStack.EMPTY;
     }
 
     @Override
-    public Map<Direction, AttachmentType> getAttachmentsPerDirection() {
+    public Map<Direction, ResourceLocation> getAttachmentsPerDirection() {
         return Collections.emptyMap();
     }
 

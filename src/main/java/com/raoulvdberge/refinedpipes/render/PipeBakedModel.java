@@ -1,7 +1,6 @@
 package com.raoulvdberge.refinedpipes.render;
 
 import com.raoulvdberge.refinedpipes.block.ItemPipeBlock;
-import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
 import com.raoulvdberge.refinedpipes.tile.ItemPipeTileEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.model.BakedQuad;
@@ -9,6 +8,7 @@ import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.data.IModelData;
 
@@ -20,15 +20,15 @@ public class PipeBakedModel implements IBakedModel {
     private final IBakedModel core;
     private final IBakedModel extension;
     private final IBakedModel straight;
-    private final Map<AttachmentType, Map<Direction, IBakedModel>> attachmentModels = new HashMap<>();
+    private final Map<ResourceLocation, Map<Direction, IBakedModel>> attachmentModels = new HashMap<>();
     private final Map<Direction, IBakedModel> inventoryAttachmentModels = new HashMap<>();
 
-    public PipeBakedModel(IBakedModel core, IBakedModel extension, IBakedModel straight, IBakedModel inventoryAttachment, Map<AttachmentType, IBakedModel> attachmentModels) {
+    public PipeBakedModel(IBakedModel core, IBakedModel extension, IBakedModel straight, IBakedModel inventoryAttachment, Map<ResourceLocation, IBakedModel> attachmentModels) {
         this.core = core;
         this.extension = extension;
         this.straight = straight;
 
-        for (Map.Entry<AttachmentType, IBakedModel> entry : attachmentModels.entrySet()) {
+        for (Map.Entry<ResourceLocation, IBakedModel> entry : attachmentModels.entrySet()) {
             Map<Direction, IBakedModel> dirToModel = new HashMap<>();
 
             for (Direction dir : Direction.values()) {
@@ -105,9 +105,9 @@ public class PipeBakedModel implements IBakedModel {
             }
         }
 
-        Map<Direction, AttachmentType> attachments = extraData.getData(ItemPipeTileEntity.ATTACHMENTS_PROPERTY);
+        Map<Direction, ResourceLocation> attachments = extraData.getData(ItemPipeTileEntity.ATTACHMENTS_PROPERTY);
         if (attachments != null) {
-            for (Map.Entry<Direction, AttachmentType> entry : attachments.entrySet()) {
+            for (Map.Entry<Direction, ResourceLocation> entry : attachments.entrySet()) {
                 quads.addAll(attachmentModels.get(entry.getValue()).get(entry.getKey()).getQuads(state, side, rand, extraData));
             }
         }

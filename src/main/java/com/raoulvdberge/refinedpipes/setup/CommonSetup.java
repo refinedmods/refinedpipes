@@ -16,8 +16,9 @@ import com.raoulvdberge.refinedpipes.network.fluid.FluidNetworkFactory;
 import com.raoulvdberge.refinedpipes.network.item.ItemNetwork;
 import com.raoulvdberge.refinedpipes.network.item.ItemNetworkFactory;
 import com.raoulvdberge.refinedpipes.network.pipe.PipeRegistry;
+import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentFactory;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentRegistry;
-import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentType;
+import com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor.ExtractorAttachmentFactory;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor.ExtractorAttachmentType;
 import com.raoulvdberge.refinedpipes.network.pipe.energy.EnergyPipe;
 import com.raoulvdberge.refinedpipes.network.pipe.energy.EnergyPipeFactory;
@@ -62,11 +63,11 @@ public class CommonSetup {
         PipeRegistry.INSTANCE.addFactory(FluidPipe.ID, new FluidPipeFactory());
         PipeRegistry.INSTANCE.addFactory(EnergyPipe.ID, new EnergyPipeFactory());
 
-        AttachmentRegistry.INSTANCE.addType(new ExtractorAttachmentType(ExtractorAttachmentType.Type.BASIC));
-        AttachmentRegistry.INSTANCE.addType(new ExtractorAttachmentType(ExtractorAttachmentType.Type.IMPROVED));
-        AttachmentRegistry.INSTANCE.addType(new ExtractorAttachmentType(ExtractorAttachmentType.Type.ADVANCED));
-        AttachmentRegistry.INSTANCE.addType(new ExtractorAttachmentType(ExtractorAttachmentType.Type.ELITE));
-        AttachmentRegistry.INSTANCE.addType(new ExtractorAttachmentType(ExtractorAttachmentType.Type.ULTIMATE));
+        AttachmentRegistry.INSTANCE.addFactory(ExtractorAttachmentType.BASIC.getId(), new ExtractorAttachmentFactory(ExtractorAttachmentType.BASIC));
+        AttachmentRegistry.INSTANCE.addFactory(ExtractorAttachmentType.IMPROVED.getId(), new ExtractorAttachmentFactory(ExtractorAttachmentType.IMPROVED));
+        AttachmentRegistry.INSTANCE.addFactory(ExtractorAttachmentType.ADVANCED.getId(), new ExtractorAttachmentFactory(ExtractorAttachmentType.ADVANCED));
+        AttachmentRegistry.INSTANCE.addFactory(ExtractorAttachmentType.ELITE.getId(), new ExtractorAttachmentFactory(ExtractorAttachmentType.ELITE));
+        AttachmentRegistry.INSTANCE.addFactory(ExtractorAttachmentType.ULTIMATE.getId(), new ExtractorAttachmentFactory(ExtractorAttachmentType.ULTIMATE));
 
         TransportCallbackFactoryRegistry.INSTANCE.addFactory(ItemInsertTransportCallback.ID, ItemInsertTransportCallback::of);
         TransportCallbackFactoryRegistry.INSTANCE.addFactory(ItemBounceBackTransportCallback.ID, ItemBounceBackTransportCallback::of);
@@ -112,8 +113,8 @@ public class CommonSetup {
         e.getRegistry().register(new EnergyPipeBlockItem(RefinedPipesBlocks.ELITE_ENERGY_PIPE));
         e.getRegistry().register(new EnergyPipeBlockItem(RefinedPipesBlocks.ULTIMATE_ENERGY_PIPE));
 
-        for (AttachmentType type : AttachmentRegistry.INSTANCE.getTypes()) {
-            e.getRegistry().register(new AttachmentItem(type));
+        for (AttachmentFactory factory : AttachmentRegistry.INSTANCE.all()) {
+            e.getRegistry().register(new AttachmentItem(factory));
         }
     }
 
