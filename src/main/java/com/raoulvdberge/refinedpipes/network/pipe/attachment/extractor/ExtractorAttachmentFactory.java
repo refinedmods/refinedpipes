@@ -35,6 +35,10 @@ public class ExtractorAttachmentFactory implements AttachmentFactory {
             attachment.setRedstoneMode(RedstoneMode.get(tag.getByte("rm")));
         }
 
+        if (tag.contains("bw")) {
+            attachment.setBlacklistWhitelist(BlacklistWhitelist.get(tag.getByte("bw")));
+        }
+
         return attachment;
     }
 

@@ -31,7 +31,11 @@
   "misc.refinedpipes.seconds": "seconds",
   "misc.refinedpipes.item": "item",
   "misc.refinedpipes.items": "items",
+  "misc.refinedpipes.redstone_mode": "Redstone mode",
   "misc.refinedpipes.redstone_mode.ignored": "Ignored",
   "misc.refinedpipes.redstone_mode.high": "High",
-  "misc.refinedpipes.redstone_mode.low": "Low"
+  "misc.refinedpipes.redstone_mode.low": "Low",
+  "misc.refinedpipes.mode": "Mode",
+  "misc.refinedpipes.mode.blacklist": "Blacklist",
+  "misc.refinedpipes.mode.whitelist": "Whitelist"
 }

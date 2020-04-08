@@ -3,16 +3,27 @@ package com.raoulvdberge.refinedpipes.screen;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.raoulvdberge.refinedpipes.RefinedPipes;
 import com.raoulvdberge.refinedpipes.container.ExtractorAttachmentContainer;
+import com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor.BlacklistWhitelist;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor.ExtractorAttachment;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor.RedstoneMode;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
+import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fml.client.gui.GuiUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ExtractorAttachmentScreen extends ContainerScreen<ExtractorAttachmentContainer> {
     private static final ResourceLocation RESOURCE = new ResourceLocation(RefinedPipes.ID, "textures/gui/extractor_attachment.png");
+
+    private Button redstoneModeButton;
+    private Button blacklistWhitelistButton;
 
     public ExtractorAttachmentScreen(ExtractorAttachmentContainer container, PlayerInventory inv, ITextComponent title) {
         super(container, inv, title);
@@ -25,13 +36,22 @@ public class ExtractorAttachmentScreen extends ContainerScreen<ExtractorAttachme
     protected void init() {
         super.init();
 
-        addButton(new IconButton(
+        redstoneModeButton = addButton(new IconButton(
             this.guiLeft + 32,
             this.guiTop + 76,
             getRedstoneModeX(container.getRedstoneMode()),
             61,
             getRedstoneModeText(container.getRedstoneMode()),
             btn -> setRedstoneMode((IconButton) btn, container.getRedstoneMode().next())
+        ));
+
+        blacklistWhitelistButton = addButton(new IconButton(
+            this.guiLeft + 55,
+            this.guiTop + 76,
+            getBlacklistWhitelistX(container.getBlacklistWhitelist()),
+            82,
+            getBlacklistWhitelistText(container.getBlacklistWhitelist()),
+            btn -> setBlacklistWhitelist((IconButton) btn, container.getBlacklistWhitelist().next())
         ));
     }
 
@@ -40,6 +60,13 @@ public class ExtractorAttachmentScreen extends ContainerScreen<ExtractorAttachme
         button.setIconTexX(getRedstoneModeX(redstoneMode));
 
         container.setRedstoneMode(redstoneMode);
+    }
+
+    private void setBlacklistWhitelist(IconButton button, BlacklistWhitelist blacklistWhitelist) {
+        button.setMessage(getBlacklistWhitelistText(blacklistWhitelist));
+        button.setIconTexX(getBlacklistWhitelistX(blacklistWhitelist));
+
+        container.setBlacklistWhitelist(blacklistWhitelist);
     }
 
     private int getRedstoneModeX(RedstoneMode redstoneMode) {
@@ -59,6 +86,21 @@ public class ExtractorAttachmentScreen extends ContainerScreen<ExtractorAttachme
         return I18n.format("misc.refinedpipes.redstone_mode." + redstoneMode.toString().toLowerCase());
     }
 
+    private int getBlacklistWhitelistX(BlacklistWhitelist blacklistWhitelist) {
+        switch (blacklistWhitelist) {
+            case BLACKLIST:
+                return 198;
+            case WHITELIST:
+                return 177;
+            default:
+                return 0;
+        }
+    }
+
+    private String getBlacklistWhitelistText(BlacklistWhitelist blacklistWhitelist) {
+        return I18n.format("misc.refinedpipes.mode." + blacklistWhitelist.toString().toLowerCase());
+    }
+
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
         super.drawGuiContainerForegroundLayer(mouseX, mouseY);
@@ -67,6 +109,20 @@ public class ExtractorAttachmentScreen extends ContainerScreen<ExtractorAttachme
         font.drawString(I18n.format("container.inventory"), 7, 103 - 4, 4210752);
 
         renderHoveredToolTip(mouseX - guiLeft, mouseY - guiTop);
+
+        if (blacklistWhitelistButton.isHovered()) {
+            List<String> tooltip = new ArrayList<>();
+            tooltip.add(I18n.format("misc.refinedpipes.mode"));
+            tooltip.add(TextFormatting.GRAY + getBlacklistWhitelistText(container.getBlacklistWhitelist()));
+
+            GuiUtils.drawHoveringText(tooltip, mouseX - guiLeft, mouseY - guiTop, width, height, -1, Minecraft.getInstance().fontRenderer);
+        } else if (redstoneModeButton.isHovered()) {
+            List<String> tooltip = new ArrayList<>();
+            tooltip.add(I18n.format("misc.refinedpipes.redstone_mode"));
+            tooltip.add(TextFormatting.GRAY + getRedstoneModeText(container.getRedstoneMode()));
+
+            GuiUtils.drawHoveringText(tooltip, mouseX - guiLeft, mouseY - guiTop, width, height, -1, Minecraft.getInstance().fontRenderer);
+        }
     }
 
     @Override

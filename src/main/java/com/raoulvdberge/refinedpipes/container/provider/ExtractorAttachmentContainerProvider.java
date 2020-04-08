@@ -38,6 +38,7 @@ public class ExtractorAttachmentContainerProvider implements INamedContainerProv
             pipe.getPos(),
             attachment.getDirection(),
             attachment.getRedstoneMode(),
+            attachment.getBlacklistWhitelist(),
             attachment.getType(),
             attachment.getItemFilter()
         );
@@ -50,6 +51,7 @@ public class ExtractorAttachmentContainerProvider implements INamedContainerProv
             buf.writeBlockPos(pipe.getPos());
             buf.writeByte(attachment.getDirection().ordinal());
             buf.writeByte(attachment.getRedstoneMode().ordinal());
+            buf.writeByte(attachment.getBlacklistWhitelist().ordinal());
             buf.writeByte(attachment.getType().ordinal());
         });
     }

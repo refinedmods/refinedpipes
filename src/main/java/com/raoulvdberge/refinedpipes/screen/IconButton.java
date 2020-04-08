@@ -5,10 +5,6 @@ import com.raoulvdberge.refinedpipes.RefinedPipes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.client.gui.GuiUtils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class IconButton extends Button {
     private static final ResourceLocation RESOURCE = new ResourceLocation(RefinedPipes.ID, "textures/gui/extractor_attachment.png");
@@ -23,25 +19,15 @@ public class IconButton extends Button {
     private int iconTexX;
     private int iconTexY;
 
-    private List<String> tooltip = new ArrayList<>(1);
-
     public IconButton(int x, int y, int iconTexX, int iconTexY, String text, IPressable onPress) {
         super(x, y, SIZE, SIZE, text, onPress);
 
         this.iconTexX = iconTexX;
         this.iconTexY = iconTexY;
-
-        tooltip.add(text);
     }
 
     public void setIconTexX(int iconTexX) {
         this.iconTexX = iconTexX;
-    }
-
-    @Override
-    public void setMessage(String message) {
-        super.setMessage(message);
-        tooltip.set(0, message);
     }
 
     @Override
@@ -64,9 +50,5 @@ public class IconButton extends Button {
         blit(this.x + 1, this.y + 1, iconTexX + 1, iconTexY + 1, this.width - 2, this.height - 2, 256, 256);
 
         RenderSystem.enableDepthTest();
-
-        if (mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height) {
-            GuiUtils.drawHoveringText(tooltip, mouseX, mouseY, Minecraft.getInstance().currentScreen.width, Minecraft.getInstance().currentScreen.height, -1, Minecraft.getInstance().fontRenderer);
-        }
     }
 }

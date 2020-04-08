@@ -43,8 +43,8 @@ public class ExtractorAttachment extends Attachment {
 
     private int ticks;
     private RedstoneMode redstoneMode = RedstoneMode.IGNORED;
+    private BlacklistWhitelist blacklistWhitelist = BlacklistWhitelist.BLACKLIST;
     private ItemStackHandler itemFilter;
-
 
     public ExtractorAttachment(Pipe pipe, Direction direction, ExtractorAttachmentType type) {
         super(direction);
@@ -140,6 +140,10 @@ public class ExtractorAttachment extends Attachment {
         this.redstoneMode = redstoneMode;
     }
 
+    public void setBlacklistWhitelist(BlacklistWhitelist blacklistWhitelist) {
+        this.blacklistWhitelist = blacklistWhitelist;
+    }
+
     private void update(FluidNetwork network, IFluidHandler source) {
         FluidStack drained = source.drain(type.getFluidsToExtract(), IFluidHandler.FluidAction.SIMULATE);
         if (drained.isEmpty()) {
@@ -182,12 +186,40 @@ public class ExtractorAttachment extends Attachment {
 
     private int getFirstSlot(IItemHandler handler) {
         for (int i = 0; i < handler.getSlots(); ++i) {
-            if (!handler.getStackInSlot(i).isEmpty()) {
+            ItemStack stack = handler.getStackInSlot(i);
+
+            if (!stack.isEmpty() && acceptsItem(stack)) {
                 return i;
             }
         }
 
         return -1;
+    }
+
+    private boolean acceptsItem(ItemStack stack) {
+        if (blacklistWhitelist == BlacklistWhitelist.WHITELIST) {
+            for (int i = 0; i < itemFilter.getSlots(); ++i) {
+                ItemStack filtered = itemFilter.getStackInSlot(i);
+
+                if (filtered.isItemEqual(stack) && ItemStack.areItemStackTagsEqual(filtered, stack)) {
+                    return true;
+                }
+            }
+
+            return false;
+        } else if (blacklistWhitelist == BlacklistWhitelist.BLACKLIST) {
+            for (int i = 0; i < itemFilter.getSlots(); ++i) {
+                ItemStack filtered = itemFilter.getStackInSlot(i);
+
+                if (filtered.isItemEqual(stack) && ItemStack.areItemStackTagsEqual(filtered, stack)) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        return false;
     }
 
     @Override
@@ -215,6 +247,10 @@ public class ExtractorAttachment extends Attachment {
         return redstoneMode;
     }
 
+    public BlacklistWhitelist getBlacklistWhitelist() {
+        return blacklistWhitelist;
+    }
+
     public ItemStackHandler getItemFilter() {
         return itemFilter;
     }
@@ -223,6 +259,7 @@ public class ExtractorAttachment extends Attachment {
     public CompoundNBT writeToNbt(CompoundNBT tag) {
         tag.putByte("rm", (byte) redstoneMode.ordinal());
         tag.put("itemfilter", itemFilter.serializeNBT());
+        tag.putByte("bw", (byte) blacklistWhitelist.ordinal());
 
         return super.writeToNbt(tag);
     }
