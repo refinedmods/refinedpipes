@@ -7,6 +7,6 @@ public class ExtractorAttachmentContainer extends BaseContainer {
     public ExtractorAttachmentContainer(int windowId, PlayerEntity player) {
         super(RefinedPipesContainers.EXTRACTOR_ATTACHMENT, windowId);
 
-        addPlayerInventory(player, 8, 85);
+        addPlayerInventory(player, 8, 111);
     }
 }

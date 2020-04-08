@@ -16,7 +16,21 @@ public class ExtractorAttachmentScreen extends ContainerScreen<ExtractorAttachme
         super(container, inv, title);
 
         xSize = 176;
-        ySize = 167;
+        ySize = 193;
+    }
+
+    @Override
+    protected void init() {
+        super.init();
+
+        addButton(new IconButton(
+            this.guiLeft + 32,
+            this.guiTop + 76,
+            177,
+            61,
+            "Redstone Mode",
+            btn -> System.out.println("hello world")
+        ));
     }
 
     @Override
@@ -24,7 +38,7 @@ public class ExtractorAttachmentScreen extends ContainerScreen<ExtractorAttachme
         super.drawGuiContainerForegroundLayer(mouseX, mouseY);
 
         font.drawString(title.getFormattedText(), 7, 7, 4210752);
-        font.drawString(I18n.format("container.inventory"), 7, 73, 4210752);
+        font.drawString(I18n.format("container.inventory"), 7, 103 - 4, 4210752);
     }
 
     @Override
