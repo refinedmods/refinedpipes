@@ -1,6 +1,7 @@
 package com.raoulvdberge.refinedpipes.container.factory;
 
 import com.raoulvdberge.refinedpipes.container.ExtractorAttachmentContainer;
+import com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor.RedstoneMode;
 import com.raoulvdberge.refinedpipes.util.DirectionUtil;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.network.PacketBuffer;
@@ -14,7 +15,7 @@ public class ExtractorAttachmentContainerFactory implements IContainerFactory<Ex
             inv.player,
             buf.readBlockPos(),
             DirectionUtil.safeGet(buf.readByte()),
-            buf.readByte()
+            RedstoneMode.get(buf.readByte())
         );
     }
 }

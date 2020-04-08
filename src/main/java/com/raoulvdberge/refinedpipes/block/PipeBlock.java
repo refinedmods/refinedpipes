@@ -118,15 +118,11 @@ public abstract class PipeBlock extends Block {
                     return ActionResultType.SUCCESS;
                 }
 
-                pipe.getAttachmentManager().setAttachment(dir, type.create(dir));
-                pipe.sendBlockUpdate();
-
-                world.setBlockState(pos, getState(world.getBlockState(pos), world, pos));
-
-                // Re-scan graph, required to rebuild destinations (chests with an attachment connected are no valid destination, refresh that)
-                pipe.getNetwork().scanGraph(world, pos);
-
+                pipe.getAttachmentManager().setAttachmentAndScanGraph(dir, type.create(dir));
                 NetworkManager.get(world).markDirty();
+
+                pipe.sendBlockUpdate();
+                world.setBlockState(pos, getState(world.getBlockState(pos), world, pos));
 
                 if (!player.isCreative()) {
                     attachment.shrink(1);
@@ -144,15 +140,11 @@ public abstract class PipeBlock extends Block {
             if (pipe != null && pipe.getAttachmentManager().hasAttachment(dir)) {
                 Attachment attachment = pipe.getAttachmentManager().getAttachment(dir);
 
-                pipe.getAttachmentManager().removeAttachment(dir);
-                pipe.sendBlockUpdate();
-
-                world.setBlockState(pos, getState(world.getBlockState(pos), world, pos));
-
-                // Re-scan graph, required to rebuild destinations (chests with an attachment connected are no valid destination, refresh that)
-                pipe.getNetwork().scanGraph(world, pos);
-
+                pipe.getAttachmentManager().removeAttachmentAndScanGraph(dir);
                 NetworkManager.get(world).markDirty();
+
+                pipe.sendBlockUpdate();
+                world.setBlockState(pos, getState(world.getBlockState(pos), world, pos));
 
                 Block.spawnAsEntity(world, pos.offset(dir), attachment.getDrop());
             }

@@ -14,7 +14,7 @@ public class ExtractorAttachmentContainer extends BaseContainer {
 
     private RedstoneMode redstoneMode;
 
-    public ExtractorAttachmentContainer(int windowId, PlayerEntity player, BlockPos pos, Direction dir, byte redstoneMode) {
+    public ExtractorAttachmentContainer(int windowId, PlayerEntity player, BlockPos pos, Direction dir, RedstoneMode redstoneMode) {
         super(RefinedPipesContainers.EXTRACTOR_ATTACHMENT, windowId);
 
         addPlayerInventory(player, 8, 111);
@@ -22,7 +22,7 @@ public class ExtractorAttachmentContainer extends BaseContainer {
         this.pos = pos;
         this.dir = dir;
 
-        this.redstoneMode = RedstoneMode.get(redstoneMode);
+        this.redstoneMode = redstoneMode;
     }
 
     public RedstoneMode getRedstoneMode() {

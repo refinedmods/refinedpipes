@@ -53,9 +53,24 @@ public class ServerAttachmentManager implements AttachmentManager {
         throw new RuntimeException("Shouldn't be called on the server");
     }
 
-    public void removeAttachment(Direction dir) {
+    public void removeAttachmentAndScanGraph(Direction dir) {
         attachments.remove(dir);
         attachmentState[dir.ordinal()] = false;
+
+        // Re-scan graph, required to rebuild destinations (chests with an attachment connected are no valid destination, refresh that)
+        pipe.getNetwork().scanGraph(pipe.getWorld(), pipe.getPos());
+    }
+
+    public void setAttachmentAndScanGraph(Direction dir, Attachment attachment) {
+        setAttachment(dir, attachment);
+
+        // Re-scan graph, required to rebuild destinations (chests with an attachment connected are no valid destination, refresh that)
+        pipe.getNetwork().scanGraph(pipe.getWorld(), pipe.getPos());
+    }
+
+    private void setAttachment(Direction dir, Attachment attachment) {
+        attachments.put(dir, attachment);
+        attachmentState[dir.ordinal()] = true;
     }
 
     @Override
@@ -66,11 +81,6 @@ public class ServerAttachmentManager implements AttachmentManager {
 
     public Collection<Attachment> getAttachments() {
         return attachments.values();
-    }
-
-    public void setAttachment(Direction dir, Attachment attachment) {
-        attachments.put(dir, attachment);
-        attachmentState[dir.ordinal()] = true;
     }
 
     public CompoundNBT writeToNbt(CompoundNBT tag) {

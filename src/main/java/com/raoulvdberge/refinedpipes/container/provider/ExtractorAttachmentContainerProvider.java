@@ -37,7 +37,7 @@ public class ExtractorAttachmentContainerProvider implements INamedContainerProv
             player,
             pipe.getPos(),
             attachment.getDirection(),
-            (byte) attachment.getRedstoneMode().ordinal()
+            attachment.getRedstoneMode()
         );
     }
 
