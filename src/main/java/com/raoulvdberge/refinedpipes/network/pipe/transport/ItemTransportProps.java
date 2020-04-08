@@ -1,5 +1,6 @@
 package com.raoulvdberge.refinedpipes.network.pipe.transport;
 
+import com.raoulvdberge.refinedpipes.util.DirectionUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.Direction;
@@ -38,8 +39,8 @@ public class ItemTransportProps {
             buf.readItemStack(),
             buf.readInt(),
             buf.readInt(),
-            Direction.values()[buf.readInt()],
-            Direction.values()[buf.readInt()],
+            DirectionUtil.safeGet((byte) buf.readInt()),
+            DirectionUtil.safeGet((byte) buf.readInt()),
             buf.readBoolean(),
             buf.readBoolean()
         );

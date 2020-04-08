@@ -1,5 +1,6 @@
 package com.raoulvdberge.refinedpipes;
 
+import com.raoulvdberge.refinedpipes.message.ChangeRedstoneModeMessage;
 import com.raoulvdberge.refinedpipes.message.FluidPipeMessage;
 import com.raoulvdberge.refinedpipes.message.ItemTransportMessage;
 import net.minecraft.util.ResourceLocation;
@@ -21,6 +22,7 @@ public class RefinedPipesNetwork {
     public void register() {
         handler.registerMessage(0, ItemTransportMessage.class, ItemTransportMessage::encode, ItemTransportMessage::decode, ItemTransportMessage::handle);
         handler.registerMessage(1, FluidPipeMessage.class, FluidPipeMessage::encode, FluidPipeMessage::decode, FluidPipeMessage::handle);
+        handler.registerMessage(2, ChangeRedstoneModeMessage.class, ChangeRedstoneModeMessage::encode, ChangeRedstoneModeMessage::decode, ChangeRedstoneModeMessage::handle);
     }
 
     public void sendInArea(World world, BlockPos pos, int radius, Object message) {
@@ -31,5 +33,9 @@ public class RefinedPipesNetwork {
             radius,
             world.getDimension().getType()
         )), message);
+    }
+
+    public void sendToServer(Object message) {
+        handler.sendToServer(message);
     }
 }

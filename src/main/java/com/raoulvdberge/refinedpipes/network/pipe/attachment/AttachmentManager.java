@@ -1,6 +1,6 @@
 package com.raoulvdberge.refinedpipes.network.pipe.attachment;
 
-import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
@@ -15,13 +15,15 @@ public interface AttachmentManager {
 
     boolean hasAttachment(Direction dir);
 
-    @Nullable
-    INamedContainerProvider getContainerProvider(Direction dir);
+    void openAttachmentContainer(Direction dir, ServerPlayerEntity player);
 
     @Nonnull
     ItemStack getPickBlock(Direction dir);
 
     Map<Direction, ResourceLocation> getAttachmentsPerDirection();
+
+    @Nullable
+    Attachment getAttachment(Direction dir);
 
     void writeUpdate(CompoundNBT tag);
 

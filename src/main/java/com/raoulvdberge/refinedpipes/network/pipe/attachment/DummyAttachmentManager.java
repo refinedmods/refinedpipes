@@ -1,6 +1,6 @@
 package com.raoulvdberge.refinedpipes.network.pipe.attachment;
 
-import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
@@ -29,10 +29,9 @@ public class DummyAttachmentManager implements AttachmentManager {
         return false;
     }
 
-    @Nullable
     @Override
-    public INamedContainerProvider getContainerProvider(Direction dir) {
-        return null;
+    public void openAttachmentContainer(Direction dir, ServerPlayerEntity player) {
+
     }
 
     @Nonnull
@@ -44,6 +43,12 @@ public class DummyAttachmentManager implements AttachmentManager {
     @Override
     public Map<Direction, ResourceLocation> getAttachmentsPerDirection() {
         return Collections.emptyMap();
+    }
+
+    @Override
+    @Nullable
+    public Attachment getAttachment(Direction dir) {
+        return null;
     }
 
     @Override

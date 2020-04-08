@@ -2,6 +2,7 @@ package com.raoulvdberge.refinedpipes.network.pipe.transport.callback;
 
 import com.raoulvdberge.refinedpipes.RefinedPipes;
 import com.raoulvdberge.refinedpipes.network.Network;
+import com.raoulvdberge.refinedpipes.util.DirectionUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
@@ -65,7 +66,7 @@ public class ItemInsertTransportCallback implements TransportCallback {
     public static ItemInsertTransportCallback of(CompoundNBT tag) {
         BlockPos itemHandlerPosition = BlockPos.fromLong(tag.getLong("ihpos"));
         ItemStack toInsert = ItemStack.read(tag.getCompound("s"));
-        Direction incomingDirection = Direction.values()[tag.getInt("incdir")];
+        Direction incomingDirection = DirectionUtil.safeGet((byte) tag.getInt("incdir"));
 
         if (toInsert.isEmpty()) {
             LOGGER.warn("Item no longer exists");

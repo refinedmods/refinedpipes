@@ -19,7 +19,7 @@ public abstract class Pipe {
 
     protected final World world;
     protected final BlockPos pos;
-    protected final ServerAttachmentManager attachmentManager = new ServerAttachmentManager();
+    protected final ServerAttachmentManager attachmentManager = new ServerAttachmentManager(this);
 
     protected Network network;
 

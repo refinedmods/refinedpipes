@@ -1,7 +1,6 @@
 package com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor;
 
-import com.raoulvdberge.refinedpipes.RefinedPipes;
-import com.raoulvdberge.refinedpipes.container.ExtractorAttachmentContainer;
+import com.raoulvdberge.refinedpipes.container.provider.ExtractorAttachmentContainerProvider;
 import com.raoulvdberge.refinedpipes.network.Network;
 import com.raoulvdberge.refinedpipes.network.NetworkManager;
 import com.raoulvdberge.refinedpipes.network.fluid.FluidNetwork;
@@ -15,17 +14,13 @@ import com.raoulvdberge.refinedpipes.network.pipe.transport.callback.ItemBounceB
 import com.raoulvdberge.refinedpipes.network.pipe.transport.callback.ItemInsertTransportCallback;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.callback.ItemPipeGoneTransportCallback;
 import com.raoulvdberge.refinedpipes.routing.Path;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
@@ -36,19 +31,25 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.annotation.Nullable;
-
 public class ExtractorAttachment extends Attachment {
     private static final Logger LOGGER = LogManager.getLogger(ExtractorAttachment.class);
 
     private final ExtractorAttachmentType type;
 
     private int ticks;
+    private RedstoneMode redstoneMode = RedstoneMode.IGNORED;
 
-    public ExtractorAttachment(ExtractorAttachmentType type, Direction dir) {
-        super(dir);
+    public ExtractorAttachment(Direction direction, ExtractorAttachmentType type) {
+        super(direction);
 
         this.type = type;
+    }
+
+    public ExtractorAttachment(Direction direction, ExtractorAttachmentType type, RedstoneMode redstoneMode) {
+        super(direction);
+
+        this.type = type;
+        this.redstoneMode = redstoneMode;
     }
 
     @Override
@@ -61,6 +62,10 @@ public class ExtractorAttachment extends Attachment {
         }
 
         if (tickInterval != 0 && (ticks++) % tickInterval != 0) {
+            return;
+        }
+
+        if (!redstoneMode.isEnabled(world, pipe.getPos())) {
             return;
         }
 
@@ -127,6 +132,12 @@ public class ExtractorAttachment extends Attachment {
         ));
     }
 
+    public void setRedstoneMode(World world, RedstoneMode redstoneMode) {
+        this.redstoneMode = redstoneMode;
+
+        NetworkManager.get(world).markDirty();
+    }
+
     private void update(FluidNetwork network, World world, IFluidHandler source) {
         FluidStack drained = source.drain(type.getFluidsToExtract(), IFluidHandler.FluidAction.SIMULATE);
         if (drained.isEmpty()) {
@@ -177,21 +188,11 @@ public class ExtractorAttachment extends Attachment {
         return -1;
     }
 
-    @Nullable
     @Override
-    public INamedContainerProvider getContainerProvider() {
-        return new INamedContainerProvider() {
-            @Override
-            public ITextComponent getDisplayName() {
-                return new TranslationTextComponent("item." + RefinedPipes.ID + "." + type.getId().getPath() + "_attachment");
-            }
+    public void openContainer(Pipe pipe, ServerPlayerEntity player) {
+        super.openContainer(pipe, player);
 
-            @Nullable
-            @Override
-            public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity player) {
-                return new ExtractorAttachmentContainer(windowId, player);
-            }
-        };
+        ExtractorAttachmentContainerProvider.open(pipe, this, player);
     }
 
     @Override
@@ -202,5 +203,20 @@ public class ExtractorAttachment extends Attachment {
     @Override
     public ItemStack getDrop() {
         return new ItemStack(type.getItem());
+    }
+
+    public ExtractorAttachmentType getType() {
+        return type;
+    }
+
+    public RedstoneMode getRedstoneMode() {
+        return redstoneMode;
+    }
+
+    @Override
+    public CompoundNBT writeToNbt(CompoundNBT tag) {
+        tag.putByte("rm", (byte) redstoneMode.ordinal());
+
+        return super.writeToNbt(tag);
     }
 }

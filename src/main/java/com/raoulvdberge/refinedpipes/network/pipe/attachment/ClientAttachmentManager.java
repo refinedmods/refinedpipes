@@ -1,6 +1,6 @@
 package com.raoulvdberge.refinedpipes.network.pipe.attachment;
 
-import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
@@ -26,9 +26,8 @@ public class ClientAttachmentManager implements AttachmentManager {
         return attachments.containsKey(dir);
     }
 
-    @Nullable
     @Override
-    public INamedContainerProvider getContainerProvider(Direction dir) {
+    public void openAttachmentContainer(Direction dir, ServerPlayerEntity player) {
         throw new RuntimeException("Server-side only");
     }
 
@@ -44,8 +43,14 @@ public class ClientAttachmentManager implements AttachmentManager {
     }
 
     @Override
+    @Nullable
+    public Attachment getAttachment(Direction dir) {
+        throw new RuntimeException("Server-side only");
+    }
+
+    @Override
     public void writeUpdate(CompoundNBT tag) {
-        throw new RuntimeException("Client doesn't write updates");
+        throw new RuntimeException("Server-side only");
     }
 
     @Override

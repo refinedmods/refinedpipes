@@ -5,8 +5,7 @@ import com.raoulvdberge.refinedpipes.RefinedPipesBlocks;
 import com.raoulvdberge.refinedpipes.block.EnergyPipeBlock;
 import com.raoulvdberge.refinedpipes.block.FluidPipeBlock;
 import com.raoulvdberge.refinedpipes.block.ItemPipeBlock;
-import com.raoulvdberge.refinedpipes.container.ExtractorAttachmentContainer;
-import com.raoulvdberge.refinedpipes.container.factory.TileEntityContainerFactory;
+import com.raoulvdberge.refinedpipes.container.factory.ExtractorAttachmentContainerFactory;
 import com.raoulvdberge.refinedpipes.item.AttachmentItem;
 import com.raoulvdberge.refinedpipes.item.EnergyPipeBlockItem;
 import com.raoulvdberge.refinedpipes.item.FluidPipeBlockItem;
@@ -143,11 +142,7 @@ public class CommonSetup {
 
     @SubscribeEvent
     public void onRegisterContainers(RegistryEvent.Register<ContainerType<?>> e) {
-        e.getRegistry().register(IForgeContainerType.create(
-            new TileEntityContainerFactory<>(
-                (windowId, inv, tile) -> new ExtractorAttachmentContainer(windowId, inv.player)
-            )
-        ).setRegistryName(RefinedPipes.ID, "extractor_attachment"));
+        e.getRegistry().register(IForgeContainerType.create(new ExtractorAttachmentContainerFactory()).setRegistryName(RefinedPipes.ID, "extractor_attachment"));
     }
 
     @SubscribeEvent

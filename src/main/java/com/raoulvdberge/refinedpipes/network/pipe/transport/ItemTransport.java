@@ -6,6 +6,7 @@ import com.raoulvdberge.refinedpipes.network.pipe.item.ItemPipe;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.callback.TransportCallback;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.callback.TransportCallbackFactory;
 import com.raoulvdberge.refinedpipes.network.pipe.transport.callback.TransportCallbackFactoryRegistry;
+import com.raoulvdberge.refinedpipes.util.DirectionUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
@@ -220,7 +221,7 @@ public class ItemTransport {
             path.add(BlockPos.fromLong(((LongNBT) pathItem).getLong()));
         }
 
-        Direction initialDirection = Direction.values()[tag.getInt("initd")];
+        Direction initialDirection = DirectionUtil.safeGet((byte) tag.getInt("initd"));
 
         ResourceLocation finishedCallbackId = new ResourceLocation(tag.getString("fcid"));
         TransportCallbackFactory finishedCallbackFactory = TransportCallbackFactoryRegistry.INSTANCE.getFactory(finishedCallbackId);

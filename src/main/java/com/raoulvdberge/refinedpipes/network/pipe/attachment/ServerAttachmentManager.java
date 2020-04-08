@@ -1,6 +1,7 @@
 package com.raoulvdberge.refinedpipes.network.pipe.attachment;
 
-import net.minecraft.inventory.container.INamedContainerProvider;
+import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
@@ -23,15 +24,22 @@ public class ServerAttachmentManager implements AttachmentManager {
     private final Map<Direction, Attachment> attachments = new HashMap<>();
     private final boolean[] attachmentState = new boolean[Direction.values().length];
 
+    private final Pipe pipe;
+
+    public ServerAttachmentManager(Pipe pipe) {
+        this.pipe = pipe;
+    }
+
     @Override
     public boolean hasAttachment(Direction dir) {
         return attachments.containsKey(dir);
     }
 
-    @Nullable
     @Override
-    public INamedContainerProvider getContainerProvider(Direction dir) {
-        return hasAttachment(dir) ? getAttachment(dir).getContainerProvider() : null;
+    public void openAttachmentContainer(Direction dir, ServerPlayerEntity player) {
+        if (hasAttachment(dir)) {
+            getAttachment(dir).openContainer(pipe, player);
+        }
     }
 
     @Nonnull
@@ -50,6 +58,7 @@ public class ServerAttachmentManager implements AttachmentManager {
         attachmentState[dir.ordinal()] = false;
     }
 
+    @Override
     @Nullable
     public Attachment getAttachment(Direction dir) {
         return attachments.get(dir);
@@ -107,6 +116,6 @@ public class ServerAttachmentManager implements AttachmentManager {
 
     @Override
     public void readUpdate(CompoundNBT tag) {
-        throw new RuntimeException("Server doesn't read updates");
+        throw new RuntimeException("Client-side only");
     }
 }

@@ -4,6 +4,7 @@ import com.raoulvdberge.refinedpipes.block.FluidPipeBlock;
 import com.raoulvdberge.refinedpipes.block.ItemPipeBlock;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.Attachment;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentFactory;
+import com.raoulvdberge.refinedpipes.util.DirectionUtil;
 import net.minecraft.block.Block;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
@@ -21,14 +22,19 @@ public class ExtractorAttachmentFactory implements AttachmentFactory {
 
     @Override
     public Attachment createFromNbt(CompoundNBT tag) {
-        Direction dir = Direction.values()[tag.getInt("dir")];
+        Direction dir = DirectionUtil.safeGet((byte) tag.getInt("dir"));
 
-        return new ExtractorAttachment(type, dir);
+        RedstoneMode redstoneMode = RedstoneMode.IGNORED;
+        if (tag.contains("rm")) {
+            redstoneMode = RedstoneMode.get(tag.getByte("rm"));
+        }
+
+        return new ExtractorAttachment(dir, type, redstoneMode);
     }
 
     @Override
     public Attachment create(Direction dir) {
-        return new ExtractorAttachment(type, dir);
+        return new ExtractorAttachment(dir, type);
     }
 
     @Override

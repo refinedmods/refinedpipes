@@ -15,7 +15,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.BooleanProperty;
@@ -33,7 +32,6 @@ import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 
@@ -167,10 +165,7 @@ public abstract class PipeBlock extends Block {
 
     private ActionResultType openAttachmentContainer(PlayerEntity player, BlockPos pos, AttachmentManager attachmentManager, Direction dir) {
         if (player instanceof ServerPlayerEntity) {
-            INamedContainerProvider provider = attachmentManager.getContainerProvider(dir);
-            if (provider != null) {
-                NetworkHooks.openGui((ServerPlayerEntity) player, provider, pos);
-            }
+            attachmentManager.openAttachmentContainer(dir, (ServerPlayerEntity) player);
         }
 
         return ActionResultType.SUCCESS;

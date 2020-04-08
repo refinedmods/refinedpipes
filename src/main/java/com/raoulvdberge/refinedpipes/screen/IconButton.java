@@ -34,6 +34,10 @@ public class IconButton extends Button {
         tooltip.add(text);
     }
 
+    public void setIconTexX(int iconTexX) {
+        this.iconTexX = iconTexX;
+    }
+
     @Override
     public void setMessage(String message) {
         super.setMessage(message);

@@ -3,6 +3,7 @@ package com.raoulvdberge.refinedpipes.screen;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.raoulvdberge.refinedpipes.RefinedPipes;
 import com.raoulvdberge.refinedpipes.container.ExtractorAttachmentContainer;
+import com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor.RedstoneMode;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
@@ -26,11 +27,35 @@ public class ExtractorAttachmentScreen extends ContainerScreen<ExtractorAttachme
         addButton(new IconButton(
             this.guiLeft + 32,
             this.guiTop + 76,
-            177,
+            getRedstoneModeX(container.getRedstoneMode()),
             61,
-            "Redstone Mode",
-            btn -> System.out.println("hello world")
+            getRedstoneModeText(container.getRedstoneMode()),
+            btn -> setRedstoneMode((IconButton) btn, container.getRedstoneMode().next())
         ));
+    }
+
+    private void setRedstoneMode(IconButton button, RedstoneMode redstoneMode) {
+        button.setMessage(getRedstoneModeText(redstoneMode));
+        button.setIconTexX(getRedstoneModeX(redstoneMode));
+
+        container.setRedstoneMode(redstoneMode);
+    }
+
+    private int getRedstoneModeX(RedstoneMode redstoneMode) {
+        switch (redstoneMode) {
+            case IGNORED:
+                return 219;
+            case HIGH:
+                return 177;
+            case LOW:
+                return 198;
+            default:
+                return 0;
+        }
+    }
+
+    private String getRedstoneModeText(RedstoneMode redstoneMode) {
+        return I18n.format("misc.refinedpipes.redstone_mode." + redstoneMode.toString().toLowerCase());
     }
 
     @Override

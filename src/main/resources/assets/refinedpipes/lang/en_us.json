@@ -29,5 +29,8 @@
   "misc.refinedpipes.second": "second",
   "misc.refinedpipes.seconds": "seconds",
   "misc.refinedpipes.item": "item",
-  "misc.refinedpipes.items": "items"
+  "misc.refinedpipes.items": "items",
+  "misc.refinedpipes.redstone_mode.ignored": "Ignored",
+  "misc.refinedpipes.redstone_mode.high": "High",
+  "misc.refinedpipes.redstone_mode.low": "Low"
 }
