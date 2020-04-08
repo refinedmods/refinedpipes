@@ -45,6 +45,8 @@ public class ExtractorAttachmentScreen extends ContainerScreen<ExtractorAttachme
             btn -> setRedstoneMode((IconButton) btn, container.getRedstoneMode().next())
         ));
 
+        redstoneModeButton.active = container.getExtractorAttachmentType().getCanSetRedstoneMode();
+
         blacklistWhitelistButton = addButton(new IconButton(
             this.guiLeft + 55,
             this.guiTop + 76,
@@ -53,6 +55,8 @@ public class ExtractorAttachmentScreen extends ContainerScreen<ExtractorAttachme
             getBlacklistWhitelistText(container.getBlacklistWhitelist()),
             btn -> setBlacklistWhitelist((IconButton) btn, container.getBlacklistWhitelist().next())
         ));
+
+        blacklistWhitelistButton.active = container.getExtractorAttachmentType().getCanSetWhitelistBlacklist();
     }
 
     private void setRedstoneMode(IconButton button, RedstoneMode redstoneMode) {

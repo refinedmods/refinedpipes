@@ -43,6 +43,14 @@ public enum ExtractorAttachmentType {
         return getConfig().getFilterSlots();
     }
 
+    public boolean getCanSetRedstoneMode() {
+        return getConfig().getCanSetRedstoneMode();
+    }
+
+    public boolean getCanSetWhitelistBlacklist() {
+        return getConfig().getCanSetWhitelistBlacklist();
+    }
+
     private ServerConfig.ExtractorAttachment getConfig() {
         switch (this) {
             case BASIC:

@@ -137,10 +137,18 @@ public class ExtractorAttachment extends Attachment {
     }
 
     public void setRedstoneMode(RedstoneMode redstoneMode) {
+        if (!type.getCanSetRedstoneMode()) {
+            return;
+        }
+
         this.redstoneMode = redstoneMode;
     }
 
     public void setBlacklistWhitelist(BlacklistWhitelist blacklistWhitelist) {
+        if (!type.getCanSetWhitelistBlacklist()) {
+            return;
+        }
+        
         this.blacklistWhitelist = blacklistWhitelist;
     }
 

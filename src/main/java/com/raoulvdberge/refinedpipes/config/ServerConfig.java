@@ -66,33 +66,43 @@ public class ServerConfig {
                 {
                     basicExtractorAttachment = new ExtractorAttachment(
                         "basic",
-                        20 * 3, 8,
-                        0, 100,
-                        0
+                        20 * 3, 8, // item tick interval, items to extract
+                        0, 100, // fluid tick interval, fluids to extract
+                        0, // filter slots
+                        false, // redstone mode
+                        false // whitelist blacklist
                     );
                     improvedExtractorAttachment = new ExtractorAttachment(
                         "improved",
-                        20 * 2, 16,
-                        0, 400,
-                        4
+                        20 * 2, 16, // item tick interval, items to extract
+                        0, 400, // fluid tick interval, fluids to extract
+                        4, // filter slots
+                        true, // redstone mode
+                        false // whitelist blacklist
                     );
                     advancedExtractorAttachment = new ExtractorAttachment(
                         "advanced",
-                        20, 32,
-                        0, 800,
-                        8
+                        20, 32, // item tick interval, items to extract
+                        0, 800, // fluid tick interval, fluids to extract
+                        8, // filter slots
+                        true, // redstone mode
+                        true // whitelist blacklist
                     );
                     eliteExtractorAttachment = new ExtractorAttachment(
                         "elite",
-                        10, 64,
-                        0, 1600,
-                        12
+                        10, 64, // item tick interval, items to extract
+                        0, 1600, // fluid tick interval, fluids to extract
+                        12, // filter slots
+                        true, // redstone mode
+                        true // whitelist blacklist
                     );
                     ultimateExtractorAttachment = new ExtractorAttachment(
                         "ultimate",
-                        10, 64,
-                        0, 3200,
-                        15
+                        10, 64, // item tick interval, items to extract
+                        0, 3200, // fluid tick interval, fluids to extract
+                        15, // filter slots
+                        true, // redstone mode
+                        true // whitelist blacklist
                     );
                 }
                 builder.pop();
@@ -246,8 +256,10 @@ public class ServerConfig {
         private final ForgeConfigSpec.IntValue fluidTickInterval;
         private final ForgeConfigSpec.IntValue fluidsToExtract;
         private final ForgeConfigSpec.IntValue filterSlots;
+        private final ForgeConfigSpec.BooleanValue canSetRedstoneMode;
+        private final ForgeConfigSpec.BooleanValue canSetWhitelistBlacklist;
 
-        public ExtractorAttachment(String type, int defaultItemTickInterval, int defaultItemsToExtract, int defaultFluidTickInterval, int defaultFluidsToExtract, int defaultFilterSlots) {
+        public ExtractorAttachment(String type, int defaultItemTickInterval, int defaultItemsToExtract, int defaultFluidTickInterval, int defaultFluidsToExtract, int defaultFilterSlots, boolean defaultCanSetRedstoneMode, boolean defaultCanSetWhitelistBlacklist) {
             builder.push(type);
 
             itemTickInterval = builder.comment("The interval between item extractions in ticks. Lower is faster.").defineInRange("itemTickInterval", defaultItemTickInterval, 0, Integer.MAX_VALUE);
@@ -255,6 +267,8 @@ public class ServerConfig {
             fluidTickInterval = builder.comment("The interval between fluid extractions in ticks. Lower is faster.").defineInRange("fluidTickInterval", defaultFluidTickInterval, 0, Integer.MAX_VALUE);
             fluidsToExtract = builder.comment("The amount of fluids in mB to extract per extraction.").defineInRange("fluidsToExtract", defaultFluidsToExtract, 0, Integer.MAX_VALUE);
             filterSlots = builder.comment("The amount of filter slots allowed.").defineInRange("filterSlots", defaultFilterSlots, 0, com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor.ExtractorAttachment.MAX_FILTER_SLOTS);
+            canSetRedstoneMode = builder.comment("Whether the redstone mode can be configured for this extractor.").define("canSetRedstoneMode", defaultCanSetRedstoneMode);
+            canSetWhitelistBlacklist = builder.comment("Whether the extractor can be toggled between whitelist and blacklist.").define("canSetWhitelistBlacklist", defaultCanSetWhitelistBlacklist);
 
             builder.pop();
         }
@@ -277,6 +291,14 @@ public class ServerConfig {
 
         public int getFilterSlots() {
             return filterSlots.get();
+        }
+
+        public boolean getCanSetRedstoneMode() {
+            return canSetRedstoneMode.get();
+        }
+
+        public boolean getCanSetWhitelistBlacklist() {
+            return canSetWhitelistBlacklist.get();
         }
     }
 }
