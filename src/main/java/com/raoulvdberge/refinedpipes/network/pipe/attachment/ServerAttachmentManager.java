@@ -22,7 +22,7 @@ public class ServerAttachmentManager implements AttachmentManager {
     private static final Logger LOGGER = LogManager.getLogger(ServerAttachmentManager.class);
 
     private final Map<Direction, Attachment> attachments = new HashMap<>();
-    private final boolean[] attachmentState = new boolean[Direction.values().length];
+    private final ResourceLocation[] attachmentState = new ResourceLocation[Direction.values().length];
 
     private final Pipe pipe;
 
@@ -48,14 +48,9 @@ public class ServerAttachmentManager implements AttachmentManager {
         throw new RuntimeException("Shouldn't be called on the server");
     }
 
-    @Override
-    public Map<Direction, ResourceLocation> getAttachmentsPerDirection() {
-        throw new RuntimeException("Shouldn't be called on the server");
-    }
-
     public void removeAttachmentAndScanGraph(Direction dir) {
         attachments.remove(dir);
-        attachmentState[dir.ordinal()] = false;
+        attachmentState[dir.ordinal()] = null;
 
         // Re-scan graph, required to rebuild destinations (chests with an attachment connected are no valid destination, refresh that)
         pipe.getNetwork().scanGraph(pipe.getWorld(), pipe.getPos());
@@ -70,7 +65,7 @@ public class ServerAttachmentManager implements AttachmentManager {
 
     private void setAttachment(Direction dir, Attachment attachment) {
         attachments.put(dir, attachment);
-        attachmentState[dir.ordinal()] = true;
+        attachmentState[dir.ordinal()] = attachment.getId();
     }
 
     @Override
@@ -110,7 +105,7 @@ public class ServerAttachmentManager implements AttachmentManager {
     }
 
     @Override
-    public boolean[] getState() {
+    public ResourceLocation[] getState() {
         return attachmentState;
     }
 

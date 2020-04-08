@@ -10,7 +10,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -19,10 +18,9 @@ import net.minecraftforge.client.model.data.ModelDataMap;
 import net.minecraftforge.client.model.data.ModelProperty;
 
 import javax.annotation.Nonnull;
-import java.util.Map;
 
 public abstract class PipeTileEntity extends BaseTileEntity {
-    public static final ModelProperty<Map<Direction, ResourceLocation>> ATTACHMENTS_PROPERTY = new ModelProperty<>();
+    public static final ModelProperty<ResourceLocation[]> ATTACHMENTS_PROPERTY = new ModelProperty<>();
 
     public PipeTileEntity(TileEntityType<?> type) {
         super(type);
@@ -83,7 +81,7 @@ public abstract class PipeTileEntity extends BaseTileEntity {
     @Nonnull
     @Override
     public IModelData getModelData() {
-        return new ModelDataMap.Builder().withInitial(ATTACHMENTS_PROPERTY, getAttachmentManager().getAttachmentsPerDirection()).build();
+        return new ModelDataMap.Builder().withInitial(ATTACHMENTS_PROPERTY, getAttachmentManager().getState()).build();
     }
 
     @Override

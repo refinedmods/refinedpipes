@@ -1,15 +1,16 @@
 package com.raoulvdberge.refinedpipes.network.pipe.shape;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.util.ResourceLocation;
 
 import java.util.Arrays;
 import java.util.Objects;
 
 public class PipeShapeCacheEntry {
     private final BlockState state;
-    private final boolean[] attachmentState;
+    private final ResourceLocation[] attachmentState;
 
-    public PipeShapeCacheEntry(BlockState state, boolean[] attachmentState) {
+    public PipeShapeCacheEntry(BlockState state, ResourceLocation[] attachmentState) {
         this.state = state;
         this.attachmentState = attachmentState;
     }
@@ -18,7 +19,7 @@ public class PipeShapeCacheEntry {
         return state;
     }
 
-    public boolean[] getAttachmentState() {
+    public ResourceLocation[] getAttachmentState() {
         return attachmentState;
     }
 

@@ -59,6 +59,7 @@ public class PipeBakedModel implements IBakedModel {
     public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
         List<BakedQuad> quads = new ArrayList<>();
 
+        // TODO Cache this entire thing.
         if (state != null) {
             boolean north = state.get(ItemPipeBlock.NORTH);
             boolean east = state.get(ItemPipeBlock.EAST);
@@ -78,7 +79,6 @@ public class PipeBakedModel implements IBakedModel {
             } else {
                 quads.addAll(core.getQuads(state, side, rand, EmptyModelData.INSTANCE));
 
-                // TODO: cache extensions as well.
                 if (north) {
                     quads.addAll(extension.getQuads(state, side, rand, EmptyModelData.INSTANCE));
                 }
@@ -105,10 +105,14 @@ public class PipeBakedModel implements IBakedModel {
             }
         }
 
-        Map<Direction, ResourceLocation> attachments = extraData.getData(ItemPipeTileEntity.ATTACHMENTS_PROPERTY);
+        ResourceLocation[] attachments = extraData.getData(ItemPipeTileEntity.ATTACHMENTS_PROPERTY);
         if (attachments != null) {
-            for (Map.Entry<Direction, ResourceLocation> entry : attachments.entrySet()) {
-                quads.addAll(attachmentModels.get(entry.getValue()).get(entry.getKey()).getQuads(state, side, rand, extraData));
+            for (Direction dir : Direction.values()) {
+                ResourceLocation attachmentId = attachments[dir.ordinal()];
+
+                if (attachmentId != null) {
+                    quads.addAll(attachmentModels.get(attachmentId).get(dir).getQuads(state, side, rand, extraData));
+                }
             }
         }
 
@@ -120,27 +124,27 @@ public class PipeBakedModel implements IBakedModel {
             boolean invUp = state.get(ItemPipeBlock.INV_UP);
             boolean invDown = state.get(ItemPipeBlock.INV_DOWN);
 
-            if (invNorth && (attachments == null || !attachments.containsKey(Direction.NORTH))) {
+            if (invNorth && (attachments == null || attachments[Direction.NORTH.ordinal()] == null)) {
                 quads.addAll(inventoryAttachmentModels.get(Direction.NORTH).getQuads(state, side, rand, EmptyModelData.INSTANCE));
             }
 
-            if (invEast && (attachments == null || !attachments.containsKey(Direction.EAST))) {
+            if (invEast && (attachments == null || attachments[Direction.EAST.ordinal()] == null)) {
                 quads.addAll(inventoryAttachmentModels.get(Direction.EAST).getQuads(state, side, rand, EmptyModelData.INSTANCE));
             }
 
-            if (invSouth && (attachments == null || !attachments.containsKey(Direction.SOUTH))) {
+            if (invSouth && (attachments == null || attachments[Direction.SOUTH.ordinal()] == null)) {
                 quads.addAll(inventoryAttachmentModels.get(Direction.SOUTH).getQuads(state, side, rand, EmptyModelData.INSTANCE));
             }
 
-            if (invWest && (attachments == null || !attachments.containsKey(Direction.WEST))) {
+            if (invWest && (attachments == null || attachments[Direction.WEST.ordinal()] == null)) {
                 quads.addAll(inventoryAttachmentModels.get(Direction.WEST).getQuads(state, side, rand, EmptyModelData.INSTANCE));
             }
 
-            if (invUp && (attachments == null || !attachments.containsKey(Direction.UP))) {
+            if (invUp && (attachments == null || attachments[Direction.UP.ordinal()] == null)) {
                 quads.addAll(inventoryAttachmentModels.get(Direction.UP).getQuads(state, side, rand, EmptyModelData.INSTANCE));
             }
 
-            if (invDown && (attachments == null || !attachments.containsKey(Direction.DOWN))) {
+            if (invDown && (attachments == null || attachments[Direction.DOWN.ordinal()] == null)) {
                 quads.addAll(inventoryAttachmentModels.get(Direction.DOWN).getQuads(state, side, rand, EmptyModelData.INSTANCE));
             }
         }

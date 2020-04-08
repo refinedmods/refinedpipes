@@ -11,6 +11,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -27,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 public class PipeShapeCache {
-    private static final boolean[] NO_ATTACHMENT_STATE = new boolean[Direction.values().length];
+    private static final ResourceLocation[] NO_ATTACHMENT_STATE = new ResourceLocation[Direction.values().length];
 
     private final PipeShapeFactory shapeFactory;
     private final List<AxisAlignedBB> attachmentShapes = new ArrayList<>();
@@ -74,7 +75,7 @@ public class PipeShapeCache {
     }
 
     private VoxelShape createShapeIfNeeded(BlockState state, IBlockReader world, BlockPos pos) {
-        boolean[] attachmentState;
+        ResourceLocation[] attachmentState;
 
         TileEntity tile = world.getTileEntity(pos);
         if (tile instanceof PipeTileEntity) {

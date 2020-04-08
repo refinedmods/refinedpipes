@@ -12,18 +12,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ClientAttachmentManager implements AttachmentManager {
-    private final Map<Direction, ResourceLocation> attachments = new HashMap<>();
+    private final ResourceLocation[] attachmentState = new ResourceLocation[Direction.values().length];
     private final Map<Direction, ItemStack> pickBlocks = new HashMap<>();
-    private final boolean[] attachmentState = new boolean[Direction.values().length];
 
     @Override
-    public boolean[] getState() {
+    public ResourceLocation[] getState() {
         return attachmentState;
     }
 
     @Override
     public boolean hasAttachment(Direction dir) {
-        return attachments.containsKey(dir);
+        return attachmentState[dir.ordinal()] != null;
     }
 
     @Override
@@ -35,11 +34,6 @@ public class ClientAttachmentManager implements AttachmentManager {
     @Override
     public ItemStack getPickBlock(Direction dir) {
         return pickBlocks.getOrDefault(dir, ItemStack.EMPTY);
-    }
-
-    @Override
-    public Map<Direction, ResourceLocation> getAttachmentsPerDirection() {
-        return attachments;
     }
 
     @Override
@@ -55,7 +49,6 @@ public class ClientAttachmentManager implements AttachmentManager {
 
     @Override
     public void readUpdate(CompoundNBT tag) {
-        this.attachments.clear();
         this.pickBlocks.clear();
 
         for (Direction dir : Direction.values()) {
@@ -63,12 +56,11 @@ public class ClientAttachmentManager implements AttachmentManager {
             String pickBlockKey = "pb_" + dir.ordinal();
 
             if (tag.contains(attachmentKey) || tag.contains(pickBlockKey)) {
-                attachments.put(dir, new ResourceLocation(tag.getString(attachmentKey)));
                 pickBlocks.put(dir, ItemStack.read(tag.getCompound(pickBlockKey)));
 
-                attachmentState[dir.ordinal()] = true;
+                attachmentState[dir.ordinal()] = new ResourceLocation(tag.getString(attachmentKey));
             } else {
-                attachmentState[dir.ordinal()] = false;
+                attachmentState[dir.ordinal()] = null;
             }
         }
     }

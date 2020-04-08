@@ -8,11 +8,9 @@ import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.Map;
 
 public class DummyAttachmentManager implements AttachmentManager {
-    private static final boolean[] STATE = new boolean[Direction.values().length];
+    private static final ResourceLocation[] STATE = new ResourceLocation[Direction.values().length];
 
     public static final DummyAttachmentManager INSTANCE = new DummyAttachmentManager();
 
@@ -20,7 +18,7 @@ public class DummyAttachmentManager implements AttachmentManager {
     }
 
     @Override
-    public boolean[] getState() {
+    public ResourceLocation[] getState() {
         return STATE;
     }
 
@@ -38,11 +36,6 @@ public class DummyAttachmentManager implements AttachmentManager {
     @Override
     public ItemStack getPickBlock(Direction dir) {
         return ItemStack.EMPTY;
-    }
-
-    @Override
-    public Map<Direction, ResourceLocation> getAttachmentsPerDirection() {
-        return Collections.emptyMap();
     }
 
     @Override

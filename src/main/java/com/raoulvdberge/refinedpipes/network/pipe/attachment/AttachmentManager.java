@@ -8,10 +8,9 @@ import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Map;
 
 public interface AttachmentManager {
-    boolean[] getState();
+    ResourceLocation[] getState();
 
     boolean hasAttachment(Direction dir);
 
@@ -19,8 +18,6 @@ public interface AttachmentManager {
 
     @Nonnull
     ItemStack getPickBlock(Direction dir);
-
-    Map<Direction, ResourceLocation> getAttachmentsPerDirection();
 
     @Nullable
     Attachment getAttachment(Direction dir);
