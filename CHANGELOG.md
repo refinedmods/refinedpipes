@@ -1,5 +1,11 @@
 # Refined Pipes Changelog
 
+## 0.3.1
+- Added filtering options for the Extractor Attachment (raoulvdberge)
+- Added whitelist / blacklist options for the Extractor Attachment (raoulvdberge)
+- Added redstone mode for the Extractor Attachment (raoulvdberge)
+- Improved performance of rendering pipes (raoulvdberge)
+
 ## 0.3
 Note: Due to fluid networks now being split up by their tier, all fluid pipes from version 0.2.1 and earlier are incompatible and won't be functioning. This can be fixed by breaking and replacing all the fluid pipes in a network.
 
