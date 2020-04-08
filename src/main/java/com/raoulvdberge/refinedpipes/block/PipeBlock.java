@@ -118,7 +118,7 @@ public abstract class PipeBlock extends Block {
                     return ActionResultType.SUCCESS;
                 }
 
-                pipe.getAttachmentManager().setAttachmentAndScanGraph(dir, type.create(dir));
+                pipe.getAttachmentManager().setAttachmentAndScanGraph(dir, type.create(pipe, dir));
                 NetworkManager.get(world).markDirty();
 
                 pipe.sendBlockUpdate();

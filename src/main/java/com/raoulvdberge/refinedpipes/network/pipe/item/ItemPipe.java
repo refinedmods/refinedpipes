@@ -30,8 +30,8 @@ public class ItemPipe extends Pipe {
         this.type = type;
     }
 
-    public void update(World world) {
-        super.update(world);
+    public void update() {
+        super.update();
 
         transports.addAll(transportsToAdd);
         transports.removeAll(transportsToRemove);

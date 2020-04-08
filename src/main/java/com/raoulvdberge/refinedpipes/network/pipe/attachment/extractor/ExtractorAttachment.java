@@ -21,39 +21,43 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraftforge.items.ItemStackHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import javax.annotation.Nullable;
 
 public class ExtractorAttachment extends Attachment {
     private static final Logger LOGGER = LogManager.getLogger(ExtractorAttachment.class);
 
+    public static final int MAX_FILTER_SLOTS = 15;
+
+    private final Pipe pipe;
     private final ExtractorAttachmentType type;
 
     private int ticks;
     private RedstoneMode redstoneMode = RedstoneMode.IGNORED;
+    private ItemStackHandler itemFilter;
 
-    public ExtractorAttachment(Direction direction, ExtractorAttachmentType type) {
+
+    public ExtractorAttachment(Pipe pipe, Direction direction, ExtractorAttachmentType type) {
         super(direction);
 
+        this.pipe = pipe;
         this.type = type;
-    }
-
-    public ExtractorAttachment(Direction direction, ExtractorAttachmentType type, RedstoneMode redstoneMode) {
-        super(direction);
-
-        this.type = type;
-        this.redstoneMode = redstoneMode;
+        this.itemFilter = createItemFilterInventory(this);
     }
 
     @Override
-    public void update(World world, Network network, Pipe pipe) {
+    public void update() {
+        Network network = pipe.getNetwork();
+
         int tickInterval = 0;
         if (network instanceof ItemNetwork) {
             tickInterval = type.getItemTickInterval();
@@ -65,27 +69,27 @@ public class ExtractorAttachment extends Attachment {
             return;
         }
 
-        if (!redstoneMode.isEnabled(world, pipe.getPos())) {
+        if (!redstoneMode.isEnabled(pipe.getWorld(), pipe.getPos())) {
             return;
         }
 
         BlockPos destinationPos = pipe.getPos().offset(getDirection());
 
-        TileEntity tile = world.getTileEntity(destinationPos);
+        TileEntity tile = pipe.getWorld().getTileEntity(destinationPos);
         if (tile == null) {
             return;
         }
 
         if (network instanceof ItemNetwork) {
             tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, getDirection().getOpposite())
-                .ifPresent(itemHandler -> update((ItemNetwork) network, pipe, destinationPos, itemHandler));
+                .ifPresent(itemHandler -> update((ItemNetwork) network, destinationPos, itemHandler));
         } else if (network instanceof FluidNetwork) {
             tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, getDirection().getOpposite())
-                .ifPresent(fluidHandler -> update((FluidNetwork) network, world, fluidHandler));
+                .ifPresent(fluidHandler -> update((FluidNetwork) network, fluidHandler));
         }
     }
 
-    private void update(ItemNetwork network, Pipe pipe, BlockPos sourcePos, IItemHandler source) {
+    private void update(ItemNetwork network, BlockPos sourcePos, IItemHandler source) {
         int firstSlot = getFirstSlot(source);
         if (firstSlot == -1) {
             return;
@@ -132,13 +136,11 @@ public class ExtractorAttachment extends Attachment {
         ));
     }
 
-    public void setRedstoneMode(World world, RedstoneMode redstoneMode) {
+    public void setRedstoneMode(RedstoneMode redstoneMode) {
         this.redstoneMode = redstoneMode;
-
-        NetworkManager.get(world).markDirty();
     }
 
-    private void update(FluidNetwork network, World world, IFluidHandler source) {
+    private void update(FluidNetwork network, IFluidHandler source) {
         FluidStack drained = source.drain(type.getFluidsToExtract(), IFluidHandler.FluidAction.SIMULATE);
         if (drained.isEmpty()) {
             return;
@@ -155,7 +157,7 @@ public class ExtractorAttachment extends Attachment {
 
         network.getFluidTank().fill(drained, IFluidHandler.FluidAction.EXECUTE);
 
-        NetworkManager.get(world).markDirty();
+        NetworkManager.get(pipe.getWorld()).markDirty();
     }
 
     private boolean isDestinationApplicable(BlockPos sourcePos, ItemStack extracted, Destination destination) {
@@ -189,8 +191,8 @@ public class ExtractorAttachment extends Attachment {
     }
 
     @Override
-    public void openContainer(Pipe pipe, ServerPlayerEntity player) {
-        super.openContainer(pipe, player);
+    public void openContainer(ServerPlayerEntity player) {
+        super.openContainer(player);
 
         ExtractorAttachmentContainerProvider.open(pipe, this, player);
     }
@@ -213,10 +215,28 @@ public class ExtractorAttachment extends Attachment {
         return redstoneMode;
     }
 
+    public ItemStackHandler getItemFilter() {
+        return itemFilter;
+    }
+
     @Override
     public CompoundNBT writeToNbt(CompoundNBT tag) {
         tag.putByte("rm", (byte) redstoneMode.ordinal());
+        tag.put("itemfilter", itemFilter.serializeNBT());
 
         return super.writeToNbt(tag);
+    }
+
+    public static ItemStackHandler createItemFilterInventory(@Nullable ExtractorAttachment attachment) {
+        return new ItemStackHandler(MAX_FILTER_SLOTS) {
+            @Override
+            protected void onContentsChanged(int slot) {
+                super.onContentsChanged(slot);
+
+                if (attachment != null) {
+                    NetworkManager.get(attachment.pipe.getWorld()).markDirty();
+                }
+            }
+        };
     }
 }

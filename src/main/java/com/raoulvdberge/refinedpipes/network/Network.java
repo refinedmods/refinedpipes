@@ -47,7 +47,7 @@ public abstract class Network {
             scanGraph(world, originPos);
         }
 
-        graph.getPipes().forEach(p -> p.update(world));
+        graph.getPipes().forEach(Pipe::update);
     }
 
     public Pipe getPipe(BlockPos pos) {

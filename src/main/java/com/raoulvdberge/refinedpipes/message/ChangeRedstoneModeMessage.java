@@ -1,5 +1,6 @@
 package com.raoulvdberge.refinedpipes.message;
 
+import com.raoulvdberge.refinedpipes.network.NetworkManager;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.Attachment;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor.ExtractorAttachment;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor.RedstoneMode;
@@ -46,7 +47,9 @@ public class ChangeRedstoneModeMessage {
                 Attachment attachment = ((PipeTileEntity) tile).getAttachmentManager().getAttachment(message.direction);
 
                 if (attachment instanceof ExtractorAttachment) {
-                    ((ExtractorAttachment) attachment).setRedstoneMode(ctx.get().getSender().world, message.redstoneMode);
+                    ((ExtractorAttachment) attachment).setRedstoneMode(message.redstoneMode);
+
+                    NetworkManager.get(tile.getWorld()).markDirty();
                 }
             }
         });

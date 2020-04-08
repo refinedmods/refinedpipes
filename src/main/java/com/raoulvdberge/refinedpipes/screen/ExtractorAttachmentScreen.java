@@ -3,6 +3,7 @@ package com.raoulvdberge.refinedpipes.screen;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.raoulvdberge.refinedpipes.RefinedPipes;
 import com.raoulvdberge.refinedpipes.container.ExtractorAttachmentContainer;
+import com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor.ExtractorAttachment;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor.RedstoneMode;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.resources.I18n;
@@ -64,15 +65,33 @@ public class ExtractorAttachmentScreen extends ContainerScreen<ExtractorAttachme
 
         font.drawString(title.getFormattedText(), 7, 7, 4210752);
         font.drawString(I18n.format("container.inventory"), 7, 103 - 4, 4210752);
+
+        renderHoveredToolTip(mouseX - guiLeft, mouseY - guiTop);
     }
 
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
         renderBackground();
+
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         this.minecraft.getTextureManager().bindTexture(RESOURCE);
         int i = (this.width - this.xSize) / 2;
         int j = (this.height - this.ySize) / 2;
         this.blit(i, j, 0, 0, this.xSize, this.ySize);
+
+        int x = 43;
+        int y = 18;
+        for (int filterSlotId = 1; filterSlotId <= ExtractorAttachment.MAX_FILTER_SLOTS; ++filterSlotId) {
+            if (filterSlotId > container.getExtractorAttachmentType().getFilterSlots()) {
+                this.blit(i + x, j + y, 198, 0, 18, 18);
+            }
+
+            if (filterSlotId % 5 == 0) {
+                x = 43;
+                y += 18;
+            } else {
+                x += 18;
+            }
+        }
     }
 }

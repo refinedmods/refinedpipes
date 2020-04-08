@@ -1,9 +1,12 @@
 package com.raoulvdberge.refinedpipes.container;
 
+import com.raoulvdberge.refinedpipes.container.slot.FilterSlot;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.container.ClickType;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.inventory.container.Slot;
+import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nullable;
 
@@ -31,6 +34,25 @@ public class BaseContainer extends Container {
                 id++;
             }
         }
+    }
+
+    @Override
+    public ItemStack slotClick(int id, int dragType, ClickType clickType, PlayerEntity player) {
+        Slot slot = id >= 0 ? getSlot(id) : null;
+
+        if (slot instanceof FilterSlot) {
+            ItemStack holding = player.inventory.getItemStack();
+
+            if (holding.isEmpty()) {
+                slot.putStack(ItemStack.EMPTY);
+            } else if (slot.isItemValid(holding)) {
+                slot.putStack(holding.copy());
+            }
+
+            return holding;
+        }
+
+        return super.slotClick(id, dragType, clickType, player);
     }
 
     @Override

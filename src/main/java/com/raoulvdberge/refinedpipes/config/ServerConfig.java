@@ -67,27 +67,32 @@ public class ServerConfig {
                     basicExtractorAttachment = new ExtractorAttachment(
                         "basic",
                         20 * 3, 8,
-                        0, 100
+                        0, 100,
+                        0
                     );
                     improvedExtractorAttachment = new ExtractorAttachment(
                         "improved",
                         20 * 2, 16,
-                        0, 400
+                        0, 400,
+                        4
                     );
                     advancedExtractorAttachment = new ExtractorAttachment(
                         "advanced",
                         20, 32,
-                        0, 800
+                        0, 800,
+                        8
                     );
                     eliteExtractorAttachment = new ExtractorAttachment(
                         "elite",
                         10, 64,
-                        0, 1600
+                        0, 1600,
+                        12
                     );
                     ultimateExtractorAttachment = new ExtractorAttachment(
                         "ultimate",
                         10, 64,
-                        0, 3200
+                        0, 3200,
+                        15
                     );
                 }
                 builder.pop();
@@ -240,14 +245,16 @@ public class ServerConfig {
         private final ForgeConfigSpec.IntValue itemsToExtract;
         private final ForgeConfigSpec.IntValue fluidTickInterval;
         private final ForgeConfigSpec.IntValue fluidsToExtract;
+        private final ForgeConfigSpec.IntValue filterSlots;
 
-        public ExtractorAttachment(String type, int defaultItemTickInterval, int defaultItemsToExtract, int defaultFluidTickInterval, int defaultFluidsToExtract) {
+        public ExtractorAttachment(String type, int defaultItemTickInterval, int defaultItemsToExtract, int defaultFluidTickInterval, int defaultFluidsToExtract, int defaultFilterSlots) {
             builder.push(type);
 
             itemTickInterval = builder.comment("The interval between item extractions in ticks. Lower is faster.").defineInRange("itemTickInterval", defaultItemTickInterval, 0, Integer.MAX_VALUE);
             itemsToExtract = builder.comment("The amount of items to extract per extraction.").defineInRange("itemsToExtract", defaultItemsToExtract, 0, 64);
             fluidTickInterval = builder.comment("The interval between fluid extractions in ticks. Lower is faster.").defineInRange("fluidTickInterval", defaultFluidTickInterval, 0, Integer.MAX_VALUE);
             fluidsToExtract = builder.comment("The amount of fluids in mB to extract per extraction.").defineInRange("fluidsToExtract", defaultFluidsToExtract, 0, Integer.MAX_VALUE);
+            filterSlots = builder.comment("The amount of filter slots allowed.").defineInRange("filterSlots", defaultFilterSlots, 0, com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor.ExtractorAttachment.MAX_FILTER_SLOTS);
 
             builder.pop();
         }
@@ -266,6 +273,10 @@ public class ServerConfig {
 
         public int getFluidsToExtract() {
             return fluidsToExtract.get();
+        }
+
+        public int getFilterSlots() {
+            return filterSlots.get();
         }
     }
 }

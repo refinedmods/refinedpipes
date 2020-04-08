@@ -2,6 +2,7 @@ package com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor;
 
 import com.raoulvdberge.refinedpipes.block.FluidPipeBlock;
 import com.raoulvdberge.refinedpipes.block.ItemPipeBlock;
+import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.Attachment;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentFactory;
 import com.raoulvdberge.refinedpipes.util.DirectionUtil;
@@ -21,20 +22,25 @@ public class ExtractorAttachmentFactory implements AttachmentFactory {
     }
 
     @Override
-    public Attachment createFromNbt(CompoundNBT tag) {
+    public Attachment createFromNbt(Pipe pipe, CompoundNBT tag) {
         Direction dir = DirectionUtil.safeGet((byte) tag.getInt("dir"));
 
-        RedstoneMode redstoneMode = RedstoneMode.IGNORED;
-        if (tag.contains("rm")) {
-            redstoneMode = RedstoneMode.get(tag.getByte("rm"));
+        ExtractorAttachment attachment = new ExtractorAttachment(pipe, dir, type);
+
+        if (tag.contains("itemfilter")) {
+            attachment.getItemFilter().deserializeNBT(tag.getCompound("itemfilter"));
         }
 
-        return new ExtractorAttachment(dir, type, redstoneMode);
+        if (tag.contains("rm")) {
+            attachment.setRedstoneMode(RedstoneMode.get(tag.getByte("rm")));
+        }
+
+        return attachment;
     }
 
     @Override
-    public Attachment create(Direction dir) {
-        return new ExtractorAttachment(dir, type);
+    public Attachment create(Pipe pipe, Direction dir) {
+        return new ExtractorAttachment(pipe, dir, type);
     }
 
     @Override
@@ -83,6 +89,11 @@ public class ExtractorAttachmentFactory implements AttachmentFactory {
             "tooltip.refinedpipes.extractor_attachment.fluid_extraction_rate",
             fluidsToExtract,
             fluidTickInterval
+        ).setStyle(new Style().setColor(TextFormatting.GRAY)));
+
+        tooltip.add(new TranslationTextComponent(
+            "tooltip.refinedpipes.extractor_attachment.filter_slots",
+            new StringTextComponent("" + type.getFilterSlots()).setStyle(new Style().setColor(TextFormatting.WHITE))
         ).setStyle(new Style().setColor(TextFormatting.GRAY)));
     }
 

@@ -28,9 +28,9 @@ public abstract class Pipe {
         this.pos = pos;
     }
 
-    public void update(World world) {
+    public void update() {
         for (Attachment attachment : attachmentManager.getAttachments()) {
-            attachment.update(world, network, this);
+            attachment.update();
         }
     }
 

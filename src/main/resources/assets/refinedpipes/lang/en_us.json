@@ -26,6 +26,7 @@
   "tooltip.refinedpipes.energy_pipe.transfer_rate": "Transfer rate: %s",
   "tooltip.refinedpipes.extractor_attachment.item_extraction_rate": "Extracts %s every %s",
   "tooltip.refinedpipes.extractor_attachment.fluid_extraction_rate": "Extracts %s every %s",
+  "tooltip.refinedpipes.extractor_attachment.filter_slots": "%d filter slots",
   "misc.refinedpipes.second": "second",
   "misc.refinedpipes.seconds": "seconds",
   "misc.refinedpipes.item": "item",

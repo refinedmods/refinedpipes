@@ -2,6 +2,7 @@ package com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor;
 
 import com.raoulvdberge.refinedpipes.RefinedPipes;
 import com.raoulvdberge.refinedpipes.RefinedPipesItems;
+import com.raoulvdberge.refinedpipes.config.ServerConfig;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 
@@ -23,68 +24,37 @@ public enum ExtractorAttachmentType {
     }
 
     int getItemTickInterval() {
-        switch (this) {
-            case BASIC:
-                return RefinedPipes.SERVER_CONFIG.getBasicExtractorAttachment().getItemTickInterval();
-            case IMPROVED:
-                return RefinedPipes.SERVER_CONFIG.getImprovedExtractorAttachment().getItemTickInterval();
-            case ADVANCED:
-                return RefinedPipes.SERVER_CONFIG.getAdvancedExtractorAttachment().getItemTickInterval();
-            case ELITE:
-                return RefinedPipes.SERVER_CONFIG.getEliteExtractorAttachment().getItemTickInterval();
-            case ULTIMATE:
-                return RefinedPipes.SERVER_CONFIG.getUltimateExtractorAttachment().getItemTickInterval();
-            default:
-                throw new RuntimeException("?");
-        }
+        return getConfig().getItemTickInterval();
     }
 
     int getFluidTickInterval() {
-        switch (this) {
-            case BASIC:
-                return RefinedPipes.SERVER_CONFIG.getBasicExtractorAttachment().getFluidTickInterval();
-            case IMPROVED:
-                return RefinedPipes.SERVER_CONFIG.getImprovedExtractorAttachment().getFluidTickInterval();
-            case ADVANCED:
-                return RefinedPipes.SERVER_CONFIG.getAdvancedExtractorAttachment().getFluidTickInterval();
-            case ELITE:
-                return RefinedPipes.SERVER_CONFIG.getEliteExtractorAttachment().getFluidTickInterval();
-            case ULTIMATE:
-                return RefinedPipes.SERVER_CONFIG.getUltimateExtractorAttachment().getFluidTickInterval();
-            default:
-                throw new RuntimeException("?");
-        }
+        return getConfig().getFluidTickInterval();
     }
 
     int getItemsToExtract() {
-        switch (this) {
-            case BASIC:
-                return RefinedPipes.SERVER_CONFIG.getBasicExtractorAttachment().getItemsToExtract();
-            case IMPROVED:
-                return RefinedPipes.SERVER_CONFIG.getImprovedExtractorAttachment().getItemsToExtract();
-            case ADVANCED:
-                return RefinedPipes.SERVER_CONFIG.getAdvancedExtractorAttachment().getItemsToExtract();
-            case ELITE:
-                return RefinedPipes.SERVER_CONFIG.getEliteExtractorAttachment().getItemsToExtract();
-            case ULTIMATE:
-                return RefinedPipes.SERVER_CONFIG.getUltimateExtractorAttachment().getItemsToExtract();
-            default:
-                throw new RuntimeException("?");
-        }
+        return getConfig().getItemsToExtract();
     }
 
     int getFluidsToExtract() {
+        return getConfig().getFluidsToExtract();
+    }
+
+    public int getFilterSlots() {
+        return getConfig().getFilterSlots();
+    }
+
+    private ServerConfig.ExtractorAttachment getConfig() {
         switch (this) {
             case BASIC:
-                return RefinedPipes.SERVER_CONFIG.getBasicExtractorAttachment().getFluidsToExtract();
+                return RefinedPipes.SERVER_CONFIG.getBasicExtractorAttachment();
             case IMPROVED:
-                return RefinedPipes.SERVER_CONFIG.getImprovedExtractorAttachment().getFluidsToExtract();
+                return RefinedPipes.SERVER_CONFIG.getImprovedExtractorAttachment();
             case ADVANCED:
-                return RefinedPipes.SERVER_CONFIG.getAdvancedExtractorAttachment().getFluidsToExtract();
+                return RefinedPipes.SERVER_CONFIG.getAdvancedExtractorAttachment();
             case ELITE:
-                return RefinedPipes.SERVER_CONFIG.getEliteExtractorAttachment().getFluidsToExtract();
+                return RefinedPipes.SERVER_CONFIG.getEliteExtractorAttachment();
             case ULTIMATE:
-                return RefinedPipes.SERVER_CONFIG.getUltimateExtractorAttachment().getFluidsToExtract();
+                return RefinedPipes.SERVER_CONFIG.getUltimateExtractorAttachment();
             default:
                 throw new RuntimeException("?");
         }
@@ -156,5 +126,15 @@ public enum ExtractorAttachmentType {
             default:
                 throw new RuntimeException("?");
         }
+    }
+
+    public static ExtractorAttachmentType get(byte b) {
+        ExtractorAttachmentType[] v = values();
+
+        if (b < 0 || b >= v.length) {
+            return BASIC;
+        }
+
+        return v[b];
     }
 }

@@ -22,8 +22,8 @@ public class FluidPipe extends Pipe {
     }
 
     @Override
-    public void update(World world) {
-        super.update(world);
+    public void update() {
+        super.update();
 
         float f = getFullness();
         if (Math.abs(lastFullness - f) >= 0.1) {

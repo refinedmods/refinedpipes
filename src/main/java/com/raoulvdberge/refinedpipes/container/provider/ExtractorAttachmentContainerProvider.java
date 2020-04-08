@@ -37,17 +37,20 @@ public class ExtractorAttachmentContainerProvider implements INamedContainerProv
             player,
             pipe.getPos(),
             attachment.getDirection(),
-            attachment.getRedstoneMode()
+            attachment.getRedstoneMode(),
+            attachment.getType(),
+            attachment.getItemFilter()
         );
     }
 
     public static void open(Pipe pipe, ExtractorAttachment attachment, ServerPlayerEntity player) {
         ExtractorAttachmentContainerProvider provider = new ExtractorAttachmentContainerProvider(pipe, attachment);
 
-        NetworkHooks.openGui(player, provider, data -> {
-            data.writeBlockPos(pipe.getPos());
-            data.writeByte(attachment.getDirection().ordinal());
-            data.writeByte(attachment.getRedstoneMode().ordinal());
+        NetworkHooks.openGui(player, provider, buf -> {
+            buf.writeBlockPos(pipe.getPos());
+            buf.writeByte(attachment.getDirection().ordinal());
+            buf.writeByte(attachment.getRedstoneMode().ordinal());
+            buf.writeByte(attachment.getType().ordinal());
         });
     }
 }

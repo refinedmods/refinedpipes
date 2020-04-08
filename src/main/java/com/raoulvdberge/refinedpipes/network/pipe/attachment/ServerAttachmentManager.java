@@ -38,7 +38,7 @@ public class ServerAttachmentManager implements AttachmentManager {
     @Override
     public void openAttachmentContainer(Direction dir, ServerPlayerEntity player) {
         if (hasAttachment(dir)) {
-            getAttachment(dir).openContainer(pipe, player);
+            getAttachment(dir).openContainer(player);
         }
     }
 
@@ -101,7 +101,7 @@ public class ServerAttachmentManager implements AttachmentManager {
 
             AttachmentFactory factory = AttachmentRegistry.INSTANCE.getFactory(new ResourceLocation(attchTag.getString("typ")));
             if (factory != null) {
-                Attachment attachment = factory.createFromNbt(attchTag);
+                Attachment attachment = factory.createFromNbt(pipe, attchTag);
                 setAttachment(attachment.getDirection(), attachment);
             } else {
                 LOGGER.warn("Attachment {} no longer exists", attchTag.getString("typ"));
