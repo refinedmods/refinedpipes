@@ -35,7 +35,7 @@
   "misc.refinedpipes.redstone_mode.ignored": "Ignored",
   "misc.refinedpipes.redstone_mode.high": "High",
   "misc.refinedpipes.redstone_mode.low": "Low",
-  "misc.refinedpipes.mode": "Mode",
+  "misc.refinedpipes.mode": "Filter mode",
   "misc.refinedpipes.mode.blacklist": "Blacklist",
   "misc.refinedpipes.mode.whitelist": "Whitelist",
   "misc.refinedpipes.routing_mode": "Routing mode",

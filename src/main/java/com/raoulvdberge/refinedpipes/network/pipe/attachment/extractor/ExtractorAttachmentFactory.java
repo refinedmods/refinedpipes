@@ -108,9 +108,15 @@ public class ExtractorAttachmentFactory implements AttachmentFactory {
             new StringTextComponent("" + type.getFilterSlots()).setStyle(new Style().setColor(TextFormatting.WHITE))
         ).setStyle(new Style().setColor(TextFormatting.GRAY)));
 
+        addAbilityToInformation(tooltip, type.getCanSetRedstoneMode(), "misc.refinedpipes.redstone_mode");
+        addAbilityToInformation(tooltip, type.getCanSetWhitelistBlacklist(), "misc.refinedpipes.mode");
+        addAbilityToInformation(tooltip, type.getCanSetRoutingMode(), "misc.refinedpipes.routing_mode");
+    }
+
+    private void addAbilityToInformation(List<ITextComponent> tooltip, boolean possible, String key) {
         tooltip.add(
-            new StringTextComponent("✓ ").appendSibling(new TranslationTextComponent("misc.refinedpipes.routing_mode"))
-                .setStyle(new Style().setColor(TextFormatting.GREEN))
+            new StringTextComponent(possible ? "✓ " : "❌ ").appendSibling(new TranslationTextComponent(key))
+                .setStyle(new Style().setColor(possible ? TextFormatting.GREEN : TextFormatting.RED))
         );
     }
 
