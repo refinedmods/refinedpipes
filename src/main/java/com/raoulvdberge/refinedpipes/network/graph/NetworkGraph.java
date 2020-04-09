@@ -13,7 +13,7 @@ public class NetworkGraph {
     private final Network network;
 
     private Set<Pipe> pipes = new HashSet<>();
-    private Map<DestinationType, Set<Destination>> destinations = new HashMap<>();
+    private Map<DestinationType, List<Destination>> destinations = new HashMap<>();
 
     public NetworkGraph(Network network) {
         this.network = network;
@@ -32,7 +32,7 @@ public class NetworkGraph {
         destinations.clear();
 
         for (Destination destination : result.getDestinations()) {
-            destinations.computeIfAbsent(destination.getType(), type -> new HashSet<>()).add(destination);
+            destinations.computeIfAbsent(destination.getType(), type -> new ArrayList<>()).add(destination);
         }
 
         return result;
@@ -42,7 +42,7 @@ public class NetworkGraph {
         return pipes;
     }
 
-    public Set<Destination> getDestinations(DestinationType type) {
-        return destinations.getOrDefault(type, Collections.emptySet());
+    public List<Destination> getDestinations(DestinationType type) {
+        return destinations.getOrDefault(type, Collections.emptyList());
     }
 }

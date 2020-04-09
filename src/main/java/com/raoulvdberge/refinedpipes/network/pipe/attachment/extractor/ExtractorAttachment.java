@@ -6,6 +6,7 @@ import com.raoulvdberge.refinedpipes.network.NetworkManager;
 import com.raoulvdberge.refinedpipes.network.fluid.FluidNetwork;
 import com.raoulvdberge.refinedpipes.network.item.ItemNetwork;
 import com.raoulvdberge.refinedpipes.network.pipe.Destination;
+import com.raoulvdberge.refinedpipes.network.pipe.DestinationType;
 import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.Attachment;
 import com.raoulvdberge.refinedpipes.network.pipe.item.ItemPipe;
@@ -32,6 +33,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ExtractorAttachment extends Attachment {
     private static final Logger LOGGER = LogManager.getLogger(ExtractorAttachment.class);
@@ -40,11 +43,13 @@ public class ExtractorAttachment extends Attachment {
 
     private final Pipe pipe;
     private final ExtractorAttachmentType type;
+    private final ItemStackHandler itemFilter;
 
     private int ticks;
     private RedstoneMode redstoneMode = RedstoneMode.IGNORED;
     private BlacklistWhitelist blacklistWhitelist = BlacklistWhitelist.BLACKLIST;
-    private ItemStackHandler itemFilter;
+    private RoutingMode routingMode = RoutingMode.NEAREST;
+    private int roundRobinIndex;
 
     public ExtractorAttachment(Pipe pipe, Direction direction, ExtractorAttachmentType type) {
         super(direction);
@@ -100,10 +105,7 @@ public class ExtractorAttachment extends Attachment {
             return;
         }
 
-        Destination destination = network
-            .getDestinationPathCache()
-            .findNearestDestination(pipe.getPos(), d -> isDestinationApplicable(sourcePos, extracted, d));
-
+        Destination destination = findDestination(network, sourcePos, extracted);
         if (destination == null) {
             LOGGER.warn("No destination found from " + pipe.getPos());
             return;
@@ -112,7 +114,6 @@ public class ExtractorAttachment extends Attachment {
         Path<BlockPos> path = network
             .getDestinationPathCache()
             .getPath(pipe.getPos(), destination);
-
         if (path == null) {
             LOGGER.error("No path found from " + pipe.getPos() + " to " + destination);
             return;
@@ -136,6 +137,57 @@ public class ExtractorAttachment extends Attachment {
         ));
     }
 
+    private Destination findDestination(ItemNetwork network, BlockPos sourcePos, ItemStack extracted) {
+        switch (routingMode) {
+            case NEAREST:
+                return network.getDestinationPathCache()
+                    .findNearestDestination(pipe.getPos(), d -> isDestinationApplicable(sourcePos, extracted, d));
+            case FURTHEST:
+                return network.getDestinationPathCache()
+                    .findFurthestDestination(pipe.getPos(), d -> isDestinationApplicable(sourcePos, extracted, d));
+            case RANDOM: {
+                List<Destination> destinations = new ArrayList<>(network.getDestinations(DestinationType.ITEM_HANDLER));
+
+                while (!destinations.isEmpty()) {
+                    int randomIndex = pipe.getWorld().getRandom().nextInt(destinations.size());
+                    Destination randomDestination = destinations.get(randomIndex);
+
+                    if (isDestinationApplicable(sourcePos, extracted, randomDestination)) {
+                        return randomDestination;
+                    }
+
+                    destinations.remove(randomIndex);
+                }
+
+                return null;
+            }
+            case ROUND_ROBIN: {
+                List<Destination> destinations = network.getDestinations(DestinationType.ITEM_HANDLER);
+                if (roundRobinIndex >= destinations.size()) {
+                    roundRobinIndex = 0;
+                }
+
+                while (true) {
+                    Destination dest = destinations.get(roundRobinIndex);
+
+                    if (isDestinationApplicable(sourcePos, extracted, dest)) {
+                        roundRobinIndex++;
+                        return dest;
+                    } else {
+                        roundRobinIndex++;
+                        if (roundRobinIndex >= destinations.size()) {
+                            break;
+                        }
+                    }
+                }
+
+                return null;
+            }
+            default:
+                throw new RuntimeException("?");
+        }
+    }
+
     public void setRedstoneMode(RedstoneMode redstoneMode) {
         if (!type.getCanSetRedstoneMode()) {
             return;
@@ -148,8 +200,20 @@ public class ExtractorAttachment extends Attachment {
         if (!type.getCanSetWhitelistBlacklist()) {
             return;
         }
-        
+
         this.blacklistWhitelist = blacklistWhitelist;
+    }
+
+    public void setRoutingMode(RoutingMode routingMode) {
+        if (!type.getCanSetRoutingMode()) {
+            return;
+        }
+
+        this.routingMode = routingMode;
+    }
+
+    public void setRoundRobinIndex(int roundRobinIndex) {
+        this.roundRobinIndex = roundRobinIndex;
     }
 
     private void update(FluidNetwork network, IFluidHandler source) {
@@ -259,6 +323,10 @@ public class ExtractorAttachment extends Attachment {
         return blacklistWhitelist;
     }
 
+    public RoutingMode getRoutingMode() {
+        return routingMode;
+    }
+
     public ItemStackHandler getItemFilter() {
         return itemFilter;
     }
@@ -268,6 +336,8 @@ public class ExtractorAttachment extends Attachment {
         tag.putByte("rm", (byte) redstoneMode.ordinal());
         tag.put("itemfilter", itemFilter.serializeNBT());
         tag.putByte("bw", (byte) blacklistWhitelist.ordinal());
+        tag.putInt("rr", roundRobinIndex);
+        tag.putByte("routingm", (byte) routingMode.ordinal());
 
         return super.writeToNbt(tag);
     }

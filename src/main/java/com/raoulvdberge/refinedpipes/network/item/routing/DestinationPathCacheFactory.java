@@ -9,16 +9,15 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class DestinationPathCacheFactory {
     private static final Logger LOGGER = LogManager.getLogger(DestinationPathCacheFactory.class);
 
     private final Graph<BlockPos> graph;
     private final NodeIndex<BlockPos> nodeIndex;
-    private final Set<Destination> destinations;
+    private final List<Destination> destinations;
 
-    public DestinationPathCacheFactory(Graph<BlockPos> graph, NodeIndex<BlockPos> nodeIndex, Set<Destination> destinations) {
+    public DestinationPathCacheFactory(Graph<BlockPos> graph, NodeIndex<BlockPos> nodeIndex, List<Destination> destinations) {
         this.graph = graph;
         this.nodeIndex = nodeIndex;
         this.destinations = destinations;

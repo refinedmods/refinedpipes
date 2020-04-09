@@ -51,6 +51,10 @@ public enum ExtractorAttachmentType {
         return getConfig().getCanSetWhitelistBlacklist();
     }
 
+    public boolean getCanSetRoutingMode() {
+        return getConfig().getCanSetRoutingMode();
+    }
+
     private ServerConfig.ExtractorAttachment getConfig() {
         switch (this) {
             case BASIC:

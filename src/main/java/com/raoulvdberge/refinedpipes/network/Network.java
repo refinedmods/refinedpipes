@@ -2,12 +2,15 @@ package com.raoulvdberge.refinedpipes.network;
 
 import com.raoulvdberge.refinedpipes.network.graph.NetworkGraph;
 import com.raoulvdberge.refinedpipes.network.graph.NetworkGraphScannerResult;
+import com.raoulvdberge.refinedpipes.network.pipe.Destination;
+import com.raoulvdberge.refinedpipes.network.pipe.DestinationType;
 import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import java.util.List;
 import java.util.Objects;
 
 public abstract class Network {
@@ -31,6 +34,10 @@ public abstract class Network {
 
     public NetworkGraphScannerResult scanGraph(World world, BlockPos pos) {
         return graph.scan(world, pos);
+    }
+
+    public List<Destination> getDestinations(DestinationType type) {
+        return graph.getDestinations(type);
     }
 
     public CompoundNBT writeToNbt(CompoundNBT tag) {

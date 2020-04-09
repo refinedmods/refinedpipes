@@ -17,7 +17,7 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 
-import java.util.Set;
+import java.util.List;
 
 public class FluidNetwork extends Network {
     private final FluidTank fluidTank = new FluidTank(FluidAttributes.BUCKET_VOLUME);
@@ -57,7 +57,7 @@ public class FluidNetwork extends Network {
     public void update(World world) {
         super.update(world);
 
-        Set<Destination> destinations = graph.getDestinations(DestinationType.FLUID_HANDLER);
+        List<Destination> destinations = graph.getDestinations(DestinationType.FLUID_HANDLER);
 
         if (fluidTank.getFluid().isEmpty() || destinations.isEmpty()) {
             return;

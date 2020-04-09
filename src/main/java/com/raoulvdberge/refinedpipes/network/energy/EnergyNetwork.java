@@ -13,7 +13,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 
-import java.util.Set;
+import java.util.List;
 
 public class EnergyNetwork extends Network {
     private final EnergyStorage energyStorage;
@@ -54,7 +54,7 @@ public class EnergyNetwork extends Network {
     public void update(World world) {
         super.update(world);
 
-        Set<Destination> destinations = graph.getDestinations(DestinationType.ENERGY_STORAGE);
+        List<Destination> destinations = graph.getDestinations(DestinationType.ENERGY_STORAGE);
 
         if (!destinations.isEmpty()) {
             if (energyStorage.getEnergyStored() <= 0) {

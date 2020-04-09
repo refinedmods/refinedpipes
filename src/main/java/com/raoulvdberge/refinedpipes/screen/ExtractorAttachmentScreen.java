@@ -6,6 +6,7 @@ import com.raoulvdberge.refinedpipes.container.ExtractorAttachmentContainer;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor.BlacklistWhitelist;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor.ExtractorAttachment;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor.RedstoneMode;
+import com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor.RoutingMode;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.widget.button.Button;
@@ -24,6 +25,7 @@ public class ExtractorAttachmentScreen extends ContainerScreen<ExtractorAttachme
 
     private Button redstoneModeButton;
     private Button blacklistWhitelistButton;
+    private Button routingModeButton;
 
     public ExtractorAttachmentScreen(ExtractorAttachmentContainer container, PlayerInventory inv, ITextComponent title) {
         super(container, inv, title);
@@ -57,6 +59,17 @@ public class ExtractorAttachmentScreen extends ContainerScreen<ExtractorAttachme
         ));
 
         blacklistWhitelistButton.active = container.getExtractorAttachmentType().getCanSetWhitelistBlacklist();
+
+        routingModeButton = addButton(new IconButton(
+            this.guiLeft + 78,
+            this.guiTop + 76,
+            getRoutingModeX(container.getRoutingMode()),
+            194,
+            getRoutingModeText(container.getRoutingMode()),
+            btn -> setRoutingMode((IconButton) btn, container.getRoutingMode().next())
+        ));
+
+        routingModeButton.active = container.getExtractorAttachmentType().getCanSetWhitelistBlacklist();
     }
 
     private void setRedstoneMode(IconButton button, RedstoneMode redstoneMode) {
@@ -71,6 +84,13 @@ public class ExtractorAttachmentScreen extends ContainerScreen<ExtractorAttachme
         button.setIconTexX(getBlacklistWhitelistX(blacklistWhitelist));
 
         container.setBlacklistWhitelist(blacklistWhitelist);
+    }
+
+    private void setRoutingMode(IconButton button, RoutingMode routingMode) {
+        button.setMessage(getRoutingModeText(routingMode));
+        button.setIconTexX(getRoutingModeX(routingMode));
+
+        container.setRoutingMode(routingMode);
     }
 
     private int getRedstoneModeX(RedstoneMode redstoneMode) {
@@ -105,6 +125,25 @@ public class ExtractorAttachmentScreen extends ContainerScreen<ExtractorAttachme
         return I18n.format("misc.refinedpipes.mode." + blacklistWhitelist.toString().toLowerCase());
     }
 
+    private int getRoutingModeX(RoutingMode routingMode) {
+        switch (routingMode) {
+            case NEAREST:
+                return 0;
+            case FURTHEST:
+                return 21;
+            case RANDOM:
+                return 42;
+            case ROUND_ROBIN:
+                return 63;
+            default:
+                return 0;
+        }
+    }
+
+    private String getRoutingModeText(RoutingMode routingMode) {
+        return I18n.format("misc.refinedpipes.routing_mode." + routingMode.toString().toLowerCase());
+    }
+
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
         super.drawGuiContainerForegroundLayer(mouseX, mouseY);
@@ -124,6 +163,12 @@ public class ExtractorAttachmentScreen extends ContainerScreen<ExtractorAttachme
             List<String> tooltip = new ArrayList<>();
             tooltip.add(I18n.format("misc.refinedpipes.redstone_mode"));
             tooltip.add(TextFormatting.GRAY + getRedstoneModeText(container.getRedstoneMode()));
+
+            GuiUtils.drawHoveringText(tooltip, mouseX - guiLeft, mouseY - guiTop, width, height, -1, Minecraft.getInstance().fontRenderer);
+        } else if (routingModeButton.isHovered()) {
+            List<String> tooltip = new ArrayList<>();
+            tooltip.add(I18n.format("misc.refinedpipes.routing_mode"));
+            tooltip.add(TextFormatting.GRAY + getRoutingModeText(container.getRoutingMode()));
 
             GuiUtils.drawHoveringText(tooltip, mouseX - guiLeft, mouseY - guiTop, width, height, -1, Minecraft.getInstance().fontRenderer);
         }

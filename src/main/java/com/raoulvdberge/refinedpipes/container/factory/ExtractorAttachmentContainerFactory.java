@@ -1,10 +1,7 @@
 package com.raoulvdberge.refinedpipes.container.factory;
 
 import com.raoulvdberge.refinedpipes.container.ExtractorAttachmentContainer;
-import com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor.BlacklistWhitelist;
-import com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor.ExtractorAttachment;
-import com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor.ExtractorAttachmentType;
-import com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor.RedstoneMode;
+import com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor.*;
 import com.raoulvdberge.refinedpipes.util.DirectionUtil;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.network.PacketBuffer;
@@ -20,6 +17,7 @@ public class ExtractorAttachmentContainerFactory implements IContainerFactory<Ex
             DirectionUtil.safeGet(buf.readByte()),
             RedstoneMode.get(buf.readByte()),
             BlacklistWhitelist.get(buf.readByte()),
+            RoutingMode.get(buf.readByte()),
             ExtractorAttachmentType.get(buf.readByte()),
             ExtractorAttachment.createItemFilterInventory(null)
         );

@@ -53,4 +53,32 @@ public class DestinationPathCache {
 
         return foundDestination;
     }
+
+    @Nullable
+    public Destination findFurthestDestination(BlockPos source, Predicate<Destination> filter) {
+        Map<Destination, Path<BlockPos>> pathsFromSource = paths.get(source);
+        if (pathsFromSource == null) {
+            return null;
+        }
+
+        Destination foundDestination = null;
+        int furthestDistance = -1;
+
+        for (Map.Entry<Destination, Path<BlockPos>> destinationAndPath : pathsFromSource.entrySet()) {
+            Destination destination = destinationAndPath.getKey();
+            if (!filter.test(destination)) {
+                continue;
+            }
+
+            Path<BlockPos> path = destinationAndPath.getValue();
+            int distance = path.length();
+
+            if ((furthestDistance == -1 || distance > furthestDistance)) {
+                furthestDistance = distance;
+                foundDestination = destination;
+            }
+        }
+
+        return foundDestination;
+    }
 }

@@ -5,9 +5,11 @@ import com.raoulvdberge.refinedpipes.RefinedPipesContainers;
 import com.raoulvdberge.refinedpipes.container.slot.FilterSlot;
 import com.raoulvdberge.refinedpipes.message.ChangeBlacklistWhitelistMessage;
 import com.raoulvdberge.refinedpipes.message.ChangeRedstoneModeMessage;
+import com.raoulvdberge.refinedpipes.message.ChangeRoutingModeMessage;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor.BlacklistWhitelist;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor.ExtractorAttachmentType;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor.RedstoneMode;
+import com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor.RoutingMode;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
@@ -20,8 +22,18 @@ public class ExtractorAttachmentContainer extends BaseContainer {
 
     private RedstoneMode redstoneMode;
     private BlacklistWhitelist blacklistWhitelist;
+    private RoutingMode routingMode;
 
-    public ExtractorAttachmentContainer(int windowId, PlayerEntity player, BlockPos pos, Direction dir, RedstoneMode redstoneMode, BlacklistWhitelist blacklistWhitelist, ExtractorAttachmentType type, ItemStackHandler itemFilters) {
+    public ExtractorAttachmentContainer(
+        int windowId,
+        PlayerEntity player,
+        BlockPos pos,
+        Direction dir,
+        RedstoneMode redstoneMode,
+        BlacklistWhitelist blacklistWhitelist,
+        RoutingMode routingMode,
+        ExtractorAttachmentType type,
+        ItemStackHandler itemFilters) {
         super(RefinedPipesContainers.EXTRACTOR_ATTACHMENT, windowId);
 
         addPlayerInventory(player, 8, 111);
@@ -45,6 +57,7 @@ public class ExtractorAttachmentContainer extends BaseContainer {
 
         this.redstoneMode = redstoneMode;
         this.blacklistWhitelist = blacklistWhitelist;
+        this.routingMode = routingMode;
     }
 
     public ExtractorAttachmentType getExtractorAttachmentType() {
@@ -59,6 +72,10 @@ public class ExtractorAttachmentContainer extends BaseContainer {
         return blacklistWhitelist;
     }
 
+    public RoutingMode getRoutingMode() {
+        return routingMode;
+    }
+
     public void setRedstoneMode(RedstoneMode redstoneMode) {
         this.redstoneMode = redstoneMode;
 
@@ -69,5 +86,11 @@ public class ExtractorAttachmentContainer extends BaseContainer {
         this.blacklistWhitelist = blacklistWhitelist;
 
         RefinedPipes.NETWORK.sendToServer(new ChangeBlacklistWhitelistMessage(pos, dir, blacklistWhitelist));
+    }
+
+    public void setRoutingMode(RoutingMode routingMode) {
+        this.routingMode = routingMode;
+
+        RefinedPipes.NETWORK.sendToServer(new ChangeRoutingModeMessage(pos, dir, routingMode));
     }
 }

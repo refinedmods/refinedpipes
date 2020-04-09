@@ -70,7 +70,8 @@ public class ServerConfig {
                         0, 100, // fluid tick interval, fluids to extract
                         0, // filter slots
                         false, // redstone mode
-                        false // whitelist blacklist
+                        false, // whitelist blacklist
+                        false // routing mode
                     );
                     improvedExtractorAttachment = new ExtractorAttachment(
                         "improved",
@@ -78,7 +79,8 @@ public class ServerConfig {
                         0, 400, // fluid tick interval, fluids to extract
                         4, // filter slots
                         true, // redstone mode
-                        false // whitelist blacklist
+                        false, // whitelist blacklist
+                        false // routing mode
                     );
                     advancedExtractorAttachment = new ExtractorAttachment(
                         "advanced",
@@ -86,7 +88,8 @@ public class ServerConfig {
                         0, 800, // fluid tick interval, fluids to extract
                         8, // filter slots
                         true, // redstone mode
-                        true // whitelist blacklist
+                        true, // whitelist blacklist
+                        true // routing mode
                     );
                     eliteExtractorAttachment = new ExtractorAttachment(
                         "elite",
@@ -94,7 +97,8 @@ public class ServerConfig {
                         0, 1600, // fluid tick interval, fluids to extract
                         12, // filter slots
                         true, // redstone mode
-                        true // whitelist blacklist
+                        true, // whitelist blacklist
+                        true // routing mode
                     );
                     ultimateExtractorAttachment = new ExtractorAttachment(
                         "ultimate",
@@ -102,7 +106,8 @@ public class ServerConfig {
                         0, 3200, // fluid tick interval, fluids to extract
                         15, // filter slots
                         true, // redstone mode
-                        true // whitelist blacklist
+                        true, // whitelist blacklist
+                        true // routing mode
                     );
                 }
                 builder.pop();
@@ -258,8 +263,9 @@ public class ServerConfig {
         private final ForgeConfigSpec.IntValue filterSlots;
         private final ForgeConfigSpec.BooleanValue canSetRedstoneMode;
         private final ForgeConfigSpec.BooleanValue canSetWhitelistBlacklist;
+        private final ForgeConfigSpec.BooleanValue canSetRoutingMode;
 
-        public ExtractorAttachment(String type, int defaultItemTickInterval, int defaultItemsToExtract, int defaultFluidTickInterval, int defaultFluidsToExtract, int defaultFilterSlots, boolean defaultCanSetRedstoneMode, boolean defaultCanSetWhitelistBlacklist) {
+        public ExtractorAttachment(String type, int defaultItemTickInterval, int defaultItemsToExtract, int defaultFluidTickInterval, int defaultFluidsToExtract, int defaultFilterSlots, boolean defaultCanSetRedstoneMode, boolean defaultCanSetWhitelistBlacklist, boolean defaultCanSetRoutingMode) {
             builder.push(type);
 
             itemTickInterval = builder.comment("The interval between item extractions in ticks. Lower is faster.").defineInRange("itemTickInterval", defaultItemTickInterval, 0, Integer.MAX_VALUE);
@@ -269,6 +275,7 @@ public class ServerConfig {
             filterSlots = builder.comment("The amount of filter slots allowed.").defineInRange("filterSlots", defaultFilterSlots, 0, com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor.ExtractorAttachment.MAX_FILTER_SLOTS);
             canSetRedstoneMode = builder.comment("Whether the redstone mode can be configured for this extractor.").define("canSetRedstoneMode", defaultCanSetRedstoneMode);
             canSetWhitelistBlacklist = builder.comment("Whether the extractor can be toggled between whitelist and blacklist.").define("canSetWhitelistBlacklist", defaultCanSetWhitelistBlacklist);
+            canSetRoutingMode = builder.comment("Whether the extractor can be toggled between routing modes.").define("canSetRoutingMode", defaultCanSetRoutingMode);
 
             builder.pop();
         }
@@ -299,6 +306,10 @@ public class ServerConfig {
 
         public boolean getCanSetWhitelistBlacklist() {
             return canSetWhitelistBlacklist.get();
+        }
+
+        public boolean getCanSetRoutingMode() {
+            return canSetRoutingMode.get();
         }
     }
 }

@@ -37,5 +37,10 @@
   "misc.refinedpipes.redstone_mode.low": "Low",
   "misc.refinedpipes.mode": "Mode",
   "misc.refinedpipes.mode.blacklist": "Blacklist",
-  "misc.refinedpipes.mode.whitelist": "Whitelist"
+  "misc.refinedpipes.mode.whitelist": "Whitelist",
+  "misc.refinedpipes.routing_mode": "Routing mode",
+  "misc.refinedpipes.routing_mode.nearest": "Nearest first",
+  "misc.refinedpipes.routing_mode.furthest": "Furthest first",
+  "misc.refinedpipes.routing_mode.random": "Random",
+  "misc.refinedpipes.routing_mode.round_robin": "Round robin"
 }

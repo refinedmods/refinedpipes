@@ -49,7 +49,7 @@ public class ItemNetwork extends Network {
         return TYPE;
     }
 
-    private void updateRouting(NetworkGraphScannerResult result, Set<Destination> destinations) {
+    private void updateRouting(NetworkGraphScannerResult result, List<Destination> destinations) {
         List<Node<BlockPos>> nodes = buildNodes(result.getFoundPipes());
 
         NodeIndex<BlockPos> nodeIndex = NodeIndex.of(nodes);

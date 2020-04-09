@@ -39,6 +39,14 @@ public class ExtractorAttachmentFactory implements AttachmentFactory {
             attachment.setBlacklistWhitelist(BlacklistWhitelist.get(tag.getByte("bw")));
         }
 
+        if (tag.contains("rr")) {
+            attachment.setRoundRobinIndex(tag.getInt("rr"));
+        }
+
+        if (tag.contains("routingm")) {
+            attachment.setRoutingMode(RoutingMode.get(tag.getByte("routingm")));
+        }
+
         return attachment;
     }
 
@@ -99,6 +107,11 @@ public class ExtractorAttachmentFactory implements AttachmentFactory {
             "tooltip.refinedpipes.extractor_attachment.filter_slots",
             new StringTextComponent("" + type.getFilterSlots()).setStyle(new Style().setColor(TextFormatting.WHITE))
         ).setStyle(new Style().setColor(TextFormatting.GRAY)));
+
+        tooltip.add(
+            new StringTextComponent("✓ ").appendSibling(new TranslationTextComponent("misc.refinedpipes.routing_mode"))
+                .setStyle(new Style().setColor(TextFormatting.GREEN))
+        );
     }
 
     @Override
