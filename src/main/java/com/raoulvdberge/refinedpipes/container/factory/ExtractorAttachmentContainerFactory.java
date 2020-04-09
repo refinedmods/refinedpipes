@@ -18,6 +18,7 @@ public class ExtractorAttachmentContainerFactory implements IContainerFactory<Ex
             RedstoneMode.get(buf.readByte()),
             BlacklistWhitelist.get(buf.readByte()),
             RoutingMode.get(buf.readByte()),
+            buf.readInt(),
             ExtractorAttachmentType.get(buf.readByte()),
             ExtractorAttachment.createItemFilterInventory(null)
         );

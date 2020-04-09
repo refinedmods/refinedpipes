@@ -47,6 +47,10 @@ public class ExtractorAttachmentFactory implements AttachmentFactory {
             attachment.setRoutingMode(RoutingMode.get(tag.getByte("routingm")));
         }
 
+        if (tag.contains("stacksi")) {
+            attachment.setStackSize(tag.getInt("stacksi"));
+        }
+
         return attachment;
     }
 

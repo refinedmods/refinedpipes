@@ -9,25 +9,20 @@ import net.minecraft.util.ResourceLocation;
 public class IconButton extends Button {
     private static final ResourceLocation RESOURCE = new ResourceLocation(RefinedPipes.ID, "textures/gui/extractor_attachment.png");
 
-    private static final int SIZE = 20;
+    private final IconButtonPreset preset;
+    private int overlayTexX;
+    private int overlayTexY;
 
-    private static final int TEX_Y_NORMAL = 0;
-    private static final int TEX_Y_HOVER = 20;
-    private static final int TEX_Y_DISABLED = 40;
-    private static final int TEX_X = 177;
+    public IconButton(int x, int y, IconButtonPreset preset, int overlayTexX, int overlayTexY, String text, IPressable onPress) {
+        super(x, y, preset.getWidth(), preset.getHeight(), text, onPress);
 
-    private int iconTexX;
-    private int iconTexY;
-
-    public IconButton(int x, int y, int iconTexX, int iconTexY, String text, IPressable onPress) {
-        super(x, y, SIZE, SIZE, text, onPress);
-
-        this.iconTexX = iconTexX;
-        this.iconTexY = iconTexY;
+        this.preset = preset;
+        this.overlayTexX = overlayTexX;
+        this.overlayTexY = overlayTexY;
     }
 
-    public void setIconTexX(int iconTexX) {
-        this.iconTexX = iconTexX;
+    public void setOverlayTexX(int overlayTexX) {
+        this.overlayTexX = overlayTexX;
     }
 
     @Override
@@ -37,17 +32,17 @@ public class IconButton extends Button {
 
         RenderSystem.disableDepthTest();
 
-        int y = TEX_Y_NORMAL;
+        int y = preset.getYTexNormal();
         if (!active) {
-            y = TEX_Y_DISABLED;
+            y = preset.getYTexDisabled();
         } else if (isHovered) {
-            y = TEX_Y_HOVER;
+            y = preset.getYTexHover();
         }
 
-        blit(this.x, this.y, TEX_X, y, this.width, this.height, 256, 256);
+        blit(this.x, this.y, preset.getXTex(), y, this.width, this.height, 256, 256);
 
         // Fiddling with -1 to remove the blue border
-        blit(this.x + 1, this.y + 1, iconTexX + 1, iconTexY + 1, this.width - 2, this.height - 2, 256, 256);
+        blit(this.x + 1, this.y + 1, overlayTexX + 1, overlayTexY + 1, this.width - 2, this.height - 2, 256, 256);
 
         RenderSystem.enableDepthTest();
     }

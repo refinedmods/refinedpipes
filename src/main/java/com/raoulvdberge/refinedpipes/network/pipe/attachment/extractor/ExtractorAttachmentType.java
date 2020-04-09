@@ -31,7 +31,7 @@ public enum ExtractorAttachmentType {
         return getConfig().getFluidTickInterval();
     }
 
-    int getItemsToExtract() {
+    public int getItemsToExtract() {
         return getConfig().getItemsToExtract();
     }
 

@@ -50,12 +50,14 @@ public class ExtractorAttachment extends Attachment {
     private BlacklistWhitelist blacklistWhitelist = BlacklistWhitelist.BLACKLIST;
     private RoutingMode routingMode = RoutingMode.NEAREST;
     private int roundRobinIndex;
+    private int stackSize;
 
     public ExtractorAttachment(Pipe pipe, Direction direction, ExtractorAttachmentType type) {
         super(direction);
 
         this.pipe = pipe;
         this.type = type;
+        this.stackSize = type.getItemsToExtract();
         this.itemFilter = createItemFilterInventory(this);
     }
 
@@ -95,12 +97,16 @@ public class ExtractorAttachment extends Attachment {
     }
 
     private void update(ItemNetwork network, BlockPos sourcePos, IItemHandler source) {
+        if (stackSize == 0) {
+            return;
+        }
+
         int firstSlot = getFirstSlot(source);
         if (firstSlot == -1) {
             return;
         }
 
-        ItemStack extracted = source.extractItem(firstSlot, type.getItemsToExtract(), true);
+        ItemStack extracted = source.extractItem(firstSlot, stackSize, true);
         if (extracted.isEmpty()) {
             return;
         }
@@ -119,7 +125,7 @@ public class ExtractorAttachment extends Attachment {
             return;
         }
 
-        ItemStack extractedActual = source.extractItem(firstSlot, type.getItemsToExtract(), false);
+        ItemStack extractedActual = source.extractItem(firstSlot, stackSize, false);
         if (extractedActual.isEmpty()) {
             return;
         }
@@ -210,6 +216,18 @@ public class ExtractorAttachment extends Attachment {
         }
 
         this.routingMode = routingMode;
+    }
+
+    public void setStackSize(int stackSize) {
+        if (stackSize < 0) {
+            stackSize = 0;
+        }
+
+        if (stackSize > type.getItemsToExtract()) {
+            stackSize = type.getItemsToExtract();
+        }
+
+        this.stackSize = stackSize;
     }
 
     public void setRoundRobinIndex(int roundRobinIndex) {
@@ -331,6 +349,10 @@ public class ExtractorAttachment extends Attachment {
         return itemFilter;
     }
 
+    public int getStackSize() {
+        return stackSize;
+    }
+
     @Override
     public CompoundNBT writeToNbt(CompoundNBT tag) {
         tag.putByte("rm", (byte) redstoneMode.ordinal());
@@ -338,6 +360,7 @@ public class ExtractorAttachment extends Attachment {
         tag.putByte("bw", (byte) blacklistWhitelist.ordinal());
         tag.putInt("rr", roundRobinIndex);
         tag.putByte("routingm", (byte) routingMode.ordinal());
+        tag.putInt("stacksi", stackSize);
 
         return super.writeToNbt(tag);
     }

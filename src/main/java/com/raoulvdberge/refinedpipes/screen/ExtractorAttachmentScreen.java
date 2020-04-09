@@ -26,6 +26,7 @@ public class ExtractorAttachmentScreen extends ContainerScreen<ExtractorAttachme
     private Button redstoneModeButton;
     private Button blacklistWhitelistButton;
     private Button routingModeButton;
+    private Button exactModeButton;
 
     public ExtractorAttachmentScreen(ExtractorAttachmentContainer container, PlayerInventory inv, ITextComponent title) {
         super(container, inv, title);
@@ -41,6 +42,7 @@ public class ExtractorAttachmentScreen extends ContainerScreen<ExtractorAttachme
         redstoneModeButton = addButton(new IconButton(
             this.guiLeft + 32,
             this.guiTop + 76,
+            IconButtonPreset.NORMAL,
             getRedstoneModeX(container.getRedstoneMode()),
             61,
             getRedstoneModeText(container.getRedstoneMode()),
@@ -52,6 +54,7 @@ public class ExtractorAttachmentScreen extends ContainerScreen<ExtractorAttachme
         blacklistWhitelistButton = addButton(new IconButton(
             this.guiLeft + 55,
             this.guiTop + 76,
+            IconButtonPreset.NORMAL,
             getBlacklistWhitelistX(container.getBlacklistWhitelist()),
             82,
             getBlacklistWhitelistText(container.getBlacklistWhitelist()),
@@ -63,6 +66,7 @@ public class ExtractorAttachmentScreen extends ContainerScreen<ExtractorAttachme
         routingModeButton = addButton(new IconButton(
             this.guiLeft + 78,
             this.guiTop + 76,
+            IconButtonPreset.NORMAL,
             getRoutingModeX(container.getRoutingMode()),
             194,
             getRoutingModeText(container.getRoutingMode()),
@@ -70,25 +74,75 @@ public class ExtractorAttachmentScreen extends ContainerScreen<ExtractorAttachme
         ));
 
         routingModeButton.active = container.getExtractorAttachmentType().getCanSetWhitelistBlacklist();
+
+        // TODO
+        exactModeButton = addButton(new IconButton(
+            this.guiLeft + 101,
+            this.guiTop + 76,
+            IconButtonPreset.NORMAL,
+            getRoutingModeX(container.getRoutingMode()),
+            194,
+            getRoutingModeText(container.getRoutingMode()),
+            btn -> setRoutingMode((IconButton) btn, container.getRoutingMode().next())
+        ));
+
+        exactModeButton.active = container.getExtractorAttachmentType().getCanSetWhitelistBlacklist();
+
+        addButton(new IconButton(
+            this.guiLeft + 125,
+            this.guiTop + 76 - 3,
+            IconButtonPreset.SMALL,
+            198,
+            19,
+            "+",
+            btn -> updateStackSize(1)
+        ));
+
+        addButton(new IconButton(
+            this.guiLeft + 125,
+            this.guiTop + 76 + 14 - 3,
+            IconButtonPreset.SMALL,
+            198,
+            34,
+            "-",
+            btn -> updateStackSize(-1)
+        ));
+    }
+
+    private void updateStackSize(int amount) {
+        if (hasShiftDown()) {
+            amount *= 4;
+        }
+
+        int newAmount = container.getStackSize() + amount;
+        if (newAmount < 0) {
+            newAmount = 0;
+        }
+
+        if (newAmount > container.getExtractorAttachmentType().getItemsToExtract()) {
+            newAmount = container.getExtractorAttachmentType().getItemsToExtract();
+        }
+
+        container.setStackSize(newAmount);
     }
 
     private void setRedstoneMode(IconButton button, RedstoneMode redstoneMode) {
         button.setMessage(getRedstoneModeText(redstoneMode));
-        button.setIconTexX(getRedstoneModeX(redstoneMode));
+        button.setOverlayTexX(getRedstoneModeX(redstoneMode));
 
         container.setRedstoneMode(redstoneMode);
     }
 
     private void setBlacklistWhitelist(IconButton button, BlacklistWhitelist blacklistWhitelist) {
         button.setMessage(getBlacklistWhitelistText(blacklistWhitelist));
-        button.setIconTexX(getBlacklistWhitelistX(blacklistWhitelist));
+        button.setOverlayTexX(getBlacklistWhitelistX(blacklistWhitelist));
 
         container.setBlacklistWhitelist(blacklistWhitelist);
     }
 
     private void setRoutingMode(IconButton button, RoutingMode routingMode) {
         button.setMessage(getRoutingModeText(routingMode));
-        button.setIconTexX(getRoutingModeX(routingMode));
+        button.setOverlayTexX(getRoutingModeX(routingMode));
 
         container.setRoutingMode(routingMode);
     }
@@ -150,6 +204,8 @@ public class ExtractorAttachmentScreen extends ContainerScreen<ExtractorAttachme
 
         font.drawString(title.getFormattedText(), 7, 7, 4210752);
         font.drawString(I18n.format("container.inventory"), 7, 103 - 4, 4210752);
+
+        font.drawString("" + container.getStackSize(), 143, 83, 4210752);
 
         renderHoveredToolTip(mouseX - guiLeft, mouseY - guiTop);
 
