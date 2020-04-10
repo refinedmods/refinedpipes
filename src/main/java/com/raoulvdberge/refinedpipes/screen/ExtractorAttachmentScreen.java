@@ -29,6 +29,8 @@ public class ExtractorAttachmentScreen extends ContainerScreen<ExtractorAttachme
     private Button blacklistWhitelistButton;
     private Button routingModeButton;
     private Button exactModeButton;
+    private Button plusButton;
+    private Button minusButton;
 
     public ExtractorAttachmentScreen(ExtractorAttachmentContainer container, PlayerInventory inv, ITextComponent title) {
         super(container, inv, title);
@@ -89,7 +91,7 @@ public class ExtractorAttachmentScreen extends ContainerScreen<ExtractorAttachme
 
         exactModeButton.active = container.getExtractorAttachmentType().getCanSetExactMode();
 
-        addButton(new IconButton(
+        plusButton = addButton(new IconButton(
             this.guiLeft + 125,
             this.guiTop + 76 - 3,
             IconButtonPreset.SMALL,
@@ -99,7 +101,7 @@ public class ExtractorAttachmentScreen extends ContainerScreen<ExtractorAttachme
             btn -> updateStackSize(1)
         ));
 
-        addButton(new IconButton(
+        minusButton = addButton(new IconButton(
             this.guiLeft + 125,
             this.guiTop + 76 + 14 - 3,
             IconButtonPreset.SMALL,
@@ -108,6 +110,9 @@ public class ExtractorAttachmentScreen extends ContainerScreen<ExtractorAttachme
             "-",
             btn -> updateStackSize(-1)
         ));
+
+        minusButton.active = container.getStackSize() > 0;
+        plusButton.active = container.getStackSize() < container.getExtractorAttachmentType().getItemsToExtract();
     }
 
     private void updateStackSize(int amount) {
@@ -123,6 +128,9 @@ public class ExtractorAttachmentScreen extends ContainerScreen<ExtractorAttachme
         if (newAmount > container.getExtractorAttachmentType().getItemsToExtract()) {
             newAmount = container.getExtractorAttachmentType().getItemsToExtract();
         }
+
+        minusButton.active = newAmount > 0;
+        plusButton.active = newAmount < container.getExtractorAttachmentType().getItemsToExtract();
 
         container.setStackSize(newAmount);
     }
