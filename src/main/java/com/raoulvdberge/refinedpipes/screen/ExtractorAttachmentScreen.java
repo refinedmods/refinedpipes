@@ -232,8 +232,6 @@ public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentCon
 
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-        super.drawGuiContainerForegroundLayer(mouseX, mouseY);
-
         font.drawString(title.getFormattedText(), 7, 7, 4210752);
         font.drawString(I18n.format("container.inventory"), 7, 103 - 4, 4210752);
 
@@ -262,6 +260,8 @@ public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentCon
         if (!tooltip.isEmpty()) {
             GuiUtils.drawHoveringText(tooltip, mouseX - guiLeft, mouseY - guiTop, width, height, -1, Minecraft.getInstance().fontRenderer);
         }
+
+        super.drawGuiContainerForegroundLayer(mouseX, mouseY);
     }
 
     @Override
