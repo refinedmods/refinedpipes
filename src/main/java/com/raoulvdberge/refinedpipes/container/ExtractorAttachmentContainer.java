@@ -10,10 +10,16 @@ import com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor.Blacklist
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor.ExtractorAttachmentType;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor.RedstoneMode;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor.RoutingMode;
+import com.raoulvdberge.refinedpipes.util.FluidUtil;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.container.Slot;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.items.SlotItemHandler;
 
 public class ExtractorAttachmentContainer extends BaseContainer {
     private final BlockPos pos;
@@ -130,5 +136,61 @@ public class ExtractorAttachmentContainer extends BaseContainer {
         this.exactMode = exactMode;
 
         RefinedPipes.NETWORK.sendToServer(new ChangeExactModeMessage(pos, dir, exactMode));
+    }
+
+    @Override
+    public ItemStack transferStackInSlot(PlayerEntity player, int index) {
+        Slot slot = inventorySlots.get(index);
+        if (slot != null && slot.getHasStack() && index < 9 * 4) {
+            for (int i = 9 * 4; i < inventorySlots.size(); ++i) {
+                Slot filterSlot = inventorySlots.get(i);
+
+                if (filterSlot instanceof FluidFilterSlot) {
+                    FluidFilterSlot fluidSlot = (FluidFilterSlot) filterSlot;
+
+                    if (fluidSlot.getFluidInventory().getFluid(fluidSlot.getSlotIndex()).isEmpty()) {
+                        FluidStack toInsert = FluidUtil.getFromStack(slot.getStack(), true).getValue();
+
+                        boolean foundExistingFluid = false;
+
+                        for (int j = 0; j < fluidSlot.getFluidInventory().getSlots(); ++j) {
+                            if (fluidSlot.getFluidInventory().getFluid(j).isFluidEqual(toInsert)) {
+                                foundExistingFluid = true;
+                                break;
+                            }
+                        }
+
+                        if (!foundExistingFluid) {
+                            fluidSlot.onContainerClicked(slot.getStack());
+                        }
+
+                        break;
+                    }
+                } else if (filterSlot instanceof SlotItemHandler) {
+                    SlotItemHandler itemSlot = (SlotItemHandler) filterSlot;
+
+                    if (!itemSlot.getHasStack()) {
+                        ItemStack toInsert = ItemHandlerHelper.copyStackWithSize(slot.getStack(), 1);
+
+                        boolean foundExistingItem = false;
+
+                        for (int j = 0; j < itemSlot.getItemHandler().getSlots(); ++j) {
+                            if (ItemStack.areItemStacksEqual(itemSlot.getItemHandler().getStackInSlot(j), toInsert)) {
+                                foundExistingItem = true;
+                                break;
+                            }
+                        }
+
+                        if (!foundExistingItem) {
+                            itemSlot.putStack(toInsert);
+                        }
+
+                        break;
+                    }
+                }
+            }
+        }
+
+        return ItemStack.EMPTY;
     }
 }
