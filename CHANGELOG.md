@@ -2,8 +2,11 @@
 
 ## 0.3.1
 - Added filtering options for the Extractor Attachment (raoulvdberge)
+- Added redstone mode options for the Extractor Attachment (raoulvdberge)
 - Added whitelist / blacklist options for the Extractor Attachment (raoulvdberge)
-- Added redstone mode for the Extractor Attachment (raoulvdberge)
+- Added routing mode (nearest first, furthest first, random and round robin) options for the Extractor Attachment (raoulvdberge)
+- Added exact mode (NBT sensitivity) options for the Extractor Attachment (raoulvdberge)
+- Added stack size configurability to the Extractor Attachment (raoulvdberge)
 - Improved performance of rendering pipes (raoulvdberge)
 
 ## 0.3
