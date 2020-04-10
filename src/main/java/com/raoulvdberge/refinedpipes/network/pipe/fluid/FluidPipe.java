@@ -41,7 +41,7 @@ public class FluidPipe extends Pipe {
         int cap = ((FluidNetwork) network).getFluidTank().getCapacity();
         int stored = ((FluidNetwork) network).getFluidTank().getFluidAmount();
 
-        return (float) stored / (float) cap;
+        return Math.round(((float) stored / (float) cap) * 10.0F) / 10.0F;
     }
 
     public FluidPipeType getType() {

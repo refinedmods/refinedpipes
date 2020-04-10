@@ -46,6 +46,9 @@ public class FluidPipeTileEntityRenderer extends TileEntityRenderer<FluidPipeTil
         IVertexBuilder buffer = bufferType.getBuffer(RenderType.getText(sprite.getAtlasTexture().getTextureLocation()));
 
         float fullness = tile.updateAndGetRenderFullness(partialTicks);
+        if (fullness == 0) {
+            return;
+        }
 
         BlockState state = tile.getWorld().getBlockState(tile.getPos());
         if (state.get(FluidPipeBlock.NORTH)) {

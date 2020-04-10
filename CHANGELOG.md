@@ -8,6 +8,7 @@
 - Added exact mode (NBT sensitivity) options for the Extractor Attachment (raoulvdberge)
 - Added stack size configurability to the Extractor Attachment (raoulvdberge)
 - Improved performance of rendering pipes (raoulvdberge)
+- Fixed rendering bug where fluid remained in pipes (raoulvdberge)
 
 ## 0.3
 Note: Due to fluid networks now being split up by their tier, all fluid pipes from version 0.2.1 and earlier are incompatible and won't be functioning. This can be fixed by breaking and replacing all the fluid pipes in a network.
