@@ -7,8 +7,9 @@ import com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor.Blacklist
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor.ExtractorAttachment;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor.RedstoneMode;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor.RoutingMode;
+import com.raoulvdberge.refinedpipes.screen.widget.IconButton;
+import com.raoulvdberge.refinedpipes.screen.widget.IconButtonPreset;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
@@ -17,19 +18,24 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.gui.GuiUtils;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ExtractorAttachmentScreen extends ContainerScreen<ExtractorAttachmentContainer> {
+public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentContainer> {
     private static final ResourceLocation RESOURCE = new ResourceLocation(RefinedPipes.ID, "textures/gui/extractor_attachment.png");
 
     private final List<String> tooltip = new ArrayList<>();
 
     private Button redstoneModeButton;
     private Button blacklistWhitelistButton;
+    @Nullable
     private Button routingModeButton;
+    @Nullable
     private Button exactModeButton;
+    @Nullable
     private Button plusButton;
+    @Nullable
     private Button minusButton;
 
     public ExtractorAttachmentScreen(ExtractorAttachmentContainer container, PlayerInventory inv, ITextComponent title) {
@@ -67,20 +73,8 @@ public class ExtractorAttachmentScreen extends ContainerScreen<ExtractorAttachme
 
         blacklistWhitelistButton.active = container.getExtractorAttachmentType().getCanSetWhitelistBlacklist();
 
-        routingModeButton = addButton(new IconButton(
-            this.guiLeft + 78,
-            this.guiTop + 76,
-            IconButtonPreset.NORMAL,
-            getRoutingModeX(container.getRoutingMode()),
-            194,
-            getRoutingModeText(container.getRoutingMode()),
-            btn -> setRoutingMode((IconButton) btn, container.getRoutingMode().next())
-        ));
-
-        routingModeButton.active = container.getExtractorAttachmentType().getCanSetWhitelistBlacklist();
-
         exactModeButton = addButton(new IconButton(
-            this.guiLeft + 101,
+            this.guiLeft + 78,
             this.guiTop + 76,
             IconButtonPreset.NORMAL,
             getExactModeX(container.isExactMode()),
@@ -91,28 +85,42 @@ public class ExtractorAttachmentScreen extends ContainerScreen<ExtractorAttachme
 
         exactModeButton.active = container.getExtractorAttachmentType().getCanSetExactMode();
 
-        plusButton = addButton(new IconButton(
-            this.guiLeft + 125,
-            this.guiTop + 76 - 3,
-            IconButtonPreset.SMALL,
-            198,
-            19,
-            "+",
-            btn -> updateStackSize(1)
-        ));
+        if (!container.isFluidMode()) {
+            routingModeButton = addButton(new IconButton(
+                this.guiLeft + 101,
+                this.guiTop + 76,
+                IconButtonPreset.NORMAL,
+                getRoutingModeX(container.getRoutingMode()),
+                194,
+                getRoutingModeText(container.getRoutingMode()),
+                btn -> setRoutingMode((IconButton) btn, container.getRoutingMode().next())
+            ));
 
-        minusButton = addButton(new IconButton(
-            this.guiLeft + 125,
-            this.guiTop + 76 + 14 - 3,
-            IconButtonPreset.SMALL,
-            198,
-            34,
-            "-",
-            btn -> updateStackSize(-1)
-        ));
+            routingModeButton.active = container.getExtractorAttachmentType().getCanSetWhitelistBlacklist();
 
-        minusButton.active = container.getStackSize() > 0;
-        plusButton.active = container.getStackSize() < container.getExtractorAttachmentType().getItemsToExtract();
+            plusButton = addButton(new IconButton(
+                this.guiLeft + 125,
+                this.guiTop + 76 - 3,
+                IconButtonPreset.SMALL,
+                198,
+                19,
+                "+",
+                btn -> updateStackSize(1)
+            ));
+
+            minusButton = addButton(new IconButton(
+                this.guiLeft + 125,
+                this.guiTop + 76 + 14 - 3,
+                IconButtonPreset.SMALL,
+                198,
+                34,
+                "-",
+                btn -> updateStackSize(-1)
+            ));
+
+            minusButton.active = container.getStackSize() > 0;
+            plusButton.active = container.getStackSize() < container.getExtractorAttachmentType().getItemsToExtract();
+        }
     }
 
     private void updateStackSize(int amount) {
@@ -229,7 +237,9 @@ public class ExtractorAttachmentScreen extends ContainerScreen<ExtractorAttachme
         font.drawString(title.getFormattedText(), 7, 7, 4210752);
         font.drawString(I18n.format("container.inventory"), 7, 103 - 4, 4210752);
 
-        font.drawString("" + container.getStackSize(), 143, 83, 4210752);
+        if (!container.isFluidMode()) {
+            font.drawString("" + container.getStackSize(), 143, 83, 4210752);
+        }
 
         renderHoveredToolTip(mouseX - guiLeft, mouseY - guiTop);
 
@@ -241,7 +251,7 @@ public class ExtractorAttachmentScreen extends ContainerScreen<ExtractorAttachme
         } else if (redstoneModeButton.isHovered()) {
             tooltip.add(I18n.format("misc.refinedpipes.redstone_mode"));
             tooltip.add(TextFormatting.GRAY + getRedstoneModeText(container.getRedstoneMode()));
-        } else if (routingModeButton.isHovered()) {
+        } else if (routingModeButton != null && routingModeButton.isHovered()) {
             tooltip.add(I18n.format("misc.refinedpipes.routing_mode"));
             tooltip.add(TextFormatting.GRAY + getRoutingModeText(container.getRoutingMode()));
         } else if (exactModeButton.isHovered()) {
@@ -278,5 +288,7 @@ public class ExtractorAttachmentScreen extends ContainerScreen<ExtractorAttachme
                 x += 18;
             }
         }
+
+        super.drawGuiContainerBackgroundLayer(partialTicks, mouseX, mouseY);
     }
 }

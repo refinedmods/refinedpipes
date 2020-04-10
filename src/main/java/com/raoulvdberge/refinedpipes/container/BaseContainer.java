@@ -1,21 +1,34 @@
 package com.raoulvdberge.refinedpipes.container;
 
+import com.raoulvdberge.refinedpipes.RefinedPipes;
 import com.raoulvdberge.refinedpipes.container.slot.FilterSlot;
+import com.raoulvdberge.refinedpipes.container.slot.FluidFilterSlot;
+import com.raoulvdberge.refinedpipes.message.FluidFilterSlotUpdateMessage;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.ClickType;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.FluidStack;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BaseContainer extends Container {
-    protected BaseContainer(@Nullable ContainerType<?> type, int windowId) {
+    private final List<FluidFilterSlot> fluidSlots = new ArrayList<>();
+    private final List<FluidStack> fluids = new ArrayList<>();
+    private final PlayerEntity player;
+
+    protected BaseContainer(@Nullable ContainerType<?> type, int windowId, PlayerEntity player) {
         super(type, windowId);
+
+        this.player = player;
     }
 
-    protected void addPlayerInventory(PlayerEntity player, int xInventory, int yInventory) {
+    protected void addPlayerInventory(int xInventory, int yInventory) {
         int id = 0;
 
         for (int i = 0; i < 9; i++) {
@@ -40,13 +53,21 @@ public class BaseContainer extends Container {
     public ItemStack slotClick(int id, int dragType, ClickType clickType, PlayerEntity player) {
         Slot slot = id >= 0 ? getSlot(id) : null;
 
-        if (slot instanceof FilterSlot) {
-            ItemStack holding = player.inventory.getItemStack();
+        ItemStack holding = player.inventory.getItemStack();
 
+        if (slot instanceof FilterSlot) {
             if (holding.isEmpty()) {
                 slot.putStack(ItemStack.EMPTY);
             } else if (slot.isItemValid(holding)) {
                 slot.putStack(holding.copy());
+            }
+
+            return holding;
+        } else if (slot instanceof FluidFilterSlot) {
+            if (holding.isEmpty()) {
+                ((FluidFilterSlot) slot).onContainerClicked(ItemStack.EMPTY);
+            } else {
+                ((FluidFilterSlot) slot).onContainerClicked(holding);
             }
 
             return holding;
@@ -56,7 +77,52 @@ public class BaseContainer extends Container {
     }
 
     @Override
+    protected Slot addSlot(Slot slot) {
+        if (slot instanceof FluidFilterSlot) {
+            fluids.add(FluidStack.EMPTY);
+            fluidSlots.add((FluidFilterSlot) slot);
+        }
+
+        return super.addSlot(slot);
+    }
+
+    @Override
+    public void detectAndSendChanges() {
+        super.detectAndSendChanges();
+
+        if (!(player instanceof ServerPlayerEntity)) {
+            return;
+        }
+
+        for (int i = 0; i < this.fluidSlots.size(); ++i) {
+            FluidFilterSlot slot = this.fluidSlots.get(i);
+
+            FluidStack cached = this.fluids.get(i);
+            FluidStack actual = slot.getFluidInventory().getFluid(slot.getSlotIndex());
+
+            if (!cached.equals(actual)) {
+                this.fluids.set(i, actual.copy());
+
+                RefinedPipes.NETWORK.sendToClient((ServerPlayerEntity) player, new FluidFilterSlotUpdateMessage(slot.slotNumber, actual));
+            }
+        }
+    }
+
+    @Override
     public boolean canInteractWith(PlayerEntity player) {
         return true;
+    }
+
+    public List<FluidFilterSlot> getFluidSlots() {
+        return fluidSlots;
+    }
+
+    @Override
+    public boolean canMergeSlot(ItemStack stack, Slot slot) {
+        if (slot instanceof FilterSlot || slot instanceof FluidFilterSlot) {
+            return false;
+        }
+
+        return super.canMergeSlot(stack, slot);
     }
 }

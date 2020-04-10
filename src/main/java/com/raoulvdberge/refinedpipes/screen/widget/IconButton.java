@@ -1,4 +1,4 @@
-package com.raoulvdberge.refinedpipes.screen;
+package com.raoulvdberge.refinedpipes.screen.widget;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.raoulvdberge.refinedpipes.RefinedPipes;

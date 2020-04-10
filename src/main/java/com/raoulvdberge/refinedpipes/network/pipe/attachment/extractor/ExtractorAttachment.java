@@ -1,6 +1,7 @@
 package com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor;
 
 import com.raoulvdberge.refinedpipes.container.provider.ExtractorAttachmentContainerProvider;
+import com.raoulvdberge.refinedpipes.inventory.fluid.FluidInventory;
 import com.raoulvdberge.refinedpipes.network.Network;
 import com.raoulvdberge.refinedpipes.network.NetworkManager;
 import com.raoulvdberge.refinedpipes.network.fluid.FluidNetwork;
@@ -44,6 +45,7 @@ public class ExtractorAttachment extends Attachment {
     private final Pipe pipe;
     private final ExtractorAttachmentType type;
     private final ItemStackHandler itemFilter;
+    private final FluidInventory fluidFilter;
 
     private int ticks;
     private RedstoneMode redstoneMode = RedstoneMode.IGNORED;
@@ -60,6 +62,11 @@ public class ExtractorAttachment extends Attachment {
         this.type = type;
         this.stackSize = type.getItemsToExtract();
         this.itemFilter = createItemFilterInventory(this);
+        this.fluidFilter = createFluidFilterInventory(this);
+    }
+
+    public boolean isFluidMode() {
+        return pipe.getNetwork() instanceof FluidNetwork;
     }
 
     @Override
@@ -203,6 +210,10 @@ public class ExtractorAttachment extends Attachment {
         return itemFilter;
     }
 
+    public FluidInventory getFluidFilter() {
+        return fluidFilter;
+    }
+
     public RedstoneMode getRedstoneMode() {
         return redstoneMode;
     }
@@ -274,6 +285,10 @@ public class ExtractorAttachment extends Attachment {
     private void update(FluidNetwork network, IFluidHandler source) {
         FluidStack drained = source.drain(type.getFluidsToExtract(), IFluidHandler.FluidAction.SIMULATE);
         if (drained.isEmpty()) {
+            return;
+        }
+
+        if (!acceptsFluid(drained)) {
             return;
         }
 
@@ -359,6 +374,42 @@ public class ExtractorAttachment extends Attachment {
         return false;
     }
 
+    private boolean acceptsFluid(FluidStack stack) {
+        if (blacklistWhitelist == BlacklistWhitelist.WHITELIST) {
+            for (int i = 0; i < fluidFilter.getSlots(); ++i) {
+                FluidStack filtered = fluidFilter.getFluid(i);
+
+                boolean equals = filtered.getFluid() == stack.getFluid();
+                if (exactMode) {
+                    equals = equals && FluidStack.areFluidStackTagsEqual(filtered, stack);
+                }
+
+                if (equals) {
+                    return true;
+                }
+            }
+
+            return false;
+        } else if (blacklistWhitelist == BlacklistWhitelist.BLACKLIST) {
+            for (int i = 0; i < fluidFilter.getSlots(); ++i) {
+                FluidStack filtered = fluidFilter.getFluid(i);
+
+                boolean equals = filtered.getFluid() == stack.getFluid();
+                if (exactMode) {
+                    equals = equals && FluidStack.areFluidStackTagsEqual(filtered, stack);
+                }
+
+                if (equals) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
     @Override
     public void openContainer(ServerPlayerEntity player) {
         super.openContainer(player);
@@ -385,6 +436,7 @@ public class ExtractorAttachment extends Attachment {
         tag.putByte("routingm", (byte) routingMode.ordinal());
         tag.putInt("stacksi", stackSize);
         tag.putBoolean("exa", exactMode);
+        tag.put("fluidfilter", fluidFilter.writeToNbt());
 
         return super.writeToNbt(tag);
     }
@@ -394,6 +446,19 @@ public class ExtractorAttachment extends Attachment {
             @Override
             protected void onContentsChanged(int slot) {
                 super.onContentsChanged(slot);
+
+                if (attachment != null) {
+                    NetworkManager.get(attachment.pipe.getWorld()).markDirty();
+                }
+            }
+        };
+    }
+
+    public static FluidInventory createFluidFilterInventory(@Nullable ExtractorAttachment attachment) {
+        return new FluidInventory(MAX_FILTER_SLOTS) {
+            @Override
+            protected void onContentsChanged() {
+                super.onContentsChanged();
 
                 if (attachment != null) {
                     NetworkManager.get(attachment.pipe.getWorld()).markDirty();

@@ -43,7 +43,9 @@ public class ExtractorAttachmentContainerProvider implements INamedContainerProv
             attachment.getStackSize(),
             attachment.isExactMode(),
             attachment.getType(),
-            attachment.getItemFilter()
+            attachment.getItemFilter(),
+            attachment.getFluidFilter(),
+            attachment.isFluidMode()
         );
     }
 
@@ -59,6 +61,7 @@ public class ExtractorAttachmentContainerProvider implements INamedContainerProv
             buf.writeInt(attachment.getStackSize());
             buf.writeBoolean(attachment.isExactMode());
             buf.writeByte(attachment.getType().ordinal());
+            buf.writeBoolean(attachment.isFluidMode());
         });
     }
 }

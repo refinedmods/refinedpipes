@@ -55,6 +55,10 @@ public class ExtractorAttachmentFactory implements AttachmentFactory {
             attachment.setExactMode(tag.getBoolean("exa"));
         }
 
+        if (tag.contains("fluidfilter")) {
+            attachment.getFluidFilter().readFromNbt(tag.getCompound("fluidfilter"));
+        }
+
         return attachment;
     }
 

@@ -1,4 +1,4 @@
-package com.raoulvdberge.refinedpipes.screen;
+package com.raoulvdberge.refinedpipes.screen.widget;
 
 public class IconButtonPreset {
     public static final IconButtonPreset NORMAL = new IconButtonPreset(20, 20, 177, 0, 20, 40);

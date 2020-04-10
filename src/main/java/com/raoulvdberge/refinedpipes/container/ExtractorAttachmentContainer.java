@@ -3,6 +3,8 @@ package com.raoulvdberge.refinedpipes.container;
 import com.raoulvdberge.refinedpipes.RefinedPipes;
 import com.raoulvdberge.refinedpipes.RefinedPipesContainers;
 import com.raoulvdberge.refinedpipes.container.slot.FilterSlot;
+import com.raoulvdberge.refinedpipes.container.slot.FluidFilterSlot;
+import com.raoulvdberge.refinedpipes.inventory.fluid.FluidInventory;
 import com.raoulvdberge.refinedpipes.message.*;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor.BlacklistWhitelist;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor.ExtractorAttachmentType;
@@ -17,6 +19,7 @@ public class ExtractorAttachmentContainer extends BaseContainer {
     private final BlockPos pos;
     private final Direction dir;
     private final ExtractorAttachmentType extractorAttachmentType;
+    private final boolean fluidMode;
 
     private RedstoneMode redstoneMode;
     private BlacklistWhitelist blacklistWhitelist;
@@ -35,15 +38,21 @@ public class ExtractorAttachmentContainer extends BaseContainer {
         int stackSize,
         boolean exactMode,
         ExtractorAttachmentType type,
-        ItemStackHandler itemFilters) {
-        super(RefinedPipesContainers.EXTRACTOR_ATTACHMENT, windowId);
+        ItemStackHandler itemFilter,
+        FluidInventory fluidFilter,
+        boolean fluidMode) {
+        super(RefinedPipesContainers.EXTRACTOR_ATTACHMENT, windowId, player);
 
-        addPlayerInventory(player, 8, 111);
+        addPlayerInventory(8, 111);
 
         int x = 44;
         int y = 19;
         for (int i = 1; i <= type.getFilterSlots(); ++i) {
-            addSlot(new FilterSlot(itemFilters, i - 1, x, y));
+            if (fluidMode) {
+                addSlot(new FluidFilterSlot(fluidFilter, i - 1, x, y));
+            } else {
+                addSlot(new FilterSlot(itemFilter, i - 1, x, y));
+            }
 
             if (i % 5 == 0) {
                 x = 44;
@@ -56,12 +65,17 @@ public class ExtractorAttachmentContainer extends BaseContainer {
         this.pos = pos;
         this.dir = dir;
         this.extractorAttachmentType = type;
+        this.fluidMode = fluidMode;
 
         this.redstoneMode = redstoneMode;
         this.blacklistWhitelist = blacklistWhitelist;
         this.routingMode = routingMode;
         this.stackSize = stackSize;
         this.exactMode = exactMode;
+    }
+
+    public boolean isFluidMode() {
+        return fluidMode;
     }
 
     public ExtractorAttachmentType getExtractorAttachmentType() {

@@ -21,7 +21,9 @@ public class ExtractorAttachmentContainerFactory implements IContainerFactory<Ex
             buf.readInt(),
             buf.readBoolean(),
             ExtractorAttachmentType.get(buf.readByte()),
-            ExtractorAttachment.createItemFilterInventory(null)
+            ExtractorAttachment.createItemFilterInventory(null),
+            ExtractorAttachment.createFluidFilterInventory(null),
+            buf.readBoolean()
         );
     }
 }
