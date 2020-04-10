@@ -1,6 +1,6 @@
 # Refined Pipes Changelog
 
-## 0.3.1
+## 0.4
 - Added filtering options for the Extractor Attachment (raoulvdberge)
 - Added redstone mode options for the Extractor Attachment (raoulvdberge)
 - Added whitelist / blacklist options for the Extractor Attachment (raoulvdberge)
