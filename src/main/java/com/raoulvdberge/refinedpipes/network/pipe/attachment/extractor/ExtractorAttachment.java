@@ -51,6 +51,7 @@ public class ExtractorAttachment extends Attachment {
     private RoutingMode routingMode = RoutingMode.NEAREST;
     private int roundRobinIndex;
     private int stackSize;
+    private boolean exactMode = true;
 
     public ExtractorAttachment(Pipe pipe, Direction direction, ExtractorAttachmentType type) {
         super(direction);
@@ -194,6 +195,18 @@ public class ExtractorAttachment extends Attachment {
         }
     }
 
+    public ExtractorAttachmentType getType() {
+        return type;
+    }
+
+    public ItemStackHandler getItemFilter() {
+        return itemFilter;
+    }
+
+    public RedstoneMode getRedstoneMode() {
+        return redstoneMode;
+    }
+
     public void setRedstoneMode(RedstoneMode redstoneMode) {
         if (!type.getCanSetRedstoneMode()) {
             return;
@@ -210,12 +223,20 @@ public class ExtractorAttachment extends Attachment {
         this.blacklistWhitelist = blacklistWhitelist;
     }
 
+    public BlacklistWhitelist getBlacklistWhitelist() {
+        return blacklistWhitelist;
+    }
+
     public void setRoutingMode(RoutingMode routingMode) {
         if (!type.getCanSetRoutingMode()) {
             return;
         }
 
         this.routingMode = routingMode;
+    }
+
+    public RoutingMode getRoutingMode() {
+        return routingMode;
     }
 
     public void setStackSize(int stackSize) {
@@ -230,8 +251,24 @@ public class ExtractorAttachment extends Attachment {
         this.stackSize = stackSize;
     }
 
+    public int getStackSize() {
+        return stackSize;
+    }
+
     public void setRoundRobinIndex(int roundRobinIndex) {
         this.roundRobinIndex = roundRobinIndex;
+    }
+
+    public void setExactMode(boolean exactMode) {
+        if (!type.getCanSetExactMode()) {
+            return;
+        }
+
+        this.exactMode = exactMode;
+    }
+
+    public boolean isExactMode() {
+        return exactMode;
     }
 
     private void update(FluidNetwork network, IFluidHandler source) {
@@ -291,7 +328,12 @@ public class ExtractorAttachment extends Attachment {
             for (int i = 0; i < itemFilter.getSlots(); ++i) {
                 ItemStack filtered = itemFilter.getStackInSlot(i);
 
-                if (filtered.isItemEqual(stack) && ItemStack.areItemStackTagsEqual(filtered, stack)) {
+                boolean equals = filtered.isItemEqual(stack);
+                if (exactMode) {
+                    equals = equals && ItemStack.areItemStackTagsEqual(filtered, stack);
+                }
+
+                if (equals) {
                     return true;
                 }
             }
@@ -301,7 +343,12 @@ public class ExtractorAttachment extends Attachment {
             for (int i = 0; i < itemFilter.getSlots(); ++i) {
                 ItemStack filtered = itemFilter.getStackInSlot(i);
 
-                if (filtered.isItemEqual(stack) && ItemStack.areItemStackTagsEqual(filtered, stack)) {
+                boolean equals = filtered.isItemEqual(stack);
+                if (exactMode) {
+                    equals = equals && ItemStack.areItemStackTagsEqual(filtered, stack);
+                }
+
+                if (equals) {
                     return false;
                 }
             }
@@ -329,30 +376,6 @@ public class ExtractorAttachment extends Attachment {
         return new ItemStack(type.getItem());
     }
 
-    public ExtractorAttachmentType getType() {
-        return type;
-    }
-
-    public RedstoneMode getRedstoneMode() {
-        return redstoneMode;
-    }
-
-    public BlacklistWhitelist getBlacklistWhitelist() {
-        return blacklistWhitelist;
-    }
-
-    public RoutingMode getRoutingMode() {
-        return routingMode;
-    }
-
-    public ItemStackHandler getItemFilter() {
-        return itemFilter;
-    }
-
-    public int getStackSize() {
-        return stackSize;
-    }
-
     @Override
     public CompoundNBT writeToNbt(CompoundNBT tag) {
         tag.putByte("rm", (byte) redstoneMode.ordinal());
@@ -361,6 +384,7 @@ public class ExtractorAttachment extends Attachment {
         tag.putInt("rr", roundRobinIndex);
         tag.putByte("routingm", (byte) routingMode.ordinal());
         tag.putInt("stacksi", stackSize);
+        tag.putBoolean("exa", exactMode);
 
         return super.writeToNbt(tag);
     }

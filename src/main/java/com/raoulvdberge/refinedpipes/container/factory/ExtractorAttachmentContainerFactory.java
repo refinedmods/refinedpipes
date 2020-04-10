@@ -19,6 +19,7 @@ public class ExtractorAttachmentContainerFactory implements IContainerFactory<Ex
             BlacklistWhitelist.get(buf.readByte()),
             RoutingMode.get(buf.readByte()),
             buf.readInt(),
+            buf.readBoolean(),
             ExtractorAttachmentType.get(buf.readByte()),
             ExtractorAttachment.createItemFilterInventory(null)
         );

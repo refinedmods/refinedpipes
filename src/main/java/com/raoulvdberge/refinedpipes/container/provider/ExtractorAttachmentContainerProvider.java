@@ -41,6 +41,7 @@ public class ExtractorAttachmentContainerProvider implements INamedContainerProv
             attachment.getBlacklistWhitelist(),
             attachment.getRoutingMode(),
             attachment.getStackSize(),
+            attachment.isExactMode(),
             attachment.getType(),
             attachment.getItemFilter()
         );
@@ -56,6 +57,7 @@ public class ExtractorAttachmentContainerProvider implements INamedContainerProv
             buf.writeByte(attachment.getBlacklistWhitelist().ordinal());
             buf.writeByte(attachment.getRoutingMode().ordinal());
             buf.writeInt(attachment.getStackSize());
+            buf.writeBoolean(attachment.isExactMode());
             buf.writeByte(attachment.getType().ordinal());
         });
     }

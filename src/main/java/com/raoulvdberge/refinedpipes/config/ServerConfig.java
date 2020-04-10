@@ -71,7 +71,8 @@ public class ServerConfig {
                         0, // filter slots
                         false, // redstone mode
                         false, // whitelist blacklist
-                        false // routing mode
+                        false, // routing mode
+                        false // exact mode
                     );
                     improvedExtractorAttachment = new ExtractorAttachment(
                         "improved",
@@ -80,7 +81,8 @@ public class ServerConfig {
                         4, // filter slots
                         true, // redstone mode
                         false, // whitelist blacklist
-                        false // routing mode
+                        false, // routing mode
+                        true // exact mode
                     );
                     advancedExtractorAttachment = new ExtractorAttachment(
                         "advanced",
@@ -89,7 +91,8 @@ public class ServerConfig {
                         8, // filter slots
                         true, // redstone mode
                         true, // whitelist blacklist
-                        true // routing mode
+                        true, // routing mode
+                        true // exact mode
                     );
                     eliteExtractorAttachment = new ExtractorAttachment(
                         "elite",
@@ -98,7 +101,8 @@ public class ServerConfig {
                         12, // filter slots
                         true, // redstone mode
                         true, // whitelist blacklist
-                        true // routing mode
+                        true, // routing mode
+                        true // exact mode
                     );
                     ultimateExtractorAttachment = new ExtractorAttachment(
                         "ultimate",
@@ -107,7 +111,8 @@ public class ServerConfig {
                         15, // filter slots
                         true, // redstone mode
                         true, // whitelist blacklist
-                        true // routing mode
+                        true, // routing mode
+                        true // exact mode
                     );
                 }
                 builder.pop();
@@ -264,8 +269,19 @@ public class ServerConfig {
         private final ForgeConfigSpec.BooleanValue canSetRedstoneMode;
         private final ForgeConfigSpec.BooleanValue canSetWhitelistBlacklist;
         private final ForgeConfigSpec.BooleanValue canSetRoutingMode;
+        private final ForgeConfigSpec.BooleanValue canSetExactMode;
 
-        public ExtractorAttachment(String type, int defaultItemTickInterval, int defaultItemsToExtract, int defaultFluidTickInterval, int defaultFluidsToExtract, int defaultFilterSlots, boolean defaultCanSetRedstoneMode, boolean defaultCanSetWhitelistBlacklist, boolean defaultCanSetRoutingMode) {
+        public ExtractorAttachment(
+            String type,
+            int defaultItemTickInterval,
+            int defaultItemsToExtract,
+            int defaultFluidTickInterval,
+            int defaultFluidsToExtract,
+            int defaultFilterSlots,
+            boolean defaultCanSetRedstoneMode,
+            boolean defaultCanSetWhitelistBlacklist,
+            boolean defaultCanSetRoutingMode,
+            boolean defaultCanSetExactMode) {
             builder.push(type);
 
             itemTickInterval = builder.comment("The interval between item extractions in ticks. Lower is faster.").defineInRange("itemTickInterval", defaultItemTickInterval, 0, Integer.MAX_VALUE);
@@ -276,6 +292,7 @@ public class ServerConfig {
             canSetRedstoneMode = builder.comment("Whether the redstone mode can be configured for this extractor.").define("canSetRedstoneMode", defaultCanSetRedstoneMode);
             canSetWhitelistBlacklist = builder.comment("Whether the extractor can be toggled between whitelist and blacklist.").define("canSetWhitelistBlacklist", defaultCanSetWhitelistBlacklist);
             canSetRoutingMode = builder.comment("Whether the extractor can be toggled between routing modes.").define("canSetRoutingMode", defaultCanSetRoutingMode);
+            canSetExactMode = builder.comment("Whether the extractor can toggle exact mode.").define("canSetExactMode", defaultCanSetExactMode);
 
             builder.pop();
         }
@@ -310,6 +327,10 @@ public class ServerConfig {
 
         public boolean getCanSetRoutingMode() {
             return canSetRoutingMode.get();
+        }
+
+        public boolean getCanSetExactMode() {
+            return canSetExactMode.get();
         }
     }
 }

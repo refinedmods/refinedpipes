@@ -23,6 +23,8 @@ import java.util.List;
 public class ExtractorAttachmentScreen extends ContainerScreen<ExtractorAttachmentContainer> {
     private static final ResourceLocation RESOURCE = new ResourceLocation(RefinedPipes.ID, "textures/gui/extractor_attachment.png");
 
+    private final List<String> tooltip = new ArrayList<>();
+
     private Button redstoneModeButton;
     private Button blacklistWhitelistButton;
     private Button routingModeButton;
@@ -31,8 +33,8 @@ public class ExtractorAttachmentScreen extends ContainerScreen<ExtractorAttachme
     public ExtractorAttachmentScreen(ExtractorAttachmentContainer container, PlayerInventory inv, ITextComponent title) {
         super(container, inv, title);
 
-        xSize = 176;
-        ySize = 193;
+        this.xSize = 176;
+        this.ySize = 193;
     }
 
     @Override
@@ -75,18 +77,17 @@ public class ExtractorAttachmentScreen extends ContainerScreen<ExtractorAttachme
 
         routingModeButton.active = container.getExtractorAttachmentType().getCanSetWhitelistBlacklist();
 
-        // TODO
         exactModeButton = addButton(new IconButton(
             this.guiLeft + 101,
             this.guiTop + 76,
             IconButtonPreset.NORMAL,
-            getRoutingModeX(container.getRoutingMode()),
-            194,
-            getRoutingModeText(container.getRoutingMode()),
-            btn -> setRoutingMode((IconButton) btn, container.getRoutingMode().next())
+            getExactModeX(container.isExactMode()),
+            103,
+            getExactModeText(container.isExactMode()),
+            btn -> setExactMode((IconButton) btn, !container.isExactMode())
         ));
 
-        exactModeButton.active = container.getExtractorAttachmentType().getCanSetWhitelistBlacklist();
+        exactModeButton.active = container.getExtractorAttachmentType().getCanSetExactMode();
 
         addButton(new IconButton(
             this.guiLeft + 125,
@@ -126,27 +127,6 @@ public class ExtractorAttachmentScreen extends ContainerScreen<ExtractorAttachme
         container.setStackSize(newAmount);
     }
 
-    private void setRedstoneMode(IconButton button, RedstoneMode redstoneMode) {
-        button.setMessage(getRedstoneModeText(redstoneMode));
-        button.setOverlayTexX(getRedstoneModeX(redstoneMode));
-
-        container.setRedstoneMode(redstoneMode);
-    }
-
-    private void setBlacklistWhitelist(IconButton button, BlacklistWhitelist blacklistWhitelist) {
-        button.setMessage(getBlacklistWhitelistText(blacklistWhitelist));
-        button.setOverlayTexX(getBlacklistWhitelistX(blacklistWhitelist));
-
-        container.setBlacklistWhitelist(blacklistWhitelist);
-    }
-
-    private void setRoutingMode(IconButton button, RoutingMode routingMode) {
-        button.setMessage(getRoutingModeText(routingMode));
-        button.setOverlayTexX(getRoutingModeX(routingMode));
-
-        container.setRoutingMode(routingMode);
-    }
-
     private int getRedstoneModeX(RedstoneMode redstoneMode) {
         switch (redstoneMode) {
             case IGNORED:
@@ -164,6 +144,13 @@ public class ExtractorAttachmentScreen extends ContainerScreen<ExtractorAttachme
         return I18n.format("misc.refinedpipes.redstone_mode." + redstoneMode.toString().toLowerCase());
     }
 
+    private void setRedstoneMode(IconButton button, RedstoneMode redstoneMode) {
+        button.setMessage(getRedstoneModeText(redstoneMode));
+        button.setOverlayTexX(getRedstoneModeX(redstoneMode));
+
+        container.setRedstoneMode(redstoneMode);
+    }
+
     private int getBlacklistWhitelistX(BlacklistWhitelist blacklistWhitelist) {
         switch (blacklistWhitelist) {
             case BLACKLIST:
@@ -177,6 +164,13 @@ public class ExtractorAttachmentScreen extends ContainerScreen<ExtractorAttachme
 
     private String getBlacklistWhitelistText(BlacklistWhitelist blacklistWhitelist) {
         return I18n.format("misc.refinedpipes.mode." + blacklistWhitelist.toString().toLowerCase());
+    }
+
+    private void setBlacklistWhitelist(IconButton button, BlacklistWhitelist blacklistWhitelist) {
+        button.setMessage(getBlacklistWhitelistText(blacklistWhitelist));
+        button.setOverlayTexX(getBlacklistWhitelistX(blacklistWhitelist));
+
+        container.setBlacklistWhitelist(blacklistWhitelist);
     }
 
     private int getRoutingModeX(RoutingMode routingMode) {
@@ -198,6 +192,28 @@ public class ExtractorAttachmentScreen extends ContainerScreen<ExtractorAttachme
         return I18n.format("misc.refinedpipes.routing_mode." + routingMode.toString().toLowerCase());
     }
 
+    private void setRoutingMode(IconButton button, RoutingMode routingMode) {
+        button.setMessage(getRoutingModeText(routingMode));
+        button.setOverlayTexX(getRoutingModeX(routingMode));
+
+        container.setRoutingMode(routingMode);
+    }
+
+    private int getExactModeX(boolean exactMode) {
+        return exactMode ? 177 : 198;
+    }
+
+    private String getExactModeText(boolean exactMode) {
+        return I18n.format("misc.refinedpipes.exact_mode." + (exactMode ? "on" : "off"));
+    }
+
+    private void setExactMode(IconButton button, boolean exactMode) {
+        button.setMessage(getExactModeText(exactMode));
+        button.setOverlayTexX(getExactModeX(exactMode));
+
+        container.setExactMode(exactMode);
+    }
+
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
         super.drawGuiContainerForegroundLayer(mouseX, mouseY);
@@ -209,23 +225,23 @@ public class ExtractorAttachmentScreen extends ContainerScreen<ExtractorAttachme
 
         renderHoveredToolTip(mouseX - guiLeft, mouseY - guiTop);
 
+        tooltip.clear();
+
         if (blacklistWhitelistButton.isHovered()) {
-            List<String> tooltip = new ArrayList<>();
             tooltip.add(I18n.format("misc.refinedpipes.mode"));
             tooltip.add(TextFormatting.GRAY + getBlacklistWhitelistText(container.getBlacklistWhitelist()));
-
-            GuiUtils.drawHoveringText(tooltip, mouseX - guiLeft, mouseY - guiTop, width, height, -1, Minecraft.getInstance().fontRenderer);
         } else if (redstoneModeButton.isHovered()) {
-            List<String> tooltip = new ArrayList<>();
             tooltip.add(I18n.format("misc.refinedpipes.redstone_mode"));
             tooltip.add(TextFormatting.GRAY + getRedstoneModeText(container.getRedstoneMode()));
-
-            GuiUtils.drawHoveringText(tooltip, mouseX - guiLeft, mouseY - guiTop, width, height, -1, Minecraft.getInstance().fontRenderer);
         } else if (routingModeButton.isHovered()) {
-            List<String> tooltip = new ArrayList<>();
             tooltip.add(I18n.format("misc.refinedpipes.routing_mode"));
             tooltip.add(TextFormatting.GRAY + getRoutingModeText(container.getRoutingMode()));
+        } else if (exactModeButton.isHovered()) {
+            tooltip.add(I18n.format("misc.refinedpipes.exact_mode"));
+            tooltip.add(TextFormatting.GRAY + getExactModeText(container.isExactMode()));
+        }
 
+        if (!tooltip.isEmpty()) {
             GuiUtils.drawHoveringText(tooltip, mouseX - guiLeft, mouseY - guiTop, width, height, -1, Minecraft.getInstance().fontRenderer);
         }
     }

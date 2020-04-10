@@ -55,6 +55,10 @@ public enum ExtractorAttachmentType {
         return getConfig().getCanSetRoutingMode();
     }
 
+    public boolean getCanSetExactMode() {
+        return getConfig().getCanSetExactMode();
+    }
+
     private ServerConfig.ExtractorAttachment getConfig() {
         switch (this) {
             case BASIC:

@@ -51,6 +51,10 @@ public class ExtractorAttachmentFactory implements AttachmentFactory {
             attachment.setStackSize(tag.getInt("stacksi"));
         }
 
+        if (tag.contains("exa")) {
+            attachment.setExactMode(tag.getBoolean("exa"));
+        }
+
         return attachment;
     }
 
@@ -115,6 +119,7 @@ public class ExtractorAttachmentFactory implements AttachmentFactory {
         addAbilityToInformation(tooltip, type.getCanSetRedstoneMode(), "misc.refinedpipes.redstone_mode");
         addAbilityToInformation(tooltip, type.getCanSetWhitelistBlacklist(), "misc.refinedpipes.mode");
         addAbilityToInformation(tooltip, type.getCanSetRoutingMode(), "misc.refinedpipes.routing_mode");
+        addAbilityToInformation(tooltip, type.getCanSetExactMode(), "misc.refinedpipes.exact_mode");
     }
 
     private void addAbilityToInformation(List<ITextComponent> tooltip, boolean possible, String key) {

@@ -3,10 +3,7 @@ package com.raoulvdberge.refinedpipes.container;
 import com.raoulvdberge.refinedpipes.RefinedPipes;
 import com.raoulvdberge.refinedpipes.RefinedPipesContainers;
 import com.raoulvdberge.refinedpipes.container.slot.FilterSlot;
-import com.raoulvdberge.refinedpipes.message.ChangeBlacklistWhitelistMessage;
-import com.raoulvdberge.refinedpipes.message.ChangeRedstoneModeMessage;
-import com.raoulvdberge.refinedpipes.message.ChangeRoutingModeMessage;
-import com.raoulvdberge.refinedpipes.message.ChangeStackSizeMessage;
+import com.raoulvdberge.refinedpipes.message.*;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor.BlacklistWhitelist;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor.ExtractorAttachmentType;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.extractor.RedstoneMode;
@@ -25,6 +22,7 @@ public class ExtractorAttachmentContainer extends BaseContainer {
     private BlacklistWhitelist blacklistWhitelist;
     private RoutingMode routingMode;
     private int stackSize;
+    private boolean exactMode;
 
     public ExtractorAttachmentContainer(
         int windowId,
@@ -35,6 +33,7 @@ public class ExtractorAttachmentContainer extends BaseContainer {
         BlacklistWhitelist blacklistWhitelist,
         RoutingMode routingMode,
         int stackSize,
+        boolean exactMode,
         ExtractorAttachmentType type,
         ItemStackHandler itemFilters) {
         super(RefinedPipesContainers.EXTRACTOR_ATTACHMENT, windowId);
@@ -62,6 +61,7 @@ public class ExtractorAttachmentContainer extends BaseContainer {
         this.blacklistWhitelist = blacklistWhitelist;
         this.routingMode = routingMode;
         this.stackSize = stackSize;
+        this.exactMode = exactMode;
     }
 
     public ExtractorAttachmentType getExtractorAttachmentType() {
@@ -82,6 +82,10 @@ public class ExtractorAttachmentContainer extends BaseContainer {
 
     public int getStackSize() {
         return stackSize;
+    }
+
+    public boolean isExactMode() {
+        return exactMode;
     }
 
     public void setRedstoneMode(RedstoneMode redstoneMode) {
@@ -106,5 +110,11 @@ public class ExtractorAttachmentContainer extends BaseContainer {
         this.stackSize = stackSize;
 
         RefinedPipes.NETWORK.sendToServer(new ChangeStackSizeMessage(pos, dir, stackSize));
+    }
+
+    public void setExactMode(boolean exactMode) {
+        this.exactMode = exactMode;
+
+        RefinedPipes.NETWORK.sendToServer(new ChangeExactModeMessage(pos, dir, exactMode));
     }
 }

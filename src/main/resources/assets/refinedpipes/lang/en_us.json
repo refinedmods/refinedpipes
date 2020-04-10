@@ -42,5 +42,8 @@
   "misc.refinedpipes.routing_mode.nearest": "Nearest first",
   "misc.refinedpipes.routing_mode.furthest": "Furthest first",
   "misc.refinedpipes.routing_mode.random": "Random",
-  "misc.refinedpipes.routing_mode.round_robin": "Round robin"
+  "misc.refinedpipes.routing_mode.round_robin": "Round robin",
+  "misc.refinedpipes.exact_mode": "Exact mode",
+  "misc.refinedpipes.exact_mode.on": "On",
+  "misc.refinedpipes.exact_mode.off": "Off"
 }
