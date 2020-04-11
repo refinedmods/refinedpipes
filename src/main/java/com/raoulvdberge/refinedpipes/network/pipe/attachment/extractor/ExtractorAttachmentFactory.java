@@ -6,6 +6,7 @@ import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.Attachment;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.AttachmentFactory;
 import com.raoulvdberge.refinedpipes.util.DirectionUtil;
+import com.raoulvdberge.refinedpipes.util.StringUtil;
 import net.minecraft.block.Block;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
@@ -86,12 +87,12 @@ public class ExtractorAttachmentFactory implements AttachmentFactory {
     public void addInformation(List<ITextComponent> tooltip) {
         tooltip.add(new TranslationTextComponent("misc.refinedpipes.tier", new TranslationTextComponent("enchantment.level." + type.getTier())).setStyle(new Style().setColor(TextFormatting.YELLOW)));
 
-        ITextComponent itemsToExtract = new StringTextComponent(type.getItemsToExtract() + " ")
+        ITextComponent itemsToExtract = new StringTextComponent(StringUtil.formatNumber(type.getItemsToExtract()) + " ")
             .appendSibling(new TranslationTextComponent("misc.refinedpipes.item" + (type.getItemsToExtract() == 1 ? "" : "s")))
             .setStyle(new Style().setColor(TextFormatting.WHITE));
 
         float itemSecondsInterval = type.getItemTickInterval() / 20F;
-        ITextComponent itemTickInterval = new StringTextComponent(itemSecondsInterval + " ")
+        ITextComponent itemTickInterval = new StringTextComponent(StringUtil.formatNumber(itemSecondsInterval) + " ")
             .appendSibling(new TranslationTextComponent("misc.refinedpipes.second" + (itemSecondsInterval == 1 ? "" : "s")))
             .setStyle(new Style().setColor(TextFormatting.WHITE));
 
@@ -101,11 +102,11 @@ public class ExtractorAttachmentFactory implements AttachmentFactory {
             itemTickInterval
         ).setStyle(new Style().setColor(TextFormatting.GRAY)));
 
-        ITextComponent fluidsToExtract = new StringTextComponent(type.getFluidsToExtract() + " mB")
+        ITextComponent fluidsToExtract = new StringTextComponent(StringUtil.formatNumber(type.getFluidsToExtract()) + " mB")
             .setStyle(new Style().setColor(TextFormatting.WHITE));
 
         float fluidSecondsInterval = type.getFluidTickInterval() / 20F;
-        ITextComponent fluidTickInterval = new StringTextComponent(fluidSecondsInterval + " ")
+        ITextComponent fluidTickInterval = new StringTextComponent(StringUtil.formatNumber(fluidSecondsInterval) + " ")
             .appendSibling(new TranslationTextComponent("misc.refinedpipes.second" + (fluidSecondsInterval == 1 ? "" : "s")))
             .setStyle(new Style().setColor(TextFormatting.WHITE));
 

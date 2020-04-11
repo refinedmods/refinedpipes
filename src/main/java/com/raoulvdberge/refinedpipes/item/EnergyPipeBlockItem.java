@@ -2,6 +2,7 @@ package com.raoulvdberge.refinedpipes.item;
 
 import com.raoulvdberge.refinedpipes.block.EnergyPipeBlock;
 import com.raoulvdberge.refinedpipes.network.pipe.energy.EnergyPipeType;
+import com.raoulvdberge.refinedpipes.util.StringUtil;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.*;
@@ -27,12 +28,12 @@ public class EnergyPipeBlockItem extends BaseBlockItem {
 
         tooltip.add(new TranslationTextComponent(
             "tooltip.refinedpipes.energy_pipe.capacity",
-            new StringTextComponent(type.getCapacity() + " FE").setStyle(new Style().setColor(TextFormatting.WHITE))
+            new StringTextComponent(StringUtil.formatNumber(type.getCapacity()) + " FE").setStyle(new Style().setColor(TextFormatting.WHITE))
         ).setStyle(new Style().setColor(TextFormatting.GRAY)));
 
         tooltip.add(new TranslationTextComponent(
             "tooltip.refinedpipes.energy_pipe.transfer_rate",
-            new StringTextComponent(type.getTransferRate() + " FE/t").setStyle(new Style().setColor(TextFormatting.WHITE))
+            new StringTextComponent(StringUtil.formatNumber(type.getTransferRate()) + " FE/t").setStyle(new Style().setColor(TextFormatting.WHITE))
         ).setStyle(new Style().setColor(TextFormatting.GRAY)));
     }
 }

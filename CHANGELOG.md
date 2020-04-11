@@ -1,5 +1,8 @@
 # Refined Pipes Changelog
 
+## 0.4.1
+- Added formatting to quantities in the tooltips (raoulvdberge)
+
 ## 0.4
 - Added filtering options for the Extractor Attachment (raoulvdberge)
 - Added redstone mode options for the Extractor Attachment (raoulvdberge)
