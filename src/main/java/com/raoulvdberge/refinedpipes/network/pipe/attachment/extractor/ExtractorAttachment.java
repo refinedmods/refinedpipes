@@ -7,7 +7,6 @@ import com.raoulvdberge.refinedpipes.network.NetworkManager;
 import com.raoulvdberge.refinedpipes.network.fluid.FluidNetwork;
 import com.raoulvdberge.refinedpipes.network.item.ItemNetwork;
 import com.raoulvdberge.refinedpipes.network.pipe.Destination;
-import com.raoulvdberge.refinedpipes.network.pipe.DestinationType;
 import com.raoulvdberge.refinedpipes.network.pipe.Pipe;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.Attachment;
 import com.raoulvdberge.refinedpipes.network.pipe.item.ItemPipe;
@@ -28,37 +27,33 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ExtractorAttachment extends Attachment {
     private static final Logger LOGGER = LogManager.getLogger(ExtractorAttachment.class);
 
     public static final int MAX_FILTER_SLOTS = 15;
 
-    private final Pipe pipe;
     private final ExtractorAttachmentType type;
     private final ItemStackHandler itemFilter;
     private final FluidInventory fluidFilter;
+
+    private final ItemDestinationFinder itemDestinationFinder = new ItemDestinationFinder(this);
 
     private int ticks;
     private RedstoneMode redstoneMode = RedstoneMode.IGNORED;
     private BlacklistWhitelist blacklistWhitelist = BlacklistWhitelist.BLACKLIST;
     private RoutingMode routingMode = RoutingMode.NEAREST;
-    private int roundRobinIndex;
     private int stackSize;
     private boolean exactMode = true;
 
     public ExtractorAttachment(Pipe pipe, Direction direction, ExtractorAttachmentType type) {
-        super(direction);
+        super(pipe, direction);
 
-        this.pipe = pipe;
         this.type = type;
         this.stackSize = type.getItemsToExtract();
         this.itemFilter = createItemFilterInventory(this);
@@ -109,7 +104,7 @@ public class ExtractorAttachment extends Attachment {
             return;
         }
 
-        int firstSlot = getFirstSlot(source);
+        int firstSlot = getSlotToExtractFrom(source);
         if (firstSlot == -1) {
             return;
         }
@@ -119,9 +114,9 @@ public class ExtractorAttachment extends Attachment {
             return;
         }
 
-        Destination destination = findDestination(network, sourcePos, extracted);
+        Destination destination = itemDestinationFinder.find(routingMode, sourcePos, extracted);
         if (destination == null) {
-            LOGGER.warn("No destination found from " + pipe.getPos());
+            LOGGER.debug("No destination found from " + pipe.getPos());
             return;
         }
 
@@ -151,137 +146,6 @@ public class ExtractorAttachment extends Attachment {
         ));
     }
 
-    private Destination findDestination(ItemNetwork network, BlockPos sourcePos, ItemStack extracted) {
-        switch (routingMode) {
-            case NEAREST:
-                return network.getDestinationPathCache()
-                    .findNearestDestination(pipe.getPos(), d -> isDestinationApplicable(sourcePos, extracted, d));
-            case FURTHEST:
-                return network.getDestinationPathCache()
-                    .findFurthestDestination(pipe.getPos(), d -> isDestinationApplicable(sourcePos, extracted, d));
-            case RANDOM: {
-                List<Destination> destinations = new ArrayList<>(network.getDestinations(DestinationType.ITEM_HANDLER));
-
-                while (!destinations.isEmpty()) {
-                    int randomIndex = pipe.getWorld().getRandom().nextInt(destinations.size());
-                    Destination randomDestination = destinations.get(randomIndex);
-
-                    if (isDestinationApplicable(sourcePos, extracted, randomDestination)) {
-                        return randomDestination;
-                    }
-
-                    destinations.remove(randomIndex);
-                }
-
-                return null;
-            }
-            case ROUND_ROBIN: {
-                List<Destination> destinations = network.getDestinations(DestinationType.ITEM_HANDLER);
-                if (roundRobinIndex >= destinations.size()) {
-                    roundRobinIndex = 0;
-                }
-
-                while (true) {
-                    Destination dest = destinations.get(roundRobinIndex);
-
-                    if (isDestinationApplicable(sourcePos, extracted, dest)) {
-                        roundRobinIndex++;
-                        return dest;
-                    } else {
-                        roundRobinIndex++;
-                        if (roundRobinIndex >= destinations.size()) {
-                            break;
-                        }
-                    }
-                }
-
-                return null;
-            }
-            default:
-                throw new RuntimeException("?");
-        }
-    }
-
-    public ExtractorAttachmentType getType() {
-        return type;
-    }
-
-    public ItemStackHandler getItemFilter() {
-        return itemFilter;
-    }
-
-    public FluidInventory getFluidFilter() {
-        return fluidFilter;
-    }
-
-    public RedstoneMode getRedstoneMode() {
-        return redstoneMode;
-    }
-
-    public void setRedstoneMode(RedstoneMode redstoneMode) {
-        if (!type.getCanSetRedstoneMode()) {
-            return;
-        }
-
-        this.redstoneMode = redstoneMode;
-    }
-
-    public void setBlacklistWhitelist(BlacklistWhitelist blacklistWhitelist) {
-        if (!type.getCanSetWhitelistBlacklist()) {
-            return;
-        }
-
-        this.blacklistWhitelist = blacklistWhitelist;
-    }
-
-    public BlacklistWhitelist getBlacklistWhitelist() {
-        return blacklistWhitelist;
-    }
-
-    public void setRoutingMode(RoutingMode routingMode) {
-        if (!type.getCanSetRoutingMode()) {
-            return;
-        }
-
-        this.routingMode = routingMode;
-    }
-
-    public RoutingMode getRoutingMode() {
-        return routingMode;
-    }
-
-    public void setStackSize(int stackSize) {
-        if (stackSize < 0) {
-            stackSize = 0;
-        }
-
-        if (stackSize > type.getItemsToExtract()) {
-            stackSize = type.getItemsToExtract();
-        }
-
-        this.stackSize = stackSize;
-    }
-
-    public int getStackSize() {
-        return stackSize;
-    }
-
-    public void setRoundRobinIndex(int roundRobinIndex) {
-        this.roundRobinIndex = roundRobinIndex;
-    }
-
-    public void setExactMode(boolean exactMode) {
-        if (!type.getCanSetExactMode()) {
-            return;
-        }
-
-        this.exactMode = exactMode;
-    }
-
-    public boolean isExactMode() {
-        return exactMode;
-    }
-
     private void update(FluidNetwork network, IFluidHandler source) {
         FluidStack drained = source.drain(type.getFluidsToExtract(), IFluidHandler.FluidAction.SIMULATE);
         if (drained.isEmpty()) {
@@ -306,27 +170,7 @@ public class ExtractorAttachment extends Attachment {
         NetworkManager.get(pipe.getWorld()).markDirty();
     }
 
-    private boolean isDestinationApplicable(BlockPos sourcePos, ItemStack extracted, Destination destination) {
-        TileEntity tile = destination.getConnectedPipe().getWorld().getTileEntity(destination.getReceiver());
-        if (tile == null) {
-            return false;
-        }
-
-        IItemHandler handler = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, destination.getIncomingDirection().getOpposite()).orElse(null);
-        if (handler == null) {
-            return false;
-        }
-
-        // Avoid extractions that lead back to the source pos through the same pipe.
-        // Only if the incoming direction is different, then we'll allow it.
-        if (destination.getReceiver().equals(sourcePos) && destination.getIncomingDirection() == getDirection()) {
-            return false;
-        }
-
-        return ItemHandlerHelper.insertItem(handler, extracted, true).isEmpty();
-    }
-
-    private int getFirstSlot(IItemHandler handler) {
+    private int getSlotToExtractFrom(IItemHandler handler) {
         for (int i = 0; i < handler.getSlots(); ++i) {
             ItemStack stack = handler.getStackInSlot(i);
 
@@ -432,13 +276,93 @@ public class ExtractorAttachment extends Attachment {
         tag.putByte("rm", (byte) redstoneMode.ordinal());
         tag.put("itemfilter", itemFilter.serializeNBT());
         tag.putByte("bw", (byte) blacklistWhitelist.ordinal());
-        tag.putInt("rr", roundRobinIndex);
+        tag.putInt("rr", itemDestinationFinder.getRoundRobinIndex());
         tag.putByte("routingm", (byte) routingMode.ordinal());
         tag.putInt("stacksi", stackSize);
         tag.putBoolean("exa", exactMode);
         tag.put("fluidfilter", fluidFilter.writeToNbt());
 
         return super.writeToNbt(tag);
+    }
+
+    public ExtractorAttachmentType getType() {
+        return type;
+    }
+
+    public ItemStackHandler getItemFilter() {
+        return itemFilter;
+    }
+
+    public FluidInventory getFluidFilter() {
+        return fluidFilter;
+    }
+
+    public RedstoneMode getRedstoneMode() {
+        return redstoneMode;
+    }
+
+    public void setRedstoneMode(RedstoneMode redstoneMode) {
+        if (!type.getCanSetRedstoneMode()) {
+            return;
+        }
+
+        this.redstoneMode = redstoneMode;
+    }
+
+    public void setBlacklistWhitelist(BlacklistWhitelist blacklistWhitelist) {
+        if (!type.getCanSetWhitelistBlacklist()) {
+            return;
+        }
+
+        this.blacklistWhitelist = blacklistWhitelist;
+    }
+
+    public BlacklistWhitelist getBlacklistWhitelist() {
+        return blacklistWhitelist;
+    }
+
+    public void setRoutingMode(RoutingMode routingMode) {
+        if (!type.getCanSetRoutingMode()) {
+            return;
+        }
+
+        this.routingMode = routingMode;
+    }
+
+    public RoutingMode getRoutingMode() {
+        return routingMode;
+    }
+
+    public void setStackSize(int stackSize) {
+        if (stackSize < 0) {
+            stackSize = 0;
+        }
+
+        if (stackSize > type.getItemsToExtract()) {
+            stackSize = type.getItemsToExtract();
+        }
+
+        this.stackSize = stackSize;
+    }
+
+    public int getStackSize() {
+        return stackSize;
+    }
+
+    public void setRoundRobinIndex(int roundRobinIndex) {
+        itemDestinationFinder.setRoundRobinIndex(roundRobinIndex);
+    }
+
+    public void setExactMode(boolean exactMode) {
+        if (!type.getCanSetExactMode()) {
+            return;
+        }
+
+        this.exactMode = exactMode;
+    }
+
+    public boolean isExactMode() {
+        return exactMode;
     }
 
     public static ItemStackHandler createItemFilterInventory(@Nullable ExtractorAttachment attachment) {
