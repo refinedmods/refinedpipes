@@ -116,7 +116,6 @@ public class ExtractorAttachment extends Attachment {
 
         Destination destination = itemDestinationFinder.find(routingMode, sourcePos, extracted);
         if (destination == null) {
-            LOGGER.debug("No destination found from " + pipe.getPos());
             return;
         }
 
