@@ -50,6 +50,10 @@ public class ItemDestinationFinder {
             }
             case ROUND_ROBIN: {
                 List<Destination> destinations = network.getDestinations(DestinationType.ITEM_HANDLER);
+                if (destinations.isEmpty()) {
+                    return null;
+                }
+
                 if (roundRobinIndex >= destinations.size()) {
                     roundRobinIndex = 0;
                 }

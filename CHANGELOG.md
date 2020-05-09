@@ -3,7 +3,8 @@
 ## 0.4.1
 - Added formatting to quantities in the tooltips (raoulvdberge)
 - Fixed invalid cast server crash (raoulvdberge)
-- Fixed server log spamming when destination for items are not found (raoulvdberge)
+- Fixed log spamming when destination for items are not found (raoulvdberge)
+- Fixed crash when item pipe in round robin mode no longer has any destination (raoulvdberge)
 
 ## 0.4
 - Added filtering options for the Extractor Attachment (raoulvdberge)
