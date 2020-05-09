@@ -3,7 +3,6 @@ package com.raoulvdberge.refinedpipes.network.pipe;
 import com.raoulvdberge.refinedpipes.network.Network;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.Attachment;
 import com.raoulvdberge.refinedpipes.network.pipe.attachment.ServerAttachmentManager;
-import com.raoulvdberge.refinedpipes.network.pipe.item.ItemPipe;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
@@ -87,7 +86,7 @@ public abstract class Pipe {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ItemPipe pipe = (ItemPipe) o;
+        Pipe pipe = (Pipe) o;
         return world.equals(pipe.world) &&
             pos.equals(pipe.pos);
     }

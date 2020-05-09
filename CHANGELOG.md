@@ -2,6 +2,7 @@
 
 ## 0.4.1
 - Added formatting to quantities in the tooltips (raoulvdberge)
+- Fixed invalid cast server crash (raoulvdberge)
 
 ## 0.4
 - Added filtering options for the Extractor Attachment (raoulvdberge)
