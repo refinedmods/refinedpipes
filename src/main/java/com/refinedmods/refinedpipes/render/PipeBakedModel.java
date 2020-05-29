@@ -69,9 +69,9 @@ public class PipeBakedModel implements IBakedModel {
             if (north && south && !east && !west && !up && !down) {
                 quads.addAll(straight.getQuads(state.getState(), state.getSide(), state.getRand(), EmptyModelData.INSTANCE));
             } else if (!north && !south && east && west && !up && !down) {
-                quads.addAll(getTransformedQuads(straight, Direction.EAST, state.getState(), state.getSide(), state.getRand()));
+                quads.addAll(getTransformedQuads(straight, Direction.EAST, state));
             } else if (!north && !south && !east && !west && up && down) {
-                quads.addAll(getTransformedQuads(straight, Direction.UP, state.getState(), state.getSide(), state.getRand()));
+                quads.addAll(getTransformedQuads(straight, Direction.UP, state));
             } else if (!north && !south && !east && !west && !up && !down) {
                 quads.addAll(core.getQuads(state.getState(), state.getSide(), state.getRand(), EmptyModelData.INSTANCE));
             } else {
@@ -82,23 +82,23 @@ public class PipeBakedModel implements IBakedModel {
                 }
 
                 if (east) {
-                    quads.addAll(getTransformedQuads(extension, Direction.EAST, state.getState(), state.getSide(), state.getRand()));
+                    quads.addAll(getTransformedQuads(extension, Direction.EAST, state));
                 }
 
                 if (south) {
-                    quads.addAll(getTransformedQuads(extension, Direction.SOUTH, state.getState(), state.getSide(), state.getRand()));
+                    quads.addAll(getTransformedQuads(extension, Direction.SOUTH, state));
                 }
 
                 if (west) {
-                    quads.addAll(getTransformedQuads(extension, Direction.WEST, state.getState(), state.getSide(), state.getRand()));
+                    quads.addAll(getTransformedQuads(extension, Direction.WEST, state));
                 }
 
                 if (up) {
-                    quads.addAll(getTransformedQuads(extension, Direction.UP, state.getState(), state.getSide(), state.getRand()));
+                    quads.addAll(getTransformedQuads(extension, Direction.UP, state));
                 }
 
                 if (down) {
-                    quads.addAll(getTransformedQuads(extension, Direction.DOWN, state.getState(), state.getSide(), state.getRand()));
+                    quads.addAll(getTransformedQuads(extension, Direction.DOWN, state));
                 }
             }
         }
@@ -108,7 +108,7 @@ public class PipeBakedModel implements IBakedModel {
                 ResourceLocation attachmentId = state.getAttachmentState()[dir.ordinal()];
 
                 if (attachmentId != null) {
-                    quads.addAll(getTransformedQuads(attachmentModels.get(attachmentId), dir, state.getState(), state.getSide(), state.getRand()));
+                    quads.addAll(getTransformedQuads(attachmentModels.get(attachmentId), dir, state));
                 }
             }
         }
@@ -122,31 +122,67 @@ public class PipeBakedModel implements IBakedModel {
             boolean invDown = state.getState().get(PipeBlock.INV_DOWN);
 
             if (invNorth && !state.hasAttachmentState(Direction.NORTH)) {
-                quads.addAll(getTransformedQuads(inventoryAttachment, Direction.NORTH, state.getState(), state.getSide(), state.getRand()));
+                quads.addAll(getTransformedQuads(inventoryAttachment, Direction.NORTH, state));
             }
 
             if (invEast && !state.hasAttachmentState(Direction.EAST)) {
-                quads.addAll(getTransformedQuads(inventoryAttachment, Direction.EAST, state.getState(), state.getSide(), state.getRand()));
+                quads.addAll(getTransformedQuads(inventoryAttachment, Direction.EAST, state));
             }
 
             if (invSouth && !state.hasAttachmentState(Direction.SOUTH)) {
-                quads.addAll(getTransformedQuads(inventoryAttachment, Direction.SOUTH, state.getState(), state.getSide(), state.getRand()));
+                quads.addAll(getTransformedQuads(inventoryAttachment, Direction.SOUTH, state));
             }
 
             if (invWest && !state.hasAttachmentState(Direction.WEST)) {
-                quads.addAll(getTransformedQuads(inventoryAttachment, Direction.WEST, state.getState(), state.getSide(), state.getRand()));
+                quads.addAll(getTransformedQuads(inventoryAttachment, Direction.WEST, state));
             }
 
             if (invUp && !state.hasAttachmentState(Direction.UP)) {
-                quads.addAll(getTransformedQuads(inventoryAttachment, Direction.UP, state.getState(), state.getSide(), state.getRand()));
+                quads.addAll(getTransformedQuads(inventoryAttachment, Direction.UP, state));
             }
 
             if (invDown && !state.hasAttachmentState(Direction.DOWN)) {
-                quads.addAll(getTransformedQuads(inventoryAttachment, Direction.DOWN, state.getState(), state.getSide(), state.getRand()));
+                quads.addAll(getTransformedQuads(inventoryAttachment, Direction.DOWN, state));
             }
         }
 
         return quads;
+    }
+
+    private static List<BakedQuad> getTransformedQuads(IBakedModel model, Direction facing, PipeState state) {
+    	TransformationMatrix transformation = SIDE_TRANSFORMS.computeIfAbsent(facing, face -> {
+            Quaternion quaternion;
+            if (face == Direction.UP) {
+                quaternion = TransformationHelper.quatFromXYZ(new Vector3f(90, 0, 0), true);
+            } else if (face == Direction.DOWN) {
+                quaternion = TransformationHelper.quatFromXYZ(new Vector3f(270, 0, 0), true);
+            } else {
+                double r = Math.PI * (360 - face.getOpposite().getHorizontalIndex() * 90) / 180d;
+
+                quaternion = TransformationHelper.quatFromXYZ(new Vector3f(0, (float) r, 0), false);
+            }
+
+            return new TransformationMatrix(null, quaternion, null, null).blockCenterToCorner();
+    	});
+
+        ImmutableList.Builder<BakedQuad> quads = ImmutableList.builder();
+        Direction side = state.getSide();
+
+        if (side != null && side.getHorizontalIndex() > -1) {
+        	int faceOffset = 4 + Direction.NORTH.getHorizontalIndex() - facing.getHorizontalIndex();
+            side = Direction.byHorizontalIndex((side.getHorizontalIndex() + faceOffset) % 4);
+        }
+
+        for (BakedQuad quad : model.getQuads(state.getState(), side, state.getRand(), EmptyModelData.INSTANCE)) {
+            BakedQuadBuilder builder = new BakedQuadBuilder(quad.func_187508_a());
+            TRSRTransformer transformer = new TRSRTransformer(builder, transformation);
+
+            quad.pipe(transformer);
+
+            quads.add(builder.build());
+        }
+
+        return quads.build();
     }
 
     @Override
@@ -178,40 +214,5 @@ public class PipeBakedModel implements IBakedModel {
     @Override
     public ItemOverrideList getOverrides() {
         return core.getOverrides();
-    }
-
-    private static List<BakedQuad> getTransformedQuads(IBakedModel model, Direction facing, BlockState state, Direction side, Random rand) {
-    	TransformationMatrix transformation = SIDE_TRANSFORMS.computeIfAbsent(facing, face -> {
-            Quaternion quaternion;
-            if (face == Direction.UP) {
-                quaternion = TransformationHelper.quatFromXYZ(new Vector3f(90, 0, 0), true);
-            } else if (face == Direction.DOWN) {
-                quaternion = TransformationHelper.quatFromXYZ(new Vector3f(270, 0, 0), true);
-            } else {
-                double r = Math.PI * (360 - face.getOpposite().getHorizontalIndex() * 90) / 180d;
-
-                quaternion = TransformationHelper.quatFromXYZ(new Vector3f(0, (float) r, 0), false);
-            }
-
-            return new TransformationMatrix(null, quaternion, null, null).blockCenterToCorner();
-    	});
-        int faceOffset = 4 + Direction.NORTH.getHorizontalIndex() - facing.getHorizontalIndex();
-
-        ImmutableList.Builder<BakedQuad> quads = ImmutableList.builder();
-
-        if (side != null && side.getHorizontalIndex() > -1) {
-            side = Direction.byHorizontalIndex((side.getHorizontalIndex() + faceOffset) % 4);
-        }
-
-        for (BakedQuad quad : model.getQuads(state, side, rand, EmptyModelData.INSTANCE)) {
-            BakedQuadBuilder builder = new BakedQuadBuilder(quad.func_187508_a());
-            TRSRTransformer transformer = new TRSRTransformer(builder, transformation);
-
-            quad.pipe(transformer);
-
-            quads.add(builder.build());
-        }
-
-        return quads.build();
     }
 }
