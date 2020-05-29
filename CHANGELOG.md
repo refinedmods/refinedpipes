@@ -1,7 +1,7 @@
 # Refined Pipes Changelog
 
 ## 0.4.2
-- Fixed memory usage (Chocohead)
+- Fixed extremely high memory usage (Chocohead)
 
 ## 0.4.1
 - Added formatting to quantities in the tooltips (raoulvdberge)
