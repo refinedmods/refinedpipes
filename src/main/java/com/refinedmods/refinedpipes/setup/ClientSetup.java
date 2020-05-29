@@ -203,12 +203,12 @@ public class ClientSetup {
         ));
 
         on: for (ResourceLocation id : e.getModelRegistry().keySet()) {
-        	for (Entry<ResourceLocation, PipeBakedModel> entry : pipeModels.entrySet()) {
-        		if (isPipeModel(id, entry.getKey())) {
-        			e.getModelRegistry().put(id, entry.getValue());
+            for (Entry<ResourceLocation, PipeBakedModel> entry : pipeModels.entrySet()) {
+                if (isPipeModel(id, entry.getKey())) {
+                    e.getModelRegistry().put(id, entry.getValue());
                     continue on;
                 }
-        	}
+            }
         }
     }
 

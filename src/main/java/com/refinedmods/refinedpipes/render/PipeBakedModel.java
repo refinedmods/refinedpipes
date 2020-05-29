@@ -26,7 +26,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 public class PipeBakedModel implements IBakedModel {
-	private static final Map<Direction, TransformationMatrix> SIDE_TRANSFORMS = new EnumMap<>(Direction.class);
+    private static final Map<Direction, TransformationMatrix> SIDE_TRANSFORMS = new EnumMap<>(Direction.class);
     private final IBakedModel core;
     private final IBakedModel extension;
     private final IBakedModel straight;
@@ -150,7 +150,7 @@ public class PipeBakedModel implements IBakedModel {
     }
 
     private static List<BakedQuad> getTransformedQuads(IBakedModel model, Direction facing, PipeState state) {
-    	TransformationMatrix transformation = SIDE_TRANSFORMS.computeIfAbsent(facing, face -> {
+        TransformationMatrix transformation = SIDE_TRANSFORMS.computeIfAbsent(facing, face -> {
             Quaternion quaternion;
             if (face == Direction.UP) {
                 quaternion = TransformationHelper.quatFromXYZ(new Vector3f(90, 0, 0), true);
@@ -163,13 +163,13 @@ public class PipeBakedModel implements IBakedModel {
             }
 
             return new TransformationMatrix(null, quaternion, null, null).blockCenterToCorner();
-    	});
+        });
 
         ImmutableList.Builder<BakedQuad> quads = ImmutableList.builder();
         Direction side = state.getSide();
 
         if (side != null && side.getHorizontalIndex() > -1) {
-        	int faceOffset = 4 + Direction.NORTH.getHorizontalIndex() - facing.getHorizontalIndex();
+            int faceOffset = 4 + Direction.NORTH.getHorizontalIndex() - facing.getHorizontalIndex();
             side = Direction.byHorizontalIndex((side.getHorizontalIndex() + faceOffset) % 4);
         }
 
