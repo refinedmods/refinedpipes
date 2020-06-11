@@ -165,7 +165,7 @@ public class NetworkManager extends WorldSavedData {
                 throw new RuntimeException("Adjacent pipe has no network");
             }
 
-            if (originPipe.getNetwork() != originPipe.getNetwork()) {
+            if (adjacent.getNetwork() != originPipe.getNetwork()) {
                 throw new RuntimeException("The origin pipe network is different than the adjacent pipe network");
             }
         }
