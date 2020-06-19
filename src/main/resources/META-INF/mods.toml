@@ -5,6 +5,8 @@ issueTrackerURL="https://github.com/refinedmods/refinedpipes"
 modId="refinedpipes"
 version="${version}"
 displayName="Refined Pipes"
+updateJSONURL="https://refinedmods.com/refined-pipes/update.json"
+displayURL="https://refinedmods.com/refined-pipes"
 authors="Refined Mods"
 description='''
 Refined Pipes is a Minecraft mod that adds pipes.

@@ -1,7 +1,7 @@
 # Refined Pipes [![Build Status](https://ci.refinedmods.com/buildStatus/icon?job=refinedpipes-mc1.15)](https://ci.refinedmods.com/job/refinedpipes-mc1.15/) [![CurseForge](http://cf.way2muchnoise.eu/full_370696_downloads.svg)](https://www.curseforge.com/minecraft/mc-mods/refined-pipes)
 
-Refined Pipes is a Minecraft mod that adds pipes.
+Refined Pipes is a Minecraft mod that adds item, fluid and energy pipes.
 
-It is my goal to have the best standalone (no external dependencies, no special ores/ingots required) item, fluid and energy transport pipes in modded Minecraft.
+The goal is to have the best standalone item, fluid and energy pipes.
 
-Similar to Refined Storage, I don't want people to think too much when using this mod, it should stay simple in use. That doesn't mean I won't be adding lots of features, though.
+No external dependencies or special ores/ingots required.
