@@ -52,7 +52,6 @@ public class ItemInsertTransportCallback implements TransportCallback {
         if (ItemHandlerHelper.insertItem(itemHandler, toInsert, true).isEmpty()) {
             ItemHandlerHelper.insertItem(itemHandler, toInsert, false);
         } else {
-            LOGGER.warn("Destination item handler is full at " + itemHandlerPosition);
             cancelCallback.call(network, world, currentPos, cancelCallback);
         }
     }
