@@ -1,5 +1,8 @@
 # Refined Pipes Changelog
 
+## 0.4.3
+- Added Russian translation (KhottyManatee55)
+
 ## 0.4.2
 - Fixed extremely high memory usage (Chocohead)
 
