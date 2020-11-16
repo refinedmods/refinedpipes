@@ -93,13 +93,13 @@ processResources {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.16.3-34.1.0'
+    minecraft 'net.minecraftforge:forge:1.16.3-34.1.40'
 
     runtimeOnly fg.deobf("mezz.jei:jei-1.16.3:7.3.2.36")
-    // runtimeOnly fg.deobf("not_used:Mekanism-1.15.2:9.9.17.409")
-    // runtimeOnly fg.deobf("com.github.mcjty:mcjtylib:1.15-4.0.3-alpha")
-    // runtimeOnly fg.deobf("com.github.mcjty:rftoolsbase:1.15-1.0.1-alpha")
-    // runtimeOnly fg.deobf("com.github.mcjty:rftoolspower:1.15-2.0.1-alpha")
+    runtimeOnly fg.deobf("not_used:Mekanism-1.16.4:10.0.17.444")
+    runtimeOnly fg.deobf("com.github.mcjty:mcjtylib:1.16-5.0.13")
+    runtimeOnly fg.deobf("com.github.mcjty:rftoolsbase:1.16-2.0.6")
+    runtimeOnly fg.deobf("com.github.mcjty:rftoolspower:1.16-3.0.8")
 }
 
 jar {
