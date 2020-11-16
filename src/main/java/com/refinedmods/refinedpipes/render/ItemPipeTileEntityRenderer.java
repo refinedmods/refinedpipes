@@ -5,11 +5,11 @@ import com.refinedmods.refinedpipes.network.pipe.transport.ItemTransportProps;
 import com.refinedmods.refinedpipes.tile.ItemPipeTileEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.Quaternion;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.vector.Quaternion;
 
 public class ItemPipeTileEntityRenderer extends TileEntityRenderer<ItemPipeTileEntity> {
     public ItemPipeTileEntityRenderer(TileEntityRendererDispatcher dispatcher) {

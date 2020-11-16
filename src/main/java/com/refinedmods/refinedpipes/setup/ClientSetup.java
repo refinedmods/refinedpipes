@@ -13,21 +13,18 @@ import com.refinedmods.refinedpipes.render.FluidPipeTileEntityRenderer;
 import com.refinedmods.refinedpipes.render.ItemPipeTileEntityRenderer;
 import com.refinedmods.refinedpipes.render.PipeBakedModel;
 import com.refinedmods.refinedpipes.screen.ExtractorAttachmentScreen;
-
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.util.ResourceLocation;
-
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -47,31 +44,6 @@ public class ClientSetup {
 
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onClientSetup);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onModelBake);
-    }
-
-    @SubscribeEvent
-    public void onClientSetup(FMLClientSetupEvent e) {
-        ScreenManager.registerFactory(RefinedPipesContainers.EXTRACTOR_ATTACHMENT, ExtractorAttachmentScreen::new);
-
-        RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.BASIC_ITEM_PIPE, RenderType.getCutout());
-        RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.IMPROVED_ITEM_PIPE, RenderType.getCutout());
-        RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.ADVANCED_ITEM_PIPE, RenderType.getCutout());
-
-        RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.BASIC_FLUID_PIPE, RenderType.getCutout());
-        RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.IMPROVED_FLUID_PIPE, RenderType.getCutout());
-        RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.ADVANCED_FLUID_PIPE, RenderType.getCutout());
-        RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.ELITE_FLUID_PIPE, RenderType.getCutout());
-        RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.ULTIMATE_FLUID_PIPE, RenderType.getCutout());
-
-        ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.BASIC_ITEM_PIPE, ItemPipeTileEntityRenderer::new);
-        ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.IMPROVED_ITEM_PIPE, ItemPipeTileEntityRenderer::new);
-        ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.ADVANCED_ITEM_PIPE, ItemPipeTileEntityRenderer::new);
-
-        ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.BASIC_FLUID_PIPE, FluidPipeTileEntityRenderer::new);
-        ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.IMPROVED_FLUID_PIPE, FluidPipeTileEntityRenderer::new);
-        ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.ADVANCED_FLUID_PIPE, FluidPipeTileEntityRenderer::new);
-        ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.ELITE_FLUID_PIPE, FluidPipeTileEntityRenderer::new);
-        ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.ULTIMATE_FLUID_PIPE, FluidPipeTileEntityRenderer::new);
 
         for (String type : new String[]{"item", "fluid", "energy"}) {
             ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/" + type + "/basic/core"));
@@ -98,6 +70,31 @@ public class ClientSetup {
         }
 
         ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/attachment/inventory_attachment"));
+    }
+
+    @SubscribeEvent
+    public void onClientSetup(FMLClientSetupEvent e) {
+        ScreenManager.registerFactory(RefinedPipesContainers.EXTRACTOR_ATTACHMENT, ExtractorAttachmentScreen::new);
+
+        RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.BASIC_ITEM_PIPE, RenderType.getCutout());
+        RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.IMPROVED_ITEM_PIPE, RenderType.getCutout());
+        RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.ADVANCED_ITEM_PIPE, RenderType.getCutout());
+
+        RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.BASIC_FLUID_PIPE, RenderType.getCutout());
+        RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.IMPROVED_FLUID_PIPE, RenderType.getCutout());
+        RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.ADVANCED_FLUID_PIPE, RenderType.getCutout());
+        RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.ELITE_FLUID_PIPE, RenderType.getCutout());
+        RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.ULTIMATE_FLUID_PIPE, RenderType.getCutout());
+
+        ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.BASIC_ITEM_PIPE, ItemPipeTileEntityRenderer::new);
+        ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.IMPROVED_ITEM_PIPE, ItemPipeTileEntityRenderer::new);
+        ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.ADVANCED_ITEM_PIPE, ItemPipeTileEntityRenderer::new);
+
+        ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.BASIC_FLUID_PIPE, FluidPipeTileEntityRenderer::new);
+        ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.IMPROVED_FLUID_PIPE, FluidPipeTileEntityRenderer::new);
+        ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.ADVANCED_FLUID_PIPE, FluidPipeTileEntityRenderer::new);
+        ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.ELITE_FLUID_PIPE, FluidPipeTileEntityRenderer::new);
+        ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.ULTIMATE_FLUID_PIPE, FluidPipeTileEntityRenderer::new);
     }
 
     @SubscribeEvent

@@ -1,5 +1,6 @@
 package com.refinedmods.refinedpipes.tile;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntity;
@@ -26,8 +27,8 @@ public abstract class BaseTileEntity extends TileEntity {
     }
 
     @Override
-    public final void handleUpdateTag(CompoundNBT tag) {
-        super.read(tag);
+    public final void handleUpdateTag(BlockState state, CompoundNBT tag) {
+        super.read(state, tag);
 
         readUpdate(tag);
     }

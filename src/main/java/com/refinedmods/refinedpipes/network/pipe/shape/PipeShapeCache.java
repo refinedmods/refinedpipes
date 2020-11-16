@@ -15,10 +15,10 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.IBlockReader;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -64,7 +64,7 @@ public class PipeShapeCache {
             return shape;
         }
 
-        Pair<Vec3d, Vec3d> vec = Raytracer.getVectors(entity);
+        Pair<Vector3d, Vector3d> vec = Raytracer.getVectors(entity);
 
         Raytracer.AdvancedRayTraceResult<BlockRayTraceResult> result = Raytracer.collisionRayTrace(pos, vec.getLeft(), vec.getRight(), attachmentShapes);
         if (result != null) {
