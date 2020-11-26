@@ -17,7 +17,7 @@
   "item.refinedpipes.improved_extractor_attachment": "中级抽出部件",
   "item.refinedpipes.advanced_extractor_attachment": "高级抽出部件",
   "item.refinedpipes.elite_extractor_attachment": "精英抽出部件",
-  "item.refinedpipes.ultimate_extractor_attachment": "中级抽出部件",
+  "item.refinedpipes.ultimate_extractor_attachment": "终极抽出部件",
   "misc.refinedpipes.tier": "等级 %s",
   "tooltip.refinedpipes.fluid_pipe.capacity": "容量: %s",
   "tooltip.refinedpipes.item_pipe.speed": "传输速度: %s",
