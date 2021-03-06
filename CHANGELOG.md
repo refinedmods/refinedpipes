@@ -1,11 +1,17 @@
 # Refined Pipes Changelog
 
+## 0.5.1
+
+- Fixed crash when breaking fluid pipe (raoulvdberge)
+
 ## 0.5
+
 - Port to Minecraft 1.16 (raoulvdberge)
 - Added Russian translation (KhottyManatee55)
 - Added Chinese translation (liuseniubi)
 
 ## 0.4.2
+
 - Fixed extremely high memory usage (Chocohead)
 
 ## 0.4.1

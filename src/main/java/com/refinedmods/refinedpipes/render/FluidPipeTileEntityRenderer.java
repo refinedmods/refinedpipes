@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.inventory.container.PlayerContainer;
 import net.minecraft.util.Direction;
+import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -27,6 +28,16 @@ public class FluidPipeTileEntityRenderer extends TileEntityRenderer<FluidPipeTil
     @Override
     @SuppressWarnings("deprecation")
     public void render(FluidPipeTileEntity tile, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer bufferType, int combinedLight, int combinedOverlay) {
+        World world = tile.getWorld();
+        if (world == null) {
+            return;
+        }
+
+        BlockState state = world.getBlockState(tile.getPos());
+        if (!(state.getBlock() instanceof FluidPipeBlock)) {
+            return;
+        }
+
         FluidStack fluidStack = tile.getFluid();
         if (fluidStack.isEmpty()) {
             tile.updateAndGetRenderFullness(partialTicks);
@@ -50,7 +61,6 @@ public class FluidPipeTileEntityRenderer extends TileEntityRenderer<FluidPipeTil
             return;
         }
 
-        BlockState state = tile.getWorld().getBlockState(tile.getPos());
         if (state.get(FluidPipeBlock.NORTH)) {
             float x1 = 4;
             float y1 = 4;
