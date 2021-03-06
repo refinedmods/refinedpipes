@@ -3,6 +3,9 @@
 ## 0.5.1
 
 - Fixed crash when breaking fluid pipe (raoulvdberge)
+- Fixed Extractor Attachment failing when it can't extract from the first slot it finds (raoulvdberge)
+- Fixed Extractor Attachment not trying other destinations when an item can't be inserted in a single destination (
+  raoulvdberge)
 
 ## 0.5
 

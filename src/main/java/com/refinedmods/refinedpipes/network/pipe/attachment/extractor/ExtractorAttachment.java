@@ -28,6 +28,7 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -104,20 +105,12 @@ public class ExtractorAttachment extends Attachment {
             return;
         }
 
-        int firstSlot = getSlotToExtractFrom(source);
-        if (firstSlot == -1) {
+        Pair<Destination, Integer> destinationAndSourceSlot = findDestinationAndSourceSlot(sourcePos, source);
+        if (destinationAndSourceSlot == null) {
             return;
         }
 
-        ItemStack extracted = source.extractItem(firstSlot, stackSize, true);
-        if (extracted.isEmpty()) {
-            return;
-        }
-
-        Destination destination = itemDestinationFinder.find(routingMode, sourcePos, extracted);
-        if (destination == null) {
-            return;
-        }
+        Destination destination = destinationAndSourceSlot.getLeft();
 
         Path<BlockPos> path = network
             .getDestinationPathCache()
@@ -127,22 +120,50 @@ public class ExtractorAttachment extends Attachment {
             return;
         }
 
-        ItemStack extractedActual = source.extractItem(firstSlot, stackSize, false);
-        if (extractedActual.isEmpty()) {
+        ItemStack extracted = source.extractItem(destinationAndSourceSlot.getRight(), stackSize, false);
+        if (extracted.isEmpty()) {
             return;
         }
 
         BlockPos fromPos = pipe.getPos().offset(getDirection());
 
         ((ItemPipe) pipe).addTransport(new ItemTransport(
-            extractedActual.copy(),
+            extracted.copy(),
             fromPos,
             destination.getReceiver(),
             path.toQueue(),
-            new ItemInsertTransportCallback(destination.getReceiver(), destination.getIncomingDirection(), extractedActual),
-            new ItemBounceBackTransportCallback(destination.getReceiver(), sourcePos, extractedActual),
-            new ItemPipeGoneTransportCallback(extractedActual)
+            new ItemInsertTransportCallback(destination.getReceiver(), destination.getIncomingDirection(), extracted),
+            new ItemBounceBackTransportCallback(destination.getReceiver(), sourcePos, extracted),
+            new ItemPipeGoneTransportCallback(extracted)
         ));
+    }
+
+    private Pair<Destination, Integer> findDestinationAndSourceSlot(BlockPos sourcePos, IItemHandler source) {
+        int startIndex = 0;
+
+        do {
+            ItemStack slot = source.getStackInSlot(startIndex);
+            if (slot.isEmpty() || !acceptsItem(slot)) {
+                startIndex++;
+                continue;
+            }
+
+            ItemStack extracted = source.extractItem(startIndex, stackSize, true);
+            if (extracted.isEmpty()) {
+                startIndex++;
+                continue;
+            }
+
+            Destination destination = itemDestinationFinder.find(routingMode, sourcePos, extracted);
+            if (destination == null) {
+                startIndex++;
+                continue;
+            }
+
+            return Pair.of(destination, startIndex);
+        } while (startIndex < source.getSlots());
+
+        return null;
     }
 
     private void update(FluidNetwork network, IFluidHandler source) {
@@ -167,18 +188,6 @@ public class ExtractorAttachment extends Attachment {
         network.getFluidTank().fill(drained, IFluidHandler.FluidAction.EXECUTE);
 
         NetworkManager.get(pipe.getWorld()).markDirty();
-    }
-
-    private int getSlotToExtractFrom(IItemHandler handler) {
-        for (int i = 0; i < handler.getSlots(); ++i) {
-            ItemStack stack = handler.getStackInSlot(i);
-
-            if (!stack.isEmpty() && acceptsItem(stack)) {
-                return i;
-            }
-        }
-
-        return -1;
     }
 
     private boolean acceptsItem(ItemStack stack) {
