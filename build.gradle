@@ -93,7 +93,7 @@ processResources {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.16.3-34.1.0'
+    minecraft 'net.minecraftforge:forge:1.16.3-34.1.40'
 
     runtimeOnly fg.deobf("mezz.jei:jei-1.16.3:7.3.2.36")
     runtimeOnly fg.deobf("not_used:Mekanism-1.16.4:10.0.17.444")
