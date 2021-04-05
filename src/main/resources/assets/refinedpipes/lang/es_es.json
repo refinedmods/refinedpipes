@@ -1,5 +1,5 @@
 {
-    "itemGroup.refinedpipes": "Tuberías refinadas",
+    "itemGroup.refinedpipes": "Tuberías Refinadas",
     "block.refinedpipes.basic_item_pipe": "Tubo básico",
     "block.refinedpipes.improved_item_pipe": "Tubo mejorado",
     "block.refinedpipes.advanced_item_pipe": "Tubo avanzado",
@@ -44,6 +44,6 @@
     "misc.refinedpipes.routing_mode.random": "Aleatorio",
     "misc.refinedpipes.routing_mode.round_robin": "Rotatorio",
     "misc.refinedpipes.exact_mode": "Modo exacto",
-    "misc.refinedpipes.exact_mode.on": "Encendido",
-    "misc.refinedpipes.exact_mode.off": "Apagado"
+    "misc.refinedpipes.exact_mode.on": "Activado",
+    "misc.refinedpipes.exact_mode.off": "Desactivado"
   }
