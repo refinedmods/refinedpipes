@@ -22,6 +22,7 @@ import net.minecraftforge.common.model.TransformationHelper;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class PipeBakedModel implements IBakedModel {
     private static final Map<Direction, TransformationMatrix> SIDE_TRANSFORMS = new EnumMap<>(Direction.class);
@@ -30,7 +31,7 @@ public class PipeBakedModel implements IBakedModel {
     private final IBakedModel straight;
     private final IBakedModel inventoryAttachment;
     private final Map<ResourceLocation, IBakedModel> attachmentModels;
-    private final Map<PipeState, List<BakedQuad>> cache = new HashMap<>();
+    private final Map<PipeState, List<BakedQuad>> cache = new ConcurrentHashMap<>();
 
     public PipeBakedModel(IBakedModel core, IBakedModel extension, IBakedModel straight, IBakedModel inventoryAttachment, Map<ResourceLocation, IBakedModel> attachmentModels) {
         this.core = core;
