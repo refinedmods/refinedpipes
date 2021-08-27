@@ -38,7 +38,7 @@
   "misc.refinedpipes.mode": "Режим фильтра",
   "misc.refinedpipes.mode.blacklist": "Чёрный список",
   "misc.refinedpipes.mode.whitelist": "Белый список",
-  "misc.refinedpipes.routing_mode": "Режим извлечения",
+  "misc.refinedpipes.routing_mode": "Порядок извлечения",
   "misc.refinedpipes.routing_mode.nearest": "Ближайший первый",
   "misc.refinedpipes.routing_mode.furthest": "Дальний первый",
   "misc.refinedpipes.routing_mode.random": "Случайный",
