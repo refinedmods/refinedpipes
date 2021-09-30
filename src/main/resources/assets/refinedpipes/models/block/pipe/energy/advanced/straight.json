@@ -1,7 +1,8 @@
 {
-  "parent": "refinedpipes:block/pipe/item/straight",
+  "parent": "refinedpipes:block/pipe/energy/straight",
   "textures": {
     "0": "refinedpipes:blocks/pipe/energy/advanced",
+    "1": "refinedpipes:blocks/pipe/item/connector",
     "particle": "refinedpipes:blocks/pipe/energy/advanced"
   }
 }
