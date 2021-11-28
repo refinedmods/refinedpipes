@@ -7,6 +7,16 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Added Italian translation by [@maicol07](https://github.com/maicol07).
+- Updated Russian translation by [@KnottyManatee55](https://github.com/KnottyManatee55).
+- Updated Spanish translations by [@d-l-n](https://github.com/d-l-n).
+
+### Changed
+
+- Changed textures and models by [@Pierniki](https://github.com/Pierniki).
+
 ### Fixed
 
 - Fixed crash when breaking fluid pipe.
