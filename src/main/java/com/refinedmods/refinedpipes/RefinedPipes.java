@@ -27,7 +27,7 @@ public class RefinedPipes {
     public RefinedPipes() {
         CommonSetup commonSetup = new CommonSetup();
 
-        DistExecutor.runWhenOn(Dist.CLIENT, () -> ClientSetup::new);
+        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> ClientSetup::new);
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, SERVER_CONFIG.getSpec());
 

@@ -4,7 +4,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
     }
 }
 
@@ -35,9 +35,7 @@ if (System.getenv('RELEASE') != null) {
     version = System.getenv('RELEASE').substring(1) // remove 'v'
 }
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
-
-compileJava.options.encoding = 'UTF-8'
+java.toolchain.languageVersion = JavaLanguageVersion.of(8)
 
 minecraft {
     mappings channel: 'snapshot', version: '20200723-1.16.1'
@@ -100,13 +98,8 @@ processResources {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.16.3-34.1.40'
-
-    runtimeOnly fg.deobf("mezz.jei:jei-1.16.3:7.3.2.36")
-    runtimeOnly fg.deobf("not_used:Mekanism-1.16.4:10.0.17.444")
-    runtimeOnly fg.deobf("com.github.mcjty:mcjtylib:1.16-5.0.13")
-    runtimeOnly fg.deobf("com.github.mcjty:rftoolsbase:1.16-2.0.6")
-    runtimeOnly fg.deobf("com.github.mcjty:rftoolspower:1.16-3.0.8")
+    minecraft 'net.minecraftforge:forge:1.16.5-36.2.19'
+    runtimeOnly fg.deobf("mezz.jei:jei-1.16.5:7.7.1.137")
 }
 
 jar {
@@ -158,20 +151,3 @@ publishing {
 }
 
 jar.finalizedBy('reobfJar')
-
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-task deobfJar(type:Jar) {
-    from sourceSets.main.output
-    classifier 'deobf'
-}
-
-artifacts {
-    archives jar
-    archives sourcesJar
-    archives deobfJar
-}
-
