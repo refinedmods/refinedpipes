@@ -44,6 +44,12 @@ jobs:
                     name: ${{ steps.tagName.outputs.tag }}
                     files: |
                         build/libs/*.jar
+            -   name: Release on CurseForge
+                run: ./gradlew curseforge
+                env:
+                    RELEASE: ${{ steps.tagName.outputs.tag }}
+                    CHANGELOG: ${{ steps.changelog_reader.outputs.changes }}
+                    CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
             # This is necessary because the Discord action doesn't support GH actions variable expansion?
             -   name: Set release URL
                 run: |
