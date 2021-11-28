@@ -8,10 +8,6 @@ buildscript {
     }
 }
 
-plugins {
-    id "org.sonarqube" version "3.3"
-}
-
 repositories {
     maven {
         url = "https://dvs1.progwml6.com/files/maven/"
