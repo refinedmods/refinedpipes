@@ -91,10 +91,6 @@ processResources {
 
         expand 'version': project.version
     }
-
-    from(sourceSets.main.resources.srcDirs) {
-        exclude 'META-INF/mods.toml'
-    }
 }
 
 dependencies {
