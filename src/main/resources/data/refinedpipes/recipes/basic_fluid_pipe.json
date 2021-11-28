@@ -10,10 +10,10 @@
       "item": "minecraft:iron_ingot"
     },
     "G": {
-      "item": "minecraft:glass"
+      "tag": "forge:glass"
     },
     "S": {
-      "item": "minecraft:slime_ball"
+      "tag": "forge:slimeballs"
     }
   },
   "result": {

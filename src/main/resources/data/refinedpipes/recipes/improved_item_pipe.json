@@ -10,7 +10,7 @@
       "item": "minecraft:gold_ingot"
     },
     "G": {
-      "item": "minecraft:glass"
+      "tag": "forge:glass"
     }
   },
   "result": {

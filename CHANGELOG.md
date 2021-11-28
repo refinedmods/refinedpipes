@@ -16,12 +16,14 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Changed
 
 - Changed textures and models by [@Pierniki](https://github.com/Pierniki).
+- Use tags in recipes for glass and slimeballs.
 
 ### Fixed
 
 - Fixed crash when breaking fluid pipe.
 - Fixed Extractor Attachment failing when it can't extract from the first slot it finds.
 - Fixed Extractor Attachment not trying other destinations when an item can't be inserted in a single destination.
+- Fixed another pipe rendering crash by [@lone-wolf-akela](https://github.com/lone-wolf-akela).
 
 ## [0.5.0] - 2020-11-16
 
