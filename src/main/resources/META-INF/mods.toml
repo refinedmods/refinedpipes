@@ -6,7 +6,6 @@ license="MIT"
 modId="refinedpipes"
 version="${version}"
 displayName="Refined Pipes"
-updateJSONURL="https://refinedmods.com/refined-pipes/update.json"
 displayURL="https://refinedmods.com/refined-pipes"
 authors="Refined Mods"
 description='''
