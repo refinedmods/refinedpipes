@@ -112,7 +112,7 @@ if (System.getenv("CURSEFORGE_TOKEN") != null) {
             changelog = System.getenv("CHANGELOG")
             changelogType = 'markdown'
             releaseType = project.version.toString().contains('beta') ? 'beta' : (project.version.toString().contains('alpha') ? 'alpha' : 'release')
-
+            addGameVersion "1.18.1"
             mainArtifact(jar) {
                 displayName = "v$project.version"
             }
