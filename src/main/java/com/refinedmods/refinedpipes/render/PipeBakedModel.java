@@ -5,7 +5,7 @@ import com.mojang.math.Quaternion;
 import com.mojang.math.Transformation;
 import com.mojang.math.Vector3f;
 import com.refinedmods.refinedpipes.block.PipeBlock;
-import com.refinedmods.refinedpipes.tile.PipeTileEntity;
+import com.refinedmods.refinedpipes.blockentity.PipeBlockEntity;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -85,7 +85,7 @@ public class PipeBakedModel implements BakedModel {
     @Nonnull
     @Override
     public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
-        PipeState pipeState = new PipeState(state, extraData.getData(PipeTileEntity.ATTACHMENTS_PROPERTY), side, rand);
+        PipeState pipeState = new PipeState(state, extraData.getData(PipeBlockEntity.ATTACHMENTS_PROPERTY), side, rand);
 
         return cache.computeIfAbsent(pipeState, this::createQuads);
     }

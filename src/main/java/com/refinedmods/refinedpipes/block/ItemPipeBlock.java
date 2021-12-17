@@ -1,8 +1,8 @@
 package com.refinedmods.refinedpipes.block;
 
+import com.refinedmods.refinedpipes.blockentity.ItemPipeBlockEntity;
 import com.refinedmods.refinedpipes.network.pipe.item.ItemPipeType;
 import com.refinedmods.refinedpipes.network.pipe.shape.PipeShapeCache;
-import com.refinedmods.refinedpipes.tile.ItemPipeTileEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
@@ -31,17 +31,17 @@ public class ItemPipeBlock extends PipeBlock implements EntityBlock {
 
     @Override
     protected boolean hasConnection(LevelAccessor world, BlockPos pos, Direction direction) {
-        BlockEntity currentTile = world.getBlockEntity(pos);
-        if (currentTile instanceof ItemPipeTileEntity &&
-            ((ItemPipeTileEntity) currentTile).getAttachmentManager().hasAttachment(direction)) {
+        BlockEntity currentBlockEntity = world.getBlockEntity(pos);
+        if (currentBlockEntity instanceof ItemPipeBlockEntity &&
+            ((ItemPipeBlockEntity) currentBlockEntity).getAttachmentManager().hasAttachment(direction)) {
             return false;
         }
 
         BlockState facingState = world.getBlockState(pos.relative(direction));
-        BlockEntity facingTile = world.getBlockEntity(pos.relative(direction));
+        BlockEntity facingBlockEntity = world.getBlockEntity(pos.relative(direction));
 
-        if (facingTile instanceof ItemPipeTileEntity &&
-            ((ItemPipeTileEntity) facingTile).getAttachmentManager().hasAttachment(direction.getOpposite())) {
+        if (facingBlockEntity instanceof ItemPipeBlockEntity &&
+            ((ItemPipeBlockEntity) facingBlockEntity).getAttachmentManager().hasAttachment(direction.getOpposite())) {
             return false;
         }
 
@@ -50,20 +50,20 @@ public class ItemPipeBlock extends PipeBlock implements EntityBlock {
 
     @Override
     protected boolean hasInvConnection(LevelAccessor world, BlockPos pos, Direction direction) {
-        BlockEntity facingTile = world.getBlockEntity(pos.relative(direction));
+        BlockEntity facingBlockEntity = world.getBlockEntity(pos.relative(direction));
 
-        return facingTile != null
-            && facingTile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction.getOpposite()).isPresent();
+        return facingBlockEntity != null
+            && facingBlockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction.getOpposite()).isPresent();
     }
 
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new ItemPipeTileEntity(pos, state, type);
+        return new ItemPipeBlockEntity(pos, state, type);
     }
 
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        return level.isClientSide ? (levelTicker, pos, stateTicker, blockEntity) -> ItemPipeTileEntity.tick((ItemPipeTileEntity) blockEntity) : null;
+        return level.isClientSide ? (levelTicker, pos, stateTicker, blockEntity) -> ItemPipeBlockEntity.tick((ItemPipeBlockEntity) blockEntity) : null;
     }
 }

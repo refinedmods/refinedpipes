@@ -1,4 +1,4 @@
-package com.refinedmods.refinedpipes.tile;
+package com.refinedmods.refinedpipes.blockentity;
 
 import com.refinedmods.refinedpipes.network.NetworkManager;
 import com.refinedmods.refinedpipes.network.pipe.Pipe;
@@ -20,11 +20,11 @@ import net.minecraftforge.client.model.data.ModelProperty;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public abstract class PipeTileEntity extends BaseTileEntity {
+public abstract class PipeBlockEntity extends BaseBlockEntity {
     public static final ModelProperty<ResourceLocation[]> ATTACHMENTS_PROPERTY = new ModelProperty<>();
     private final AttachmentManager clientAttachmentManager = new ClientAttachmentManager();
 
-    protected PipeTileEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+    protected PipeBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
     }
 
@@ -110,5 +110,5 @@ public abstract class PipeTileEntity extends BaseTileEntity {
         level.sendBlockUpdated(worldPosition, state, state, 1 | 2);
     }
 
-    protected abstract Pipe createPipe(Level world, BlockPos pos);
+    protected abstract Pipe createPipe(Level level, BlockPos pos);
 }

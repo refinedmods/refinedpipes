@@ -24,8 +24,8 @@ public class ItemPipe extends Pipe {
     private final List<ItemTransport> transportsToRemove = new ArrayList<>();
     private final ItemPipeType type;
 
-    public ItemPipe(Level world, BlockPos pos, ItemPipeType type) {
-        super(world, pos);
+    public ItemPipe(Level level, BlockPos pos, ItemPipeType type) {
+        super(level, pos);
 
         this.type = type;
     }
@@ -37,19 +37,19 @@ public class ItemPipe extends Pipe {
         transports.removeAll(transportsToRemove);
 
         if (!transportsToAdd.isEmpty() || !transportsToRemove.isEmpty()) {
-            NetworkManager.get(world).setDirty();
+            NetworkManager.get(level).setDirty();
             sendTransportUpdate();
         }
 
         if (!transports.isEmpty()) {
-            NetworkManager.get(world).setDirty();
+            NetworkManager.get(level).setDirty();
         }
 
         transportsToAdd.clear();
         transportsToRemove.clear();
 
         if (transports.removeIf(t -> t.update(network, this))) {
-            NetworkManager.get(world).setDirty();
+            NetworkManager.get(level).setDirty();
         }
     }
 
@@ -71,7 +71,7 @@ public class ItemPipe extends Pipe {
             props.add(transport.createProps(this));
         }
 
-        RefinedPipes.NETWORK.sendInArea(world, pos, 32, new ItemTransportMessage(pos, props));
+        RefinedPipes.NETWORK.sendInArea(level, pos, 32, new ItemTransportMessage(pos, props));
     }
 
     @Override

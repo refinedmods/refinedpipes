@@ -17,12 +17,12 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BaseContainer extends AbstractContainerMenu {
+public class BaseContainerMenu extends AbstractContainerMenu {
     private final List<FluidFilterSlot> fluidSlots = new ArrayList<>();
     private final List<FluidStack> fluids = new ArrayList<>();
     private final Player player;
 
-    protected BaseContainer(@Nullable MenuType<?> type, int windowId, Player player) {
+    protected BaseContainerMenu(@Nullable MenuType<?> type, int windowId, Player player) {
         super(type, windowId);
 
         this.player = player;

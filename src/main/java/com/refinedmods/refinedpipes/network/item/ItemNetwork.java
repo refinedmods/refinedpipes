@@ -31,8 +31,8 @@ public class ItemNetwork extends Network {
     }
 
     @Override
-    public NetworkGraphScannerResult scanGraph(Level world, BlockPos pos) {
-        NetworkGraphScannerResult result = super.scanGraph(world, pos);
+    public NetworkGraphScannerResult scanGraph(Level level, BlockPos pos) {
+        NetworkGraphScannerResult result = super.scanGraph(level, pos);
 
         updateRouting(result, graph.getDestinations(DestinationType.ITEM_HANDLER));
 

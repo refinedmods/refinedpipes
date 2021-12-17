@@ -11,12 +11,12 @@ import net.minecraft.world.level.Level;
 
 public class ItemPipeFactory implements PipeFactory {
     @Override
-    public Pipe createFromNbt(Level world, CompoundTag tag) {
+    public Pipe createFromNbt(Level level, CompoundTag tag) {
         BlockPos pos = BlockPos.of(tag.getLong("pos"));
 
         ItemPipeType pipeType = ItemPipeType.values()[tag.getInt("type")];
 
-        ItemPipe pipe = new ItemPipe(world, pos, pipeType);
+        ItemPipe pipe = new ItemPipe(level, pos, pipeType);
 
         pipe.getAttachmentManager().readFromNbt(tag);
 

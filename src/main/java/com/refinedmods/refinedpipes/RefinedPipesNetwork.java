@@ -32,13 +32,13 @@ public class RefinedPipesNetwork {
         handler.registerMessage(id++, FluidFilterSlotUpdateMessage.class, FluidFilterSlotUpdateMessage::encode, FluidFilterSlotUpdateMessage::decode, FluidFilterSlotUpdateMessage::handle);
     }
 
-    public void sendInArea(Level world, BlockPos pos, int radius, Object message) {
+    public void sendInArea(Level level, BlockPos pos, int radius, Object message) {
         handler.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(
             pos.getX(),
             pos.getY(),
             pos.getZ(),
             radius,
-            world.dimension()
+            level.dimension()
         )), message);
     }
 

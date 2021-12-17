@@ -4,5 +4,5 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
 
 public interface PipeFactory {
-    Pipe createFromNbt(Level world, CompoundTag tag);
+    Pipe createFromNbt(Level level, CompoundTag tag);
 }

@@ -36,7 +36,7 @@ public class ItemDestinationFinder {
                 List<Destination> destinations = new ArrayList<>(network.getDestinations(DestinationType.ITEM_HANDLER));
 
                 while (!destinations.isEmpty()) {
-                    int randomIndex = attachment.getPipe().getWorld().getRandom().nextInt(destinations.size());
+                    int randomIndex = attachment.getPipe().getLevel().getRandom().nextInt(destinations.size());
                     Destination randomDestination = destinations.get(randomIndex);
 
                     if (isDestinationApplicable(sourcePos, extracted, randomDestination)) {
@@ -80,12 +80,12 @@ public class ItemDestinationFinder {
     }
 
     private boolean isDestinationApplicable(BlockPos sourcePos, ItemStack extracted, Destination destination) {
-        BlockEntity tile = destination.getConnectedPipe().getWorld().getBlockEntity(destination.getReceiver());
-        if (tile == null) {
+        BlockEntity blockEntity = destination.getConnectedPipe().getLevel().getBlockEntity(destination.getReceiver());
+        if (blockEntity == null) {
             return false;
         }
 
-        IItemHandler handler = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, destination.getIncomingDirection().getOpposite()).orElse(null);
+        IItemHandler handler = blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, destination.getIncomingDirection().getOpposite()).orElse(null);
         if (handler == null) {
             return false;
         }

@@ -5,6 +5,9 @@ import com.refinedmods.refinedpipes.RefinedPipesBlocks;
 import com.refinedmods.refinedpipes.block.EnergyPipeBlock;
 import com.refinedmods.refinedpipes.block.FluidPipeBlock;
 import com.refinedmods.refinedpipes.block.ItemPipeBlock;
+import com.refinedmods.refinedpipes.blockentity.EnergyPipeBlockEntity;
+import com.refinedmods.refinedpipes.blockentity.FluidPipeBlockEntity;
+import com.refinedmods.refinedpipes.blockentity.ItemPipeBlockEntity;
 import com.refinedmods.refinedpipes.container.factory.ExtractorAttachmentContainerFactory;
 import com.refinedmods.refinedpipes.item.AttachmentItem;
 import com.refinedmods.refinedpipes.item.EnergyPipeBlockItem;
@@ -36,9 +39,6 @@ import com.refinedmods.refinedpipes.network.pipe.transport.callback.ItemBounceBa
 import com.refinedmods.refinedpipes.network.pipe.transport.callback.ItemInsertTransportCallback;
 import com.refinedmods.refinedpipes.network.pipe.transport.callback.ItemPipeGoneTransportCallback;
 import com.refinedmods.refinedpipes.network.pipe.transport.callback.TransportCallbackFactoryRegistry;
-import com.refinedmods.refinedpipes.tile.EnergyPipeTileEntity;
-import com.refinedmods.refinedpipes.tile.FluidPipeTileEntity;
-import com.refinedmods.refinedpipes.tile.ItemPipeTileEntity;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -131,31 +131,31 @@ public final class CommonSetup {
     }
 
     @SubscribeEvent
-    public static void onRegisterTileEntities(RegistryEvent.Register<BlockEntityType<?>> e) {
-        e.getRegistry().register(BlockEntityType.Builder.of((pos, state) -> new ItemPipeTileEntity(pos, state, ItemPipeType.BASIC), RefinedPipesBlocks.BASIC_ITEM_PIPE).build(null).setRegistryName(ItemPipeType.BASIC.getId()));
-        e.getRegistry().register(BlockEntityType.Builder.of((pos, state) -> new ItemPipeTileEntity(pos, state, ItemPipeType.IMPROVED), RefinedPipesBlocks.IMPROVED_ITEM_PIPE).build(null).setRegistryName(ItemPipeType.IMPROVED.getId()));
-        e.getRegistry().register(BlockEntityType.Builder.of((pos, state) -> new ItemPipeTileEntity(pos, state, ItemPipeType.ADVANCED), RefinedPipesBlocks.ADVANCED_ITEM_PIPE).build(null).setRegistryName(ItemPipeType.ADVANCED.getId()));
+    public static void onRegisterBlockEntities(RegistryEvent.Register<BlockEntityType<?>> e) {
+        e.getRegistry().register(BlockEntityType.Builder.of((pos, state) -> new ItemPipeBlockEntity(pos, state, ItemPipeType.BASIC), RefinedPipesBlocks.BASIC_ITEM_PIPE).build(null).setRegistryName(ItemPipeType.BASIC.getId()));
+        e.getRegistry().register(BlockEntityType.Builder.of((pos, state) -> new ItemPipeBlockEntity(pos, state, ItemPipeType.IMPROVED), RefinedPipesBlocks.IMPROVED_ITEM_PIPE).build(null).setRegistryName(ItemPipeType.IMPROVED.getId()));
+        e.getRegistry().register(BlockEntityType.Builder.of((pos, state) -> new ItemPipeBlockEntity(pos, state, ItemPipeType.ADVANCED), RefinedPipesBlocks.ADVANCED_ITEM_PIPE).build(null).setRegistryName(ItemPipeType.ADVANCED.getId()));
 
-        e.getRegistry().register(BlockEntityType.Builder.of((pos, state) -> new FluidPipeTileEntity(pos, state, FluidPipeType.BASIC), RefinedPipesBlocks.BASIC_FLUID_PIPE).build(null).setRegistryName(FluidPipeType.BASIC.getId()));
-        e.getRegistry().register(BlockEntityType.Builder.of((pos, state) -> new FluidPipeTileEntity(pos, state, FluidPipeType.IMPROVED), RefinedPipesBlocks.IMPROVED_FLUID_PIPE).build(null).setRegistryName(FluidPipeType.IMPROVED.getId()));
-        e.getRegistry().register(BlockEntityType.Builder.of((pos, state) -> new FluidPipeTileEntity(pos, state, FluidPipeType.ADVANCED), RefinedPipesBlocks.ADVANCED_FLUID_PIPE).build(null).setRegistryName(FluidPipeType.ADVANCED.getId()));
-        e.getRegistry().register(BlockEntityType.Builder.of((pos, state) -> new FluidPipeTileEntity(pos, state, FluidPipeType.ELITE), RefinedPipesBlocks.ELITE_FLUID_PIPE).build(null).setRegistryName(FluidPipeType.ELITE.getId()));
-        e.getRegistry().register(BlockEntityType.Builder.of((pos, state) -> new FluidPipeTileEntity(pos, state, FluidPipeType.ULTIMATE), RefinedPipesBlocks.ULTIMATE_FLUID_PIPE).build(null).setRegistryName(FluidPipeType.ULTIMATE.getId()));
+        e.getRegistry().register(BlockEntityType.Builder.of((pos, state) -> new FluidPipeBlockEntity(pos, state, FluidPipeType.BASIC), RefinedPipesBlocks.BASIC_FLUID_PIPE).build(null).setRegistryName(FluidPipeType.BASIC.getId()));
+        e.getRegistry().register(BlockEntityType.Builder.of((pos, state) -> new FluidPipeBlockEntity(pos, state, FluidPipeType.IMPROVED), RefinedPipesBlocks.IMPROVED_FLUID_PIPE).build(null).setRegistryName(FluidPipeType.IMPROVED.getId()));
+        e.getRegistry().register(BlockEntityType.Builder.of((pos, state) -> new FluidPipeBlockEntity(pos, state, FluidPipeType.ADVANCED), RefinedPipesBlocks.ADVANCED_FLUID_PIPE).build(null).setRegistryName(FluidPipeType.ADVANCED.getId()));
+        e.getRegistry().register(BlockEntityType.Builder.of((pos, state) -> new FluidPipeBlockEntity(pos, state, FluidPipeType.ELITE), RefinedPipesBlocks.ELITE_FLUID_PIPE).build(null).setRegistryName(FluidPipeType.ELITE.getId()));
+        e.getRegistry().register(BlockEntityType.Builder.of((pos, state) -> new FluidPipeBlockEntity(pos, state, FluidPipeType.ULTIMATE), RefinedPipesBlocks.ULTIMATE_FLUID_PIPE).build(null).setRegistryName(FluidPipeType.ULTIMATE.getId()));
 
-        e.getRegistry().register(BlockEntityType.Builder.of((pos, state) -> new EnergyPipeTileEntity(pos, state, EnergyPipeType.BASIC), RefinedPipesBlocks.BASIC_ENERGY_PIPE).build(null).setRegistryName(EnergyPipeType.BASIC.getId()));
-        e.getRegistry().register(BlockEntityType.Builder.of((pos, state) -> new EnergyPipeTileEntity(pos, state, EnergyPipeType.IMPROVED), RefinedPipesBlocks.IMPROVED_ENERGY_PIPE).build(null).setRegistryName(EnergyPipeType.IMPROVED.getId()));
-        e.getRegistry().register(BlockEntityType.Builder.of((pos, state) -> new EnergyPipeTileEntity(pos, state, EnergyPipeType.ADVANCED), RefinedPipesBlocks.ADVANCED_ENERGY_PIPE).build(null).setRegistryName(EnergyPipeType.ADVANCED.getId()));
-        e.getRegistry().register(BlockEntityType.Builder.of((pos, state) -> new EnergyPipeTileEntity(pos, state, EnergyPipeType.ELITE), RefinedPipesBlocks.ELITE_ENERGY_PIPE).build(null).setRegistryName(EnergyPipeType.ELITE.getId()));
-        e.getRegistry().register(BlockEntityType.Builder.of((pos, state) -> new EnergyPipeTileEntity(pos, state, EnergyPipeType.ULTIMATE), RefinedPipesBlocks.ULTIMATE_ENERGY_PIPE).build(null).setRegistryName(EnergyPipeType.ULTIMATE.getId()));
+        e.getRegistry().register(BlockEntityType.Builder.of((pos, state) -> new EnergyPipeBlockEntity(pos, state, EnergyPipeType.BASIC), RefinedPipesBlocks.BASIC_ENERGY_PIPE).build(null).setRegistryName(EnergyPipeType.BASIC.getId()));
+        e.getRegistry().register(BlockEntityType.Builder.of((pos, state) -> new EnergyPipeBlockEntity(pos, state, EnergyPipeType.IMPROVED), RefinedPipesBlocks.IMPROVED_ENERGY_PIPE).build(null).setRegistryName(EnergyPipeType.IMPROVED.getId()));
+        e.getRegistry().register(BlockEntityType.Builder.of((pos, state) -> new EnergyPipeBlockEntity(pos, state, EnergyPipeType.ADVANCED), RefinedPipesBlocks.ADVANCED_ENERGY_PIPE).build(null).setRegistryName(EnergyPipeType.ADVANCED.getId()));
+        e.getRegistry().register(BlockEntityType.Builder.of((pos, state) -> new EnergyPipeBlockEntity(pos, state, EnergyPipeType.ELITE), RefinedPipesBlocks.ELITE_ENERGY_PIPE).build(null).setRegistryName(EnergyPipeType.ELITE.getId()));
+        e.getRegistry().register(BlockEntityType.Builder.of((pos, state) -> new EnergyPipeBlockEntity(pos, state, EnergyPipeType.ULTIMATE), RefinedPipesBlocks.ULTIMATE_ENERGY_PIPE).build(null).setRegistryName(EnergyPipeType.ULTIMATE.getId()));
     }
 
     @SubscribeEvent
-    public static void onRegisterContainers(RegistryEvent.Register<MenuType<?>> e) {
+    public static void onRegisterContainerMenus(RegistryEvent.Register<MenuType<?>> e) {
         e.getRegistry().register(IForgeMenuType.create(new ExtractorAttachmentContainerFactory()).setRegistryName(RefinedPipes.ID, "extractor_attachment"));
     }
 
     @SubscribeEvent
-    public static void onWorldTick(TickEvent.WorldTickEvent e) {
+    public static void onLevelTick(TickEvent.WorldTickEvent e) {
         if (!e.world.isClientSide && e.phase == TickEvent.Phase.END) {
             NetworkManager.get(e.world).getNetworks().forEach(n -> n.update(e.world));
         }

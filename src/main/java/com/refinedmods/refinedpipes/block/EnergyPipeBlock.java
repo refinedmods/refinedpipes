@@ -1,9 +1,9 @@
 package com.refinedmods.refinedpipes.block;
 
+import com.refinedmods.refinedpipes.blockentity.EnergyPipeBlockEntity;
 import com.refinedmods.refinedpipes.network.pipe.energy.EnergyPipeEnergyStorage;
 import com.refinedmods.refinedpipes.network.pipe.energy.EnergyPipeType;
 import com.refinedmods.refinedpipes.network.pipe.shape.PipeShapeCache;
-import com.refinedmods.refinedpipes.tile.EnergyPipeTileEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.LevelAccessor;
@@ -29,18 +29,18 @@ public class EnergyPipeBlock extends PipeBlock implements EntityBlock {
     }
 
     @Override
-    protected boolean hasConnection(LevelAccessor world, BlockPos pos, Direction direction) {
-        BlockEntity currentTile = world.getBlockEntity(pos);
-        if (currentTile instanceof EnergyPipeTileEntity &&
-            ((EnergyPipeTileEntity) currentTile).getAttachmentManager().hasAttachment(direction)) {
+    protected boolean hasConnection(LevelAccessor level, BlockPos pos, Direction direction) {
+        BlockEntity currentBlockEntity = level.getBlockEntity(pos);
+        if (currentBlockEntity instanceof EnergyPipeBlockEntity &&
+            ((EnergyPipeBlockEntity) currentBlockEntity).getAttachmentManager().hasAttachment(direction)) {
             return false;
         }
 
-        BlockState facingState = world.getBlockState(pos.relative(direction));
-        BlockEntity facingTile = world.getBlockEntity(pos.relative(direction));
+        BlockState facingState = level.getBlockState(pos.relative(direction));
+        BlockEntity facingBlockEntity = level.getBlockEntity(pos.relative(direction));
 
-        if (facingTile instanceof EnergyPipeTileEntity &&
-            ((EnergyPipeTileEntity) facingTile).getAttachmentManager().hasAttachment(direction.getOpposite())) {
+        if (facingBlockEntity instanceof EnergyPipeBlockEntity &&
+            ((EnergyPipeBlockEntity) facingBlockEntity).getAttachmentManager().hasAttachment(direction.getOpposite())) {
             return false;
         }
 
@@ -49,13 +49,13 @@ public class EnergyPipeBlock extends PipeBlock implements EntityBlock {
     }
 
     @Override
-    protected boolean hasInvConnection(LevelAccessor world, BlockPos pos, Direction direction) {
-        BlockEntity facingTile = world.getBlockEntity(pos.relative(direction));
-        if (facingTile == null) {
+    protected boolean hasInvConnection(LevelAccessor level, BlockPos pos, Direction direction) {
+        BlockEntity facingBlockEntityy = level.getBlockEntity(pos.relative(direction));
+        if (facingBlockEntityy == null) {
             return false;
         }
 
-        IEnergyStorage energyStorage = facingTile.getCapability(CapabilityEnergy.ENERGY, direction.getOpposite()).orElse(null);
+        IEnergyStorage energyStorage = facingBlockEntityy.getCapability(CapabilityEnergy.ENERGY, direction.getOpposite()).orElse(null);
         if (energyStorage == null) {
             return false;
         }
@@ -70,6 +70,6 @@ public class EnergyPipeBlock extends PipeBlock implements EntityBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new EnergyPipeTileEntity(pos, state, type);
+        return new EnergyPipeBlockEntity(pos, state, type);
     }
 }

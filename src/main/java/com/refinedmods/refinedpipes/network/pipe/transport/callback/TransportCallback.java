@@ -7,7 +7,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 
 public interface TransportCallback {
-    void call(Network network, Level world, BlockPos currentPos, TransportCallback cancelCallback);
+    void call(Network network, Level level, BlockPos currentPos, TransportCallback cancelCallback);
 
     ResourceLocation getId();
 

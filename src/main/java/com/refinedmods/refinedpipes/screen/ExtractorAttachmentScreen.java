@@ -3,7 +3,7 @@ package com.refinedmods.refinedpipes.screen;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.refinedmods.refinedpipes.RefinedPipes;
-import com.refinedmods.refinedpipes.container.ExtractorAttachmentContainer;
+import com.refinedmods.refinedpipes.container.ExtractorAttachmentContainerMenu;
 import com.refinedmods.refinedpipes.network.pipe.attachment.extractor.BlacklistWhitelist;
 import com.refinedmods.refinedpipes.network.pipe.attachment.extractor.ExtractorAttachment;
 import com.refinedmods.refinedpipes.network.pipe.attachment.extractor.RedstoneMode;
@@ -24,7 +24,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentContainer> {
+public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentContainerMenu> {
     private static final ResourceLocation RESOURCE = new ResourceLocation(RefinedPipes.ID, "textures/gui/extractor_attachment.png");
 
     private final List<Component> tooltip = new ArrayList<>();
@@ -40,7 +40,7 @@ public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentCon
     @Nullable
     private Button minusButton;
 
-    public ExtractorAttachmentScreen(ExtractorAttachmentContainer container, Inventory inv, Component title) {
+    public ExtractorAttachmentScreen(ExtractorAttachmentContainerMenu container, Inventory inv, Component title) {
         super(container, inv, title);
 
         this.imageWidth = 176;
@@ -233,15 +233,15 @@ public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentCon
     }
 
     @Override
-    protected void renderLabels(PoseStack matrixStack, int mouseX, int mouseY) {
-        font.draw(matrixStack, title.getString(), 7, 7, 4210752);
-        font.draw(matrixStack, I18n.get("container.inventory"), 7, 103 - 4, 4210752);
+    protected void renderLabels(PoseStack poseStack, int mouseX, int mouseY) {
+        font.draw(poseStack, title.getString(), 7, 7, 4210752);
+        font.draw(poseStack, I18n.get("container.inventory"), 7, 103 - 4, 4210752);
 
         if (!menu.isFluidMode()) {
-            font.draw(matrixStack, "" + menu.getStackSize(), 143, 83, 4210752);
+            font.draw(poseStack, "" + menu.getStackSize(), 143, 83, 4210752);
         }
 
-        renderTooltip(matrixStack, mouseX - leftPos, mouseY - topPos);
+        renderTooltip(poseStack, mouseX - leftPos, mouseY - topPos);
 
         tooltip.clear();
 
@@ -260,28 +260,28 @@ public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentCon
         }
 
         if (!tooltip.isEmpty()) {
-            renderComponentTooltip(matrixStack, tooltip, mouseX - leftPos, mouseY - topPos);
+            renderComponentTooltip(poseStack, tooltip, mouseX - leftPos, mouseY - topPos);
         }
 
-        super.renderLabels(matrixStack, mouseX, mouseY);
+        super.renderLabels(poseStack, mouseX, mouseY);
     }
 
     @Override
-    protected void renderBg(PoseStack matrixStack, float partialTicks, int mouseX, int mouseY) {
-        renderBackground(matrixStack);
+    protected void renderBg(PoseStack poseStack, float partialTicks, int mouseX, int mouseY) {
+        renderBackground(poseStack);
 
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.setShaderTexture(0, RESOURCE);
 
         int i = (this.width - this.imageWidth) / 2;
         int j = (this.height - this.imageHeight) / 2;
-        this.blit(matrixStack, i, j, 0, 0, this.imageWidth, this.imageHeight);
+        this.blit(poseStack, i, j, 0, 0, this.imageWidth, this.imageHeight);
 
         int x = 43;
         int y = 18;
         for (int filterSlotId = 1; filterSlotId <= ExtractorAttachment.MAX_FILTER_SLOTS; ++filterSlotId) {
             if (filterSlotId > menu.getExtractorAttachmentType().getFilterSlots()) {
-                this.blit(matrixStack, i + x, j + y, 198, 0, 18, 18);
+                this.blit(poseStack, i + x, j + y, 198, 0, 18, 18);
             }
 
             if (filterSlotId % 5 == 0) {
@@ -292,6 +292,6 @@ public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentCon
             }
         }
 
-        super.renderBg(matrixStack, partialTicks, mouseX, mouseY);
+        super.renderBg(poseStack, partialTicks, mouseX, mouseY);
     }
 }

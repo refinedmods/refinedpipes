@@ -17,8 +17,8 @@ public class EnergyPipe extends Pipe {
 
     private LazyOptional<ServerEnergyPipeEnergyStorage> energyStorage = LazyOptional.empty();
 
-    public EnergyPipe(Level world, BlockPos pos, EnergyPipeType type) {
-        super(world, pos);
+    public EnergyPipe(Level level, BlockPos pos, EnergyPipeType type) {
+        super(level, pos);
         this.type = type;
     }
 

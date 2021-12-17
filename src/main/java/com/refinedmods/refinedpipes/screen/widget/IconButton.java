@@ -27,7 +27,7 @@ public class IconButton extends Button {
     }
 
     @Override
-    public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void renderButton(PoseStack poseStack, int mouseX, int mouseY, float partialTicks) {
         RenderSystem.setShaderTexture(0, RESOURCE);
 
         RenderSystem.disableDepthTest();
@@ -39,10 +39,10 @@ public class IconButton extends Button {
             y = preset.getYTexHover();
         }
 
-        blit(matrixStack, this.x, this.y, preset.getXTex(), y, this.width, this.height, 256, 256);
+        blit(poseStack, this.x, this.y, preset.getXTex(), y, this.width, this.height, 256, 256);
 
         // Fiddling with -1 to remove the blue border
-        blit(matrixStack, this.x + 1, this.y + 1, overlayTexX + 1, overlayTexY + 1, this.width - 2, this.height - 2, 256, 256);
+        blit(poseStack, this.x + 1, this.y + 1, overlayTexX + 1, overlayTexY + 1, this.width - 2, this.height - 2, 256, 256);
 
         RenderSystem.enableDepthTest();
     }

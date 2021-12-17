@@ -14,14 +14,14 @@ import org.apache.logging.log4j.Logger;
 import java.util.Objects;
 
 public abstract class Pipe {
-    protected final Level world;
+    protected final Level level;
     protected final BlockPos pos;
     protected final ServerAttachmentManager attachmentManager = new ServerAttachmentManager(this);
     private final Logger logger = LogManager.getLogger(getClass());
     protected Network network;
 
-    public Pipe(Level world, BlockPos pos) {
-        this.world = world;
+    public Pipe(Level level, BlockPos pos) {
+        this.level = level;
         this.pos = pos;
     }
 
@@ -35,8 +35,8 @@ public abstract class Pipe {
         return attachmentManager;
     }
 
-    public Level getWorld() {
-        return world;
+    public Level getLevel() {
+        return level;
     }
 
     public BlockPos getPos() {
@@ -64,8 +64,8 @@ public abstract class Pipe {
     }
 
     public void sendBlockUpdate() {
-        BlockState state = world.getBlockState(pos);
-        world.sendBlockUpdated(pos, state, state, 1 | 2);
+        BlockState state = level.getBlockState(pos);
+        level.sendBlockUpdated(pos, state, state, 1 | 2);
     }
 
     public CompoundTag writeToNbt(CompoundTag tag) {
@@ -85,12 +85,12 @@ public abstract class Pipe {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Pipe pipe = (Pipe) o;
-        return world.equals(pipe.world) &&
+        return level.equals(pipe.level) &&
             pos.equals(pipe.pos);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(world, pos);
+        return Objects.hash(level, pos);
     }
 }

@@ -8,12 +8,12 @@ import net.minecraft.world.level.Level;
 
 public class FluidPipeFactory implements PipeFactory {
     @Override
-    public Pipe createFromNbt(Level world, CompoundTag tag) {
+    public Pipe createFromNbt(Level level, CompoundTag tag) {
         BlockPos pos = BlockPos.of(tag.getLong("pos"));
 
         FluidPipeType pipeType = FluidPipeType.values()[tag.getInt("type")];
 
-        FluidPipe pipe = new FluidPipe(world, pos, pipeType);
+        FluidPipe pipe = new FluidPipe(level, pos, pipeType);
 
         pipe.getAttachmentManager().readFromNbt(tag);
 

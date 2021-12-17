@@ -1,16 +1,16 @@
 package com.refinedmods.refinedpipes.container.factory;
 
-import com.refinedmods.refinedpipes.container.ExtractorAttachmentContainer;
+import com.refinedmods.refinedpipes.container.ExtractorAttachmentContainerMenu;
 import com.refinedmods.refinedpipes.network.pipe.attachment.extractor.*;
 import com.refinedmods.refinedpipes.util.DirectionUtil;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.network.IContainerFactory;
 
-public class ExtractorAttachmentContainerFactory implements IContainerFactory<ExtractorAttachmentContainer> {
+public class ExtractorAttachmentContainerFactory implements IContainerFactory<ExtractorAttachmentContainerMenu> {
     @Override
-    public ExtractorAttachmentContainer create(int windowId, Inventory inv, FriendlyByteBuf buf) {
-        return new ExtractorAttachmentContainer(
+    public ExtractorAttachmentContainerMenu create(int windowId, Inventory inv, FriendlyByteBuf buf) {
+        return new ExtractorAttachmentContainerMenu(
             windowId,
             inv.player,
             buf.readBlockPos(),

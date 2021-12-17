@@ -1,12 +1,12 @@
-package com.refinedmods.refinedpipes.item.group;
+package com.refinedmods.refinedpipes.item.creativetab;
 
 import com.refinedmods.refinedpipes.RefinedPipes;
 import com.refinedmods.refinedpipes.RefinedPipesItems;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 
-public class MainItemGroup extends CreativeModeTab {
-    public MainItemGroup() {
+public class MainCreativeModeTab extends CreativeModeTab {
+    public MainCreativeModeTab() {
         super(RefinedPipes.ID);
     }
 

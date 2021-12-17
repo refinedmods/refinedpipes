@@ -32,8 +32,8 @@ public abstract class Network {
         return id;
     }
 
-    public NetworkGraphScannerResult scanGraph(Level world, BlockPos pos) {
-        return graph.scan(world, pos);
+    public NetworkGraphScannerResult scanGraph(Level level, BlockPos pos) {
+        return graph.scan(level, pos);
     }
 
     public List<Destination> getDestinations(DestinationType type) {
@@ -47,11 +47,11 @@ public abstract class Network {
         return tag;
     }
 
-    public void update(Level world) {
+    public void update(Level level) {
         if (!didDoInitialScan) {
             didDoInitialScan = true;
 
-            scanGraph(world, originPos);
+            scanGraph(level, originPos);
         }
 
         graph.getPipes().forEach(Pipe::update);

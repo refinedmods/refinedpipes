@@ -2,19 +2,19 @@ package com.refinedmods.refinedpipes.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Quaternion;
+import com.refinedmods.refinedpipes.blockentity.ItemPipeBlockEntity;
 import com.refinedmods.refinedpipes.network.pipe.transport.ItemTransportProps;
-import com.refinedmods.refinedpipes.tile.ItemPipeTileEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.core.Direction;
 
-public class ItemPipeTileEntityRenderer implements BlockEntityRenderer<ItemPipeTileEntity> {
+public class ItemPipeBlockEntityRenderer implements BlockEntityRenderer<ItemPipeBlockEntity> {
     @Override
     @SuppressWarnings("deprecation")
-    public void render(ItemPipeTileEntity tile, float partialTicks, PoseStack matrixStack, MultiBufferSource bufferType, int combinedLight, int combinedOverlay) {
-        for (ItemTransportProps prop : tile.getProps()) {
+    public void render(ItemPipeBlockEntity blockEntity, float partialTicks, PoseStack poseStack, MultiBufferSource bufferType, int combinedLight, int combinedOverlay) {
+        for (ItemTransportProps prop : blockEntity.getProps()) {
             Direction dir = prop.getDirection();
 
             double pipeLength = 1D;
@@ -48,33 +48,33 @@ public class ItemPipeTileEntityRenderer implements BlockEntityRenderer<ItemPipeT
             }
 
             // If the next pipe is gone..
-            if (v > 0.25 && tile.getLevel().isEmptyBlock(tile.getBlockPos().relative(prop.getDirection()))) {
+            if (v > 0.25 && blockEntity.getLevel().isEmptyBlock(blockEntity.getBlockPos().relative(prop.getDirection()))) {
                 continue;
             }
 
             v = Math.min(1F, v);
 
-            matrixStack.pushPose();
+            poseStack.pushPose();
 
-            matrixStack.translate(
+            poseStack.translate(
                 0.5 + (dir.getStepX() * v),
                 0.5 + (dir.getStepY() * v),
                 0.5 + (dir.getStepZ() * v)
             );
-            matrixStack.mulPose(new Quaternion(0, (float) ((Minecraft.getInstance().level.getGameTime() / 25D) % (Math.PI * 2) + (partialTicks / 25D)), 0, false));
-            matrixStack.scale(0.5F, 0.5F, 0.5F);
+            poseStack.mulPose(new Quaternion(0, (float) ((Minecraft.getInstance().level.getGameTime() / 25D) % (Math.PI * 2) + (partialTicks / 25D)), 0, false));
+            poseStack.scale(0.5F, 0.5F, 0.5F);
 
             Minecraft.getInstance().getItemRenderer().renderStatic(
                 prop.getStack(),
                 ItemTransforms.TransformType.FIXED,
                 combinedLight,
                 combinedOverlay,
-                matrixStack,
+                poseStack,
                 bufferType,
                 0
             );
 
-            matrixStack.popPose();
+            poseStack.popPose();
         }
     }
 }

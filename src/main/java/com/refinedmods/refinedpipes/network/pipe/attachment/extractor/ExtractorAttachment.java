@@ -1,6 +1,6 @@
 package com.refinedmods.refinedpipes.network.pipe.attachment.extractor;
 
-import com.refinedmods.refinedpipes.container.provider.ExtractorAttachmentContainerProvider;
+import com.refinedmods.refinedpipes.container.provider.ExtractorAttachmentMenuProvider;
 import com.refinedmods.refinedpipes.inventory.fluid.FluidInventory;
 import com.refinedmods.refinedpipes.network.Network;
 import com.refinedmods.refinedpipes.network.NetworkManager;
@@ -66,7 +66,7 @@ public class ExtractorAttachment extends Attachment {
                 super.onContentsChanged(slot);
 
                 if (attachment != null) {
-                    NetworkManager.get(attachment.pipe.getWorld()).setDirty();
+                    NetworkManager.get(attachment.pipe.getLevel()).setDirty();
                 }
             }
         };
@@ -79,7 +79,7 @@ public class ExtractorAttachment extends Attachment {
                 super.onContentsChanged();
 
                 if (attachment != null) {
-                    NetworkManager.get(attachment.pipe.getWorld()).setDirty();
+                    NetworkManager.get(attachment.pipe.getLevel()).setDirty();
                 }
             }
         };
@@ -104,22 +104,22 @@ public class ExtractorAttachment extends Attachment {
             return;
         }
 
-        if (!redstoneMode.isEnabled(pipe.getWorld(), pipe.getPos())) {
+        if (!redstoneMode.isEnabled(pipe.getLevel(), pipe.getPos())) {
             return;
         }
 
         BlockPos destinationPos = pipe.getPos().relative(getDirection());
 
-        BlockEntity tile = pipe.getWorld().getBlockEntity(destinationPos);
-        if (tile == null) {
+        BlockEntity blockEntity = pipe.getLevel().getBlockEntity(destinationPos);
+        if (blockEntity == null) {
             return;
         }
 
         if (network instanceof ItemNetwork) {
-            tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, getDirection().getOpposite())
+            blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, getDirection().getOpposite())
                 .ifPresent(itemHandler -> update((ItemNetwork) network, destinationPos, itemHandler));
         } else if (network instanceof FluidNetwork) {
-            tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, getDirection().getOpposite())
+            blockEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, getDirection().getOpposite())
                 .ifPresent(fluidHandler -> update((FluidNetwork) network, fluidHandler));
         }
     }
@@ -211,7 +211,7 @@ public class ExtractorAttachment extends Attachment {
 
         network.getFluidTank().fill(drained, IFluidHandler.FluidAction.EXECUTE);
 
-        NetworkManager.get(pipe.getWorld()).setDirty();
+        NetworkManager.get(pipe.getLevel()).setDirty();
     }
 
     private boolean acceptsItem(ItemStack stack) {
@@ -290,7 +290,7 @@ public class ExtractorAttachment extends Attachment {
     public void openContainer(ServerPlayer player) {
         super.openContainer(player);
 
-        ExtractorAttachmentContainerProvider.open(pipe, this, player);
+        ExtractorAttachmentMenuProvider.open(pipe, this, player);
     }
 
     @Override

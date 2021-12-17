@@ -1,6 +1,6 @@
 package com.refinedmods.refinedpipes.message;
 
-import com.refinedmods.refinedpipes.tile.FluidPipeTileEntity;
+import com.refinedmods.refinedpipes.blockentity.FluidPipeBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -40,11 +40,11 @@ public class FluidPipeMessage {
 
     public static void handle(FluidPipeMessage message, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            BlockEntity tile = Minecraft.getInstance().level.getBlockEntity(message.pos);
+            BlockEntity blockEntity = Minecraft.getInstance().level.getBlockEntity(message.pos);
 
-            if (tile instanceof FluidPipeTileEntity) {
-                ((FluidPipeTileEntity) tile).setFluid(message.fluid);
-                ((FluidPipeTileEntity) tile).setFullness(message.fullness);
+            if (blockEntity instanceof FluidPipeBlockEntity) {
+                ((FluidPipeBlockEntity) blockEntity).setFluid(message.fluid);
+                ((FluidPipeBlockEntity) blockEntity).setFullness(message.fullness);
             }
         });
 

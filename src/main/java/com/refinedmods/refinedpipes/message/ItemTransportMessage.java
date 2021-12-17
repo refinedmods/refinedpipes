@@ -1,7 +1,7 @@
 package com.refinedmods.refinedpipes.message;
 
+import com.refinedmods.refinedpipes.blockentity.ItemPipeBlockEntity;
 import com.refinedmods.refinedpipes.network.pipe.transport.ItemTransportProps;
-import com.refinedmods.refinedpipes.tile.ItemPipeTileEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -42,10 +42,10 @@ public class ItemTransportMessage {
 
     public static void handle(ItemTransportMessage message, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            BlockEntity tile = Minecraft.getInstance().level.getBlockEntity(message.pos);
+            BlockEntity blockEntity = Minecraft.getInstance().level.getBlockEntity(message.pos);
 
-            if (tile instanceof ItemPipeTileEntity) {
-                ((ItemPipeTileEntity) tile).setProps(message.props);
+            if (blockEntity instanceof ItemPipeBlockEntity) {
+                ((ItemPipeBlockEntity) blockEntity).setProps(message.props);
             }
         });
 

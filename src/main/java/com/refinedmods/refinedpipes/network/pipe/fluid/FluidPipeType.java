@@ -1,8 +1,8 @@
 package com.refinedmods.refinedpipes.network.pipe.fluid;
 
 import com.refinedmods.refinedpipes.RefinedPipes;
-import com.refinedmods.refinedpipes.RefinedPipesTileEntities;
-import com.refinedmods.refinedpipes.tile.FluidPipeTileEntity;
+import com.refinedmods.refinedpipes.RefinedPipesBlockEntities;
+import com.refinedmods.refinedpipes.blockentity.FluidPipeBlockEntity;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 
@@ -23,18 +23,18 @@ public enum FluidPipeType {
         return tier;
     }
 
-    public BlockEntityType<FluidPipeTileEntity> getTileType() {
+    public BlockEntityType<FluidPipeBlockEntity> getBlockEntityType() {
         switch (this) {
             case BASIC:
-                return RefinedPipesTileEntities.BASIC_FLUID_PIPE;
+                return RefinedPipesBlockEntities.BASIC_FLUID_PIPE;
             case IMPROVED:
-                return RefinedPipesTileEntities.IMPROVED_FLUID_PIPE;
+                return RefinedPipesBlockEntities.IMPROVED_FLUID_PIPE;
             case ADVANCED:
-                return RefinedPipesTileEntities.ADVANCED_FLUID_PIPE;
+                return RefinedPipesBlockEntities.ADVANCED_FLUID_PIPE;
             case ELITE:
-                return RefinedPipesTileEntities.ELITE_FLUID_PIPE;
+                return RefinedPipesBlockEntities.ELITE_FLUID_PIPE;
             case ULTIMATE:
-                return RefinedPipesTileEntities.ULTIMATE_FLUID_PIPE;
+                return RefinedPipesBlockEntities.ULTIMATE_FLUID_PIPE;
             default:
                 throw new RuntimeException("?");
         }

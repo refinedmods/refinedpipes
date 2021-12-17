@@ -35,8 +35,8 @@ public class FluidNetwork extends Network {
     }
 
     @Override
-    public NetworkGraphScannerResult scanGraph(Level world, BlockPos pos) {
-        NetworkGraphScannerResult result = super.scanGraph(world, pos);
+    public NetworkGraphScannerResult scanGraph(Level level, BlockPos pos) {
+        NetworkGraphScannerResult result = super.scanGraph(level, pos);
 
         fluidTank.setCapacity(
             result.getFoundPipes()
@@ -54,8 +54,8 @@ public class FluidNetwork extends Network {
     }
 
     @Override
-    public void update(Level world) {
-        super.update(world);
+    public void update(Level level) {
+        super.update(level);
 
         List<Destination> destinations = graph.getDestinations(DestinationType.FLUID_HANDLER);
 
@@ -64,12 +64,12 @@ public class FluidNetwork extends Network {
         }
 
         for (Destination destination : destinations) {
-            BlockEntity tile = destination.getConnectedPipe().getWorld().getBlockEntity(destination.getReceiver());
-            if (tile == null) {
+            BlockEntity blockEntity = destination.getConnectedPipe().getLevel().getBlockEntity(destination.getReceiver());
+            if (blockEntity == null) {
                 continue;
             }
 
-            IFluidHandler handler = tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, destination.getIncomingDirection().getOpposite()).orElse(null);
+            IFluidHandler handler = blockEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, destination.getIncomingDirection().getOpposite()).orElse(null);
             if (handler == null) {
                 continue;
             }

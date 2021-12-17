@@ -28,8 +28,8 @@ public class EnergyNetwork extends Network {
     }
 
     @Override
-    public NetworkGraphScannerResult scanGraph(Level world, BlockPos pos) {
-        NetworkGraphScannerResult result = super.scanGraph(world, pos);
+    public NetworkGraphScannerResult scanGraph(Level level, BlockPos pos) {
+        NetworkGraphScannerResult result = super.scanGraph(level, pos);
 
         energyStorage.setCapacityAndMaxExtract(
             result.getFoundPipes()
@@ -51,8 +51,8 @@ public class EnergyNetwork extends Network {
     }
 
     @Override
-    public void update(Level world) {
-        super.update(world);
+    public void update(Level level) {
+        super.update(level);
 
         List<Destination> destinations = graph.getDestinations(DestinationType.ENERGY_STORAGE);
 
@@ -62,12 +62,12 @@ public class EnergyNetwork extends Network {
             }
 
             for (Destination destination : destinations) {
-                BlockEntity tile = destination.getConnectedPipe().getWorld().getBlockEntity(destination.getReceiver());
-                if (tile == null) {
+                BlockEntity blockEntity = destination.getConnectedPipe().getLevel().getBlockEntity(destination.getReceiver());
+                if (blockEntity == null) {
                     continue;
                 }
 
-                IEnergyStorage handler = tile.getCapability(CapabilityEnergy.ENERGY, destination.getIncomingDirection().getOpposite()).orElse(null);
+                IEnergyStorage handler = blockEntity.getCapability(CapabilityEnergy.ENERGY, destination.getIncomingDirection().getOpposite()).orElse(null);
                 if (handler == null) {
                     continue;
                 }

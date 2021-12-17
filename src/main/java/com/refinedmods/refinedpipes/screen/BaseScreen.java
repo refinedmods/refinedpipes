@@ -2,7 +2,7 @@ package com.refinedmods.refinedpipes.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.refinedmods.refinedpipes.container.BaseContainer;
+import com.refinedmods.refinedpipes.container.BaseContainerMenu;
 import com.refinedmods.refinedpipes.container.slot.FluidFilterSlot;
 import com.refinedmods.refinedpipes.render.FluidRenderer;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -10,13 +10,13 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.fluids.FluidStack;
 
-public abstract class BaseScreen<T extends BaseContainer> extends AbstractContainerScreen<T> {
+public abstract class BaseScreen<T extends BaseContainerMenu> extends AbstractContainerScreen<T> {
     public BaseScreen(T screenContainer, Inventory inv, Component title) {
         super(screenContainer, inv, title);
     }
 
     @Override
-    protected void renderBg(PoseStack matrixStack, float partialTicks, int mouseX, int mouseY) {
+    protected void renderBg(PoseStack poseStack, float partialTicks, int mouseX, int mouseY) {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
         for (FluidFilterSlot slot : menu.getFluidSlots()) {
@@ -30,7 +30,7 @@ public abstract class BaseScreen<T extends BaseContainer> extends AbstractContai
     }
 
     @Override
-    protected void renderLabels(PoseStack matrixStack, int mouseX, int mouseY) {
+    protected void renderLabels(PoseStack poseStack, int mouseX, int mouseY) {
         for (FluidFilterSlot slot : menu.getFluidSlots()) {
             FluidStack stack = slot.getFluidInventory().getFluid(slot.getSlotIndex());
             if (stack.isEmpty()) {
@@ -41,7 +41,7 @@ public abstract class BaseScreen<T extends BaseContainer> extends AbstractContai
                 continue;
             }
 
-            renderTooltip(matrixStack, stack.getDisplayName(), mouseX - leftPos, mouseY - topPos);
+            renderTooltip(poseStack, stack.getDisplayName(), mouseX - leftPos, mouseY - topPos);
         }
     }
 }

@@ -3,7 +3,7 @@ package com.refinedmods.refinedpipes.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.refinedmods.refinedpipes.block.FluidPipeBlock;
-import com.refinedmods.refinedpipes.tile.FluidPipeTileEntity;
+import com.refinedmods.refinedpipes.blockentity.FluidPipeBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -17,29 +17,29 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
 
-public class FluidPipeTileEntityRenderer implements BlockEntityRenderer<FluidPipeTileEntity> {
+public class FluidPipeBlockEntityRenderer implements BlockEntityRenderer<FluidPipeBlockEntity> {
     private static final float INSET = 0.001F;
 
     @Override
     @SuppressWarnings("deprecation")
-    public void render(FluidPipeTileEntity tile, float partialTicks, PoseStack matrixStack, MultiBufferSource bufferType, int combinedLight, int combinedOverlay) {
-        Level world = tile.getLevel();
-        if (world == null) {
+    public void render(FluidPipeBlockEntity blockEntity, float partialTicks, PoseStack poseStack, MultiBufferSource bufferType, int combinedLight, int combinedOverlay) {
+        Level level = blockEntity.getLevel();
+        if (level == null) {
             return;
         }
 
-        BlockState state = world.getBlockState(tile.getBlockPos());
+        BlockState state = level.getBlockState(blockEntity.getBlockPos());
         if (!(state.getBlock() instanceof FluidPipeBlock)) {
             return;
         }
 
-        FluidStack fluidStack = tile.getFluid();
+        FluidStack fluidStack = blockEntity.getFluid();
         if (fluidStack.isEmpty()) {
-            tile.updateAndGetRenderFullness(partialTicks);
+            blockEntity.updateAndGetRenderFullness(partialTicks);
             return;
         }
 
-        int light = LevelRenderer.getLightColor(tile.getLevel(), tile.getBlockPos());
+        int light = LevelRenderer.getLightColor(blockEntity.getLevel(), blockEntity.getBlockPos());
         FluidAttributes attributes = fluidStack.getFluid().getAttributes();
         TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(attributes.getStillTexture(fluidStack));
         int fluidColor = attributes.getColor(fluidStack);
@@ -51,7 +51,7 @@ public class FluidPipeTileEntityRenderer implements BlockEntityRenderer<FluidPip
 
         VertexConsumer buffer = bufferType.getBuffer(RenderType.text(sprite.atlas().location()));
 
-        float fullness = tile.updateAndGetRenderFullness(partialTicks);
+        float fullness = blockEntity.updateAndGetRenderFullness(partialTicks);
         if (fullness == 0) {
             return;
         }
@@ -65,7 +65,7 @@ public class FluidPipeTileEntityRenderer implements BlockEntityRenderer<FluidPip
             float z2 = 4;
 
             CubeBuilder.INSTANCE.putCube(
-                matrixStack,
+                poseStack,
                 buffer,
                 (x1 / 16F) + INSET,
                 (y1 / 16F) + INSET,
@@ -92,7 +92,7 @@ public class FluidPipeTileEntityRenderer implements BlockEntityRenderer<FluidPip
             float z2 = 12;
 
             CubeBuilder.INSTANCE.putCube(
-                matrixStack,
+                poseStack,
                 buffer,
                 (x1 / 16F) + INSET,
                 (y1 / 16F) + INSET,
@@ -119,7 +119,7 @@ public class FluidPipeTileEntityRenderer implements BlockEntityRenderer<FluidPip
             float z2 = 16;
 
             CubeBuilder.INSTANCE.putCube(
-                matrixStack,
+                poseStack,
                 buffer,
                 (x1 / 16F) + INSET,
                 (y1 / 16F) + INSET,
@@ -146,7 +146,7 @@ public class FluidPipeTileEntityRenderer implements BlockEntityRenderer<FluidPip
             float z2 = 12;
 
             CubeBuilder.INSTANCE.putCube(
-                matrixStack,
+                poseStack,
                 buffer,
                 (x1 / 16F) + INSET,
                 (y1 / 16F) + INSET,
@@ -187,7 +187,7 @@ public class FluidPipeTileEntityRenderer implements BlockEntityRenderer<FluidPip
             y1 -= (1F - fullness) * (12F - 4F);
 
             CubeBuilder.INSTANCE.putCube(
-                matrixStack,
+                poseStack,
                 buffer,
                 (x1 / 16F) + INSET,
                 (y1 / 16F) + INSET,
@@ -222,7 +222,7 @@ public class FluidPipeTileEntityRenderer implements BlockEntityRenderer<FluidPip
             z2 -= shrinkage;
 
             CubeBuilder.INSTANCE.putCube(
-                matrixStack,
+                poseStack,
                 buffer,
                 (x1 / 16F) + INSET,
                 (y1 / 16F) + INSET,
@@ -248,10 +248,10 @@ public class FluidPipeTileEntityRenderer implements BlockEntityRenderer<FluidPip
             float y2 = 4 + (fullness * (12 - 4));
             float z2 = 12;
 
-            matrixStack.pushPose();
+            poseStack.pushPose();
 
             CubeBuilder.INSTANCE.putFace(
-                matrixStack,
+                poseStack,
                 buffer,
                 (x1 / 16F) + INSET,
                 (y1 / 16F) + INSET,
@@ -269,7 +269,7 @@ public class FluidPipeTileEntityRenderer implements BlockEntityRenderer<FluidPip
             );
 
             CubeBuilder.INSTANCE.putFace(
-                matrixStack,
+                poseStack,
                 buffer,
                 (x1 / 16F) + INSET,
                 (y1 / 16F) + INSET,
@@ -288,7 +288,7 @@ public class FluidPipeTileEntityRenderer implements BlockEntityRenderer<FluidPip
 
             if (!state.getValue(FluidPipeBlock.NORTH)) {
                 CubeBuilder.INSTANCE.putFace(
-                    matrixStack,
+                    poseStack,
                     buffer,
                     (x1 / 16F) + INSET,
                     (y1 / 16F) + INSET,
@@ -308,7 +308,7 @@ public class FluidPipeTileEntityRenderer implements BlockEntityRenderer<FluidPip
 
             if (!state.getValue(FluidPipeBlock.EAST)) {
                 CubeBuilder.INSTANCE.putFace(
-                    matrixStack,
+                    poseStack,
                     buffer,
                     (x1 / 16F) + INSET,
                     (y1 / 16F) + INSET,
@@ -328,7 +328,7 @@ public class FluidPipeTileEntityRenderer implements BlockEntityRenderer<FluidPip
 
             if (!state.getValue(FluidPipeBlock.SOUTH)) {
                 CubeBuilder.INSTANCE.putFace(
-                    matrixStack,
+                    poseStack,
                     buffer,
                     (x1 / 16F) + INSET,
                     (y1 / 16F) + INSET,
@@ -348,7 +348,7 @@ public class FluidPipeTileEntityRenderer implements BlockEntityRenderer<FluidPip
 
             if (!state.getValue(FluidPipeBlock.WEST)) {
                 CubeBuilder.INSTANCE.putFace(
-                    matrixStack,
+                    poseStack,
                     buffer,
                     (x1 / 16F) + INSET,
                     (y1 / 16F) + INSET,
@@ -366,7 +366,7 @@ public class FluidPipeTileEntityRenderer implements BlockEntityRenderer<FluidPip
                 );
             }
 
-            matrixStack.popPose();
+            poseStack.popPose();
         }
     }
 }

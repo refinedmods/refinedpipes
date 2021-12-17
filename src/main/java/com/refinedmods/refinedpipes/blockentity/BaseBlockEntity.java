@@ -1,4 +1,4 @@
-package com.refinedmods.refinedpipes.tile;
+package com.refinedmods.refinedpipes.blockentity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -10,8 +10,8 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nullable;
 
-public abstract class BaseTileEntity extends BlockEntity {
-    protected BaseTileEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+public abstract class BaseBlockEntity extends BlockEntity {
+    protected BaseBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
     }
 

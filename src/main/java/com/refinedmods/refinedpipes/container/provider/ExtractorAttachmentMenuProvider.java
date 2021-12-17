@@ -1,7 +1,7 @@
 package com.refinedmods.refinedpipes.container.provider;
 
 import com.refinedmods.refinedpipes.RefinedPipes;
-import com.refinedmods.refinedpipes.container.ExtractorAttachmentContainer;
+import com.refinedmods.refinedpipes.container.ExtractorAttachmentContainerMenu;
 import com.refinedmods.refinedpipes.network.pipe.Pipe;
 import com.refinedmods.refinedpipes.network.pipe.attachment.extractor.ExtractorAttachment;
 import net.minecraft.network.chat.Component;
@@ -15,17 +15,17 @@ import net.minecraftforge.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 
-public class ExtractorAttachmentContainerProvider implements MenuProvider {
+public class ExtractorAttachmentMenuProvider implements MenuProvider {
     private final Pipe pipe;
     private final ExtractorAttachment attachment;
 
-    public ExtractorAttachmentContainerProvider(Pipe pipe, ExtractorAttachment attachment) {
+    public ExtractorAttachmentMenuProvider(Pipe pipe, ExtractorAttachment attachment) {
         this.pipe = pipe;
         this.attachment = attachment;
     }
 
     public static void open(Pipe pipe, ExtractorAttachment attachment, ServerPlayer player) {
-        ExtractorAttachmentContainerProvider provider = new ExtractorAttachmentContainerProvider(pipe, attachment);
+        ExtractorAttachmentMenuProvider provider = new ExtractorAttachmentMenuProvider(pipe, attachment);
 
         NetworkHooks.openGui(player, provider, buf -> {
             buf.writeBlockPos(pipe.getPos());
@@ -48,7 +48,7 @@ public class ExtractorAttachmentContainerProvider implements MenuProvider {
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int windowId, Inventory inv, Player player) {
-        return new ExtractorAttachmentContainer(
+        return new ExtractorAttachmentContainerMenu(
             windowId,
             player,
             pipe.getPos(),

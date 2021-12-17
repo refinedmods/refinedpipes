@@ -1,4 +1,4 @@
-package com.refinedmods.refinedpipes.tile;
+package com.refinedmods.refinedpipes.blockentity;
 
 import com.refinedmods.refinedpipes.network.pipe.Pipe;
 import com.refinedmods.refinedpipes.network.pipe.item.ItemPipe;
@@ -13,16 +13,16 @@ import net.minecraft.world.level.block.state.BlockState;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ItemPipeTileEntity extends PipeTileEntity {
+public class ItemPipeBlockEntity extends PipeBlockEntity {
     private final ItemPipeType type;
     private List<ItemTransportProps> props = new ArrayList<>();
 
-    public ItemPipeTileEntity(BlockPos pos, BlockState state, ItemPipeType type) {
-        super(type.getTileType(), pos, state);
+    public ItemPipeBlockEntity(BlockPos pos, BlockState state, ItemPipeType type) {
+        super(type.getBlockEntityType(), pos, state);
         this.type = type;
     }
 
-    public static void tick(ItemPipeTileEntity blockEntity) {
+    public static void tick(ItemPipeBlockEntity blockEntity) {
         blockEntity.props.forEach(ItemTransportProps::tick);
     }
 
@@ -44,7 +44,7 @@ public class ItemPipeTileEntity extends PipeTileEntity {
     }
 
     @Override
-    protected Pipe createPipe(Level world, BlockPos pos) {
-        return new ItemPipe(world, pos, type);
+    protected Pipe createPipe(Level level, BlockPos pos) {
+        return new ItemPipe(level, pos, type);
     }
 }

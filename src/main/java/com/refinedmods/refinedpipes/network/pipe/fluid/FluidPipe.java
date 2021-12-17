@@ -15,8 +15,8 @@ public class FluidPipe extends Pipe {
     private final FluidPipeType type;
     private float lastFullness = 0;
 
-    public FluidPipe(Level world, BlockPos pos, FluidPipeType type) {
-        super(world, pos);
+    public FluidPipe(Level level, BlockPos pos, FluidPipeType type) {
+        super(level, pos);
 
         this.type = type;
     }
@@ -34,7 +34,7 @@ public class FluidPipe extends Pipe {
     }
 
     public void sendFluidPipeUpdate() {
-        RefinedPipes.NETWORK.sendInArea(world, pos, 32, new FluidPipeMessage(pos, ((FluidNetwork) network).getFluidTank().getFluid(), getFullness()));
+        RefinedPipes.NETWORK.sendInArea(level, pos, 32, new FluidPipeMessage(pos, ((FluidNetwork) network).getFluidTank().getFluid(), getFullness()));
     }
 
     public float getFullness() {

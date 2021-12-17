@@ -8,12 +8,12 @@ import net.minecraft.world.level.Level;
 
 public class EnergyPipeFactory implements PipeFactory {
     @Override
-    public Pipe createFromNbt(Level world, CompoundTag tag) {
+    public Pipe createFromNbt(Level level, CompoundTag tag) {
         BlockPos pos = BlockPos.of(tag.getLong("pos"));
 
         EnergyPipeType pipeType = EnergyPipeType.values()[tag.getInt("type")];
 
-        EnergyPipe pipe = new EnergyPipe(world, pos, pipeType);
+        EnergyPipe pipe = new EnergyPipe(level, pos, pipeType);
 
         pipe.getAttachmentManager().readFromNbt(tag);
 

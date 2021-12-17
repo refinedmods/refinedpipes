@@ -52,14 +52,14 @@ public class ServerAttachmentManager implements AttachmentManager {
         attachmentState[dir.ordinal()] = null;
 
         // Re-scan graph, required to rebuild destinations (chests with an attachment connected are no valid destination, refresh that)
-        pipe.getNetwork().scanGraph(pipe.getWorld(), pipe.getPos());
+        pipe.getNetwork().scanGraph(pipe.getLevel(), pipe.getPos());
     }
 
     public void setAttachmentAndScanGraph(Direction dir, Attachment attachment) {
         setAttachment(dir, attachment);
 
         // Re-scan graph, required to rebuild destinations (chests with an attachment connected are no valid destination, refresh that)
-        pipe.getNetwork().scanGraph(pipe.getWorld(), pipe.getPos());
+        pipe.getNetwork().scanGraph(pipe.getLevel(), pipe.getPos());
     }
 
     private void setAttachment(Direction dir, Attachment attachment) {

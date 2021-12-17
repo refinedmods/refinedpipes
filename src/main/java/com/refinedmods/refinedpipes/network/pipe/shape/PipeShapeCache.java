@@ -1,8 +1,8 @@
 package com.refinedmods.refinedpipes.network.pipe.shape;
 
+import com.refinedmods.refinedpipes.blockentity.PipeBlockEntity;
 import com.refinedmods.refinedpipes.item.AttachmentItem;
 import com.refinedmods.refinedpipes.network.pipe.attachment.AttachmentFactory;
-import com.refinedmods.refinedpipes.tile.PipeTileEntity;
 import com.refinedmods.refinedpipes.util.Raytracer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -78,9 +78,9 @@ public class PipeShapeCache {
     private VoxelShape createShapeIfNeeded(BlockState state, BlockGetter world, BlockPos pos) {
         ResourceLocation[] attachmentState;
 
-        BlockEntity tile = world.getBlockEntity(pos);
-        if (tile instanceof PipeTileEntity) {
-            attachmentState = ((PipeTileEntity) tile).getAttachmentManager().getState();
+        BlockEntity blockEntity = world.getBlockEntity(pos);
+        if (blockEntity instanceof PipeBlockEntity) {
+            attachmentState = ((PipeBlockEntity) blockEntity).getAttachmentManager().getState();
         } else {
             attachmentState = NO_ATTACHMENT_STATE;
         }

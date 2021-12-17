@@ -18,14 +18,14 @@ public enum RedstoneMode {
         return m[b];
     }
 
-    public boolean isEnabled(Level world, BlockPos pos) {
+    public boolean isEnabled(Level level, BlockPos pos) {
         switch (this) {
             case IGNORED:
                 return true;
             case HIGH:
-                return world.hasNeighborSignal(pos);
+                return level.hasNeighborSignal(pos);
             case LOW:
-                return !world.hasNeighborSignal(pos);
+                return !level.hasNeighborSignal(pos);
             default:
                 return false;
         }

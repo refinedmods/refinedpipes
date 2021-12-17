@@ -1,5 +1,6 @@
 package com.refinedmods.refinedpipes.block;
 
+import com.refinedmods.refinedpipes.blockentity.PipeBlockEntity;
 import com.refinedmods.refinedpipes.item.AttachmentItem;
 import com.refinedmods.refinedpipes.network.NetworkManager;
 import com.refinedmods.refinedpipes.network.pipe.Pipe;
@@ -8,7 +9,6 @@ import com.refinedmods.refinedpipes.network.pipe.attachment.AttachmentFactory;
 import com.refinedmods.refinedpipes.network.pipe.attachment.AttachmentManager;
 import com.refinedmods.refinedpipes.network.pipe.shape.PipeShapeCache;
 import com.refinedmods.refinedpipes.network.pipe.shape.PipeShapeProps;
-import com.refinedmods.refinedpipes.tile.PipeTileEntity;
 import com.refinedmods.refinedpipes.util.Raytracer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -75,42 +75,42 @@ public abstract class PipeBlock extends Block {
 
     @Override
     @SuppressWarnings("deprecation")
-    public void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
-        super.neighborChanged(state, world, pos, block, fromPos, isMoving);
+    public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
+        super.neighborChanged(state, level, pos, block, fromPos, isMoving);
 
-        if (!world.isClientSide) {
-            Pipe pipe = NetworkManager.get(world).getPipe(pos);
+        if (!level.isClientSide) {
+            Pipe pipe = NetworkManager.get(level).getPipe(pos);
 
             if (pipe != null && pipe.getNetwork() != null) {
-                pipe.getNetwork().scanGraph(world, pos);
+                pipe.getNetwork().scanGraph(level, pos);
             }
         }
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         Direction dirClicked = getAttachmentDirectionClicked(pos, hit.getLocation());
 
         if (dirClicked != null) {
             ItemStack held = player.getMainHandItem();
-            BlockEntity tile = world.getBlockEntity(pos);
+            BlockEntity blockEntity = level.getBlockEntity(pos);
 
             if (held.isEmpty() && player.isCrouching()) {
-                return removeAttachment(world, pos, dirClicked);
-            } else if (tile instanceof PipeTileEntity && ((PipeTileEntity) tile).getAttachmentManager().hasAttachment(dirClicked)) {
-                return openAttachmentContainer(player, pos, ((PipeTileEntity) tile).getAttachmentManager(), dirClicked);
+                return removeAttachment(level, pos, dirClicked);
+            } else if (blockEntity instanceof PipeBlockEntity pipeBlockEntity && pipeBlockEntity.getAttachmentManager().hasAttachment(dirClicked)) {
+                return openAttachmentContainer(player, pos, pipeBlockEntity.getAttachmentManager(), dirClicked);
             } else if (held.getItem() instanceof AttachmentItem) {
-                return addAttachment(player, world, pos, held, dirClicked);
+                return addAttachment(player, level, pos, held, dirClicked);
             }
         }
 
-        return super.use(state, world, pos, player, hand, hit);
+        return super.use(state, level, pos, player, hand, hit);
     }
 
-    private InteractionResult addAttachment(Player player, Level world, BlockPos pos, ItemStack attachment, Direction dir) {
-        if (!world.isClientSide) {
-            Pipe pipe = NetworkManager.get(world).getPipe(pos);
+    private InteractionResult addAttachment(Player player, Level level, BlockPos pos, ItemStack attachment, Direction dir) {
+        if (!level.isClientSide) {
+            Pipe pipe = NetworkManager.get(level).getPipe(pos);
 
             if (pipe != null && !pipe.getAttachmentManager().hasAttachment(dir)) {
                 AttachmentFactory type = ((AttachmentItem) attachment.getItem()).getFactory();
@@ -119,10 +119,10 @@ public abstract class PipeBlock extends Block {
                 }
 
                 pipe.getAttachmentManager().setAttachmentAndScanGraph(dir, type.create(pipe, dir));
-                NetworkManager.get(world).setDirty();
+                NetworkManager.get(level).setDirty();
 
                 pipe.sendBlockUpdate();
-                world.setBlockAndUpdate(pos, getState(world.getBlockState(pos), world, pos));
+                level.setBlockAndUpdate(pos, getState(level.getBlockState(pos), level, pos));
 
                 if (!player.isCreative()) {
                     attachment.shrink(1);
@@ -133,25 +133,25 @@ public abstract class PipeBlock extends Block {
         return InteractionResult.SUCCESS;
     }
 
-    private InteractionResult removeAttachment(Level world, BlockPos pos, Direction dir) {
-        if (!world.isClientSide) {
-            Pipe pipe = NetworkManager.get(world).getPipe(pos);
+    private InteractionResult removeAttachment(Level level, BlockPos pos, Direction dir) {
+        if (!level.isClientSide) {
+            Pipe pipe = NetworkManager.get(level).getPipe(pos);
 
             if (pipe != null && pipe.getAttachmentManager().hasAttachment(dir)) {
                 Attachment attachment = pipe.getAttachmentManager().getAttachment(dir);
 
                 pipe.getAttachmentManager().removeAttachmentAndScanGraph(dir);
-                NetworkManager.get(world).setDirty();
+                NetworkManager.get(level).setDirty();
 
                 pipe.sendBlockUpdate();
-                world.setBlockAndUpdate(pos, getState(world.getBlockState(pos), world, pos));
+                level.setBlockAndUpdate(pos, getState(level.getBlockState(pos), level, pos));
 
-                Block.popResource(world, pos.relative(dir), attachment.getDrop());
+                Block.popResource(level, pos.relative(dir), attachment.getDrop());
             }
 
             return InteractionResult.SUCCESS;
         } else {
-            return ((PipeTileEntity) world.getBlockEntity(pos)).getAttachmentManager().hasAttachment(dir) ? InteractionResult.SUCCESS : InteractionResult.FAIL;
+            return ((PipeBlockEntity) level.getBlockEntity(pos)).getAttachmentManager().hasAttachment(dir) ? InteractionResult.SUCCESS : InteractionResult.FAIL;
         }
     }
 
@@ -202,9 +202,9 @@ public abstract class PipeBlock extends Block {
         Direction dirClicked = getAttachmentDirectionClicked(pos, target.getLocation());
 
         if (dirClicked != null) {
-            BlockEntity tile = world.getBlockEntity(pos);
-            if (tile instanceof PipeTileEntity) {
-                return ((PipeTileEntity) tile).getAttachmentManager().getPickBlock(dirClicked);
+            BlockEntity blockEntity = world.getBlockEntity(pos);
+            if (blockEntity instanceof PipeBlockEntity pipeBlockEntity) {
+                return pipeBlockEntity.getAttachmentManager().getPickBlock(dirClicked);
             }
         }
 

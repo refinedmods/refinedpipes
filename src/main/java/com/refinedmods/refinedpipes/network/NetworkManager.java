@@ -24,24 +24,24 @@ import java.util.*;
 public class NetworkManager extends SavedData {
     private static final String NAME = RefinedPipes.ID + "_networks";
     private static final Logger LOGGER = LogManager.getLogger(NetworkManager.class);
-    private final Level world;
+    private final Level level;
     private final Map<String, Network> networks = new HashMap<>();
     private final Map<BlockPos, Pipe> pipes = new HashMap<>();
 
-    public NetworkManager(Level world) {
-        this.world = world;
+    public NetworkManager(Level level) {
+        this.level = level;
     }
 
-    public static NetworkManager get(Level world) {
-        return get((ServerLevel) world);
+    public static NetworkManager get(Level level) {
+        return get((ServerLevel) level);
     }
 
-    public static NetworkManager get(ServerLevel world) {
-        return world.getDataStorage().computeIfAbsent((tag) -> {
-            NetworkManager networkManager = new NetworkManager(world);
+    public static NetworkManager get(ServerLevel level) {
+        return level.getDataStorage().computeIfAbsent((tag) -> {
+            NetworkManager networkManager = new NetworkManager(level);
             networkManager.load(tag);
             return networkManager;
-        }, () -> new NetworkManager(world), NAME);
+        }, () -> new NetworkManager(level), NAME);
     }
 
     public void addNetwork(Network network) {
@@ -68,15 +68,15 @@ public class NetworkManager extends SavedData {
         setDirty();
     }
 
-    private void formNetworkAt(Level world, BlockPos pos, ResourceLocation type) {
+    private void formNetworkAt(Level level, BlockPos pos, ResourceLocation type) {
         Network network = NetworkRegistry.INSTANCE.getFactory(type).create(pos);
 
         addNetwork(network);
 
-        network.scanGraph(world, pos);
+        network.scanGraph(level, pos);
     }
 
-    private void mergeNetworksIntoOne(Set<Pipe> candidates, Level world, BlockPos pos) {
+    private void mergeNetworksIntoOne(Set<Pipe> candidates, Level level, BlockPos pos) {
         if (candidates.isEmpty()) {
             throw new RuntimeException("Cannot merge networks: no candidates");
         }
@@ -110,7 +110,7 @@ public class NetworkManager extends SavedData {
             }
         }
 
-        mainNetwork.scanGraph(world, pos);
+        mainNetwork.scanGraph(level, pos);
 
         mergedNetworks.forEach(n -> n.onMergedWith(mainNetwork));
     }
@@ -129,9 +129,9 @@ public class NetworkManager extends SavedData {
         Set<Pipe> adjacentPipes = findAdjacentPipes(pipe.getPos(), pipe.getNetworkType());
 
         if (adjacentPipes.isEmpty()) {
-            formNetworkAt(pipe.getWorld(), pipe.getPos(), pipe.getNetworkType());
+            formNetworkAt(pipe.getLevel(), pipe.getPos(), pipe.getNetworkType());
         } else {
-            mergeNetworksIntoOne(adjacentPipes, pipe.getWorld(), pipe.getPos());
+            mergeNetworksIntoOne(adjacentPipes, pipe.getLevel(), pipe.getPos());
         }
     }
 
@@ -177,7 +177,7 @@ public class NetworkManager extends SavedData {
             setDirty();
 
             NetworkGraphScannerResult result = otherPipeInNetwork.getNetwork().scanGraph(
-                otherPipeInNetwork.getWorld(),
+                otherPipeInNetwork.getLevel(),
                 otherPipeInNetwork.getPos()
             );
 
@@ -195,7 +195,7 @@ public class NetworkManager extends SavedData {
                 // The formNetworkAt call below can let these removed pipes join a network again.
                 // We only have to form a new network when necessary, hence the null check.
                 if (removed.getNetwork() == null) {
-                    formNetworkAt(removed.getWorld(), removed.getPos(), removed.getNetworkType());
+                    formNetworkAt(removed.getLevel(), removed.getPos(), removed.getNetworkType());
                 }
             }
 
@@ -259,7 +259,7 @@ public class NetworkManager extends SavedData {
                 continue;
             }
 
-            Pipe pipe = factory.createFromNbt(world, pipeTagCompound);
+            Pipe pipe = factory.createFromNbt(level, pipeTagCompound);
 
             this.pipes.put(pipe.getPos(), pipe);
         }

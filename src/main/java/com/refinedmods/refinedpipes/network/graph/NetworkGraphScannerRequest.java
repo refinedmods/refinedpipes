@@ -7,7 +7,7 @@ import net.minecraft.world.level.Level;
 import javax.annotation.Nullable;
 
 public class NetworkGraphScannerRequest {
-    private final Level world;
+    private final Level level;
     private final BlockPos pos;
     @Nullable
     private final Direction direction;
@@ -15,15 +15,15 @@ public class NetworkGraphScannerRequest {
     private final NetworkGraphScannerRequest parent;
     private boolean successful;
 
-    public NetworkGraphScannerRequest(Level world, BlockPos pos, @Nullable Direction direction, @Nullable NetworkGraphScannerRequest parent) {
-        this.world = world;
+    public NetworkGraphScannerRequest(Level level, BlockPos pos, @Nullable Direction direction, @Nullable NetworkGraphScannerRequest parent) {
+        this.level = level;
         this.pos = pos;
         this.direction = direction;
         this.parent = parent;
     }
 
-    public Level getWorld() {
-        return world;
+    public Level getLevel() {
+        return level;
     }
 
     public BlockPos getPos() {

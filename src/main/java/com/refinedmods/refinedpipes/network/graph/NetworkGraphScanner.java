@@ -33,8 +33,8 @@ public class NetworkGraphScanner {
         this.requiredNetworkType = requiredNetworkType;
     }
 
-    public NetworkGraphScannerResult scanAt(Level world, BlockPos pos) {
-        addRequest(new NetworkGraphScannerRequest(world, pos, null, null));
+    public NetworkGraphScannerResult scanAt(Level level, BlockPos pos) {
+        addRequest(new NetworkGraphScannerRequest(level, pos, null, null));
 
         NetworkGraphScannerRequest request;
         while ((request = requests.poll()) != null) {
@@ -51,7 +51,7 @@ public class NetworkGraphScanner {
     }
 
     private void singleScanAt(NetworkGraphScannerRequest request) {
-        Pipe pipe = NetworkManager.get(request.getWorld()).getPipe(request.getPos());
+        Pipe pipe = NetworkManager.get(request.getLevel()).getPipe(request.getPos());
 
         if (pipe != null) {
             if (!requiredNetworkType.equals(pipe.getNetworkType())) {
@@ -69,32 +69,32 @@ public class NetworkGraphScanner {
 
                 for (Direction dir : Direction.values()) {
                     addRequest(new NetworkGraphScannerRequest(
-                        request.getWorld(),
+                        request.getLevel(),
                         request.getPos().relative(dir),
                         dir,
                         request
                     ));
                 }
             }
-        } else if (request.getParent() != null) { // This can NOT be called on pipe positions! (causes problems with tiles getting invalidated/validates when it shouldn't)
+        } else if (request.getParent() != null) { // This can NOT be called on pipe positions! (causes problems with block entities getting invalidated/validates when it shouldn't)
             // We can NOT have the TE capability checks always run regardless of whether there was a pipe or not.
             // Otherwise we have this loop: pipe gets placed -> network gets scanned -> TEs get checked -> it might check the TE we just placed
             // -> the newly created TE can be created in immediate mode -> TE#validate is called again -> TE#remove is called again!
 
-            Pipe connectedPipe = NetworkManager.get(request.getWorld()).getPipe(request.getParent().getPos());
+            Pipe connectedPipe = NetworkManager.get(request.getLevel()).getPipe(request.getParent().getPos());
 
             // If this destination is connected to a pipe with an attachment, then this is not a valid destination.
             if (!connectedPipe.getAttachmentManager().hasAttachment(request.getDirection())) {
-                BlockEntity tile = request.getWorld().getBlockEntity(request.getPos());
+                BlockEntity blockEntity = request.getLevel().getBlockEntity(request.getPos());
 
-                if (tile != null) {
-                    tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, request.getDirection().getOpposite())
+                if (blockEntity != null) {
+                    blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, request.getDirection().getOpposite())
                         .ifPresent(itemHandler -> destinations.add(new Destination(DestinationType.ITEM_HANDLER, request.getPos(), request.getDirection(), connectedPipe)));
 
-                    tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, request.getDirection().getOpposite())
+                    blockEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, request.getDirection().getOpposite())
                         .ifPresent(fluidHandler -> destinations.add(new Destination(DestinationType.FLUID_HANDLER, request.getPos(), request.getDirection(), connectedPipe)));
 
-                    tile.getCapability(CapabilityEnergy.ENERGY, request.getDirection().getOpposite())
+                    blockEntity.getCapability(CapabilityEnergy.ENERGY, request.getDirection().getOpposite())
                         .ifPresent(energyStorage -> {
                             if (!(energyStorage instanceof EnergyPipeEnergyStorage)) {
                                 destinations.add(new Destination(DestinationType.ENERGY_STORAGE, request.getPos(), request.getDirection(), connectedPipe));

@@ -1,9 +1,9 @@
 package com.refinedmods.refinedpipes.message;
 
+import com.refinedmods.refinedpipes.blockentity.PipeBlockEntity;
 import com.refinedmods.refinedpipes.network.NetworkManager;
 import com.refinedmods.refinedpipes.network.pipe.attachment.Attachment;
 import com.refinedmods.refinedpipes.network.pipe.attachment.extractor.ExtractorAttachment;
-import com.refinedmods.refinedpipes.tile.PipeTileEntity;
 import com.refinedmods.refinedpipes.util.DirectionUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -40,15 +40,15 @@ public class ChangeStackSizeMessage {
 
     public static void handle(ChangeStackSizeMessage message, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            BlockEntity tile = ctx.get().getSender().level.getBlockEntity(message.pos);
+            BlockEntity blockEntity = ctx.get().getSender().level.getBlockEntity(message.pos);
 
-            if (tile instanceof PipeTileEntity) {
-                Attachment attachment = ((PipeTileEntity) tile).getAttachmentManager().getAttachment(message.direction);
+            if (blockEntity instanceof PipeBlockEntity) {
+                Attachment attachment = ((PipeBlockEntity) blockEntity).getAttachmentManager().getAttachment(message.direction);
 
                 if (attachment instanceof ExtractorAttachment) {
                     ((ExtractorAttachment) attachment).setStackSize(message.stackSize);
 
-                    NetworkManager.get(tile.getLevel()).setDirty();
+                    NetworkManager.get(blockEntity.getLevel()).setDirty();
                 }
             }
         });

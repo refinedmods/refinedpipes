@@ -1,4 +1,4 @@
-package com.refinedmods.refinedpipes.tile;
+package com.refinedmods.refinedpipes.blockentity;
 
 import com.refinedmods.refinedpipes.network.NetworkManager;
 import com.refinedmods.refinedpipes.network.pipe.Pipe;
@@ -16,12 +16,12 @@ import net.minecraftforge.energy.CapabilityEnergy;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class EnergyPipeTileEntity extends PipeTileEntity {
+public class EnergyPipeBlockEntity extends PipeBlockEntity {
     private final EnergyPipeType type;
     private final LazyOptional<ClientEnergyPipeEnergyStorage> clientEnergyStorage;
 
-    public EnergyPipeTileEntity(BlockPos pos, BlockState state, EnergyPipeType type) {
-        super(type.getTileType(), pos, state);
+    public EnergyPipeBlockEntity(BlockPos pos, BlockState state, EnergyPipeType type) {
+        super(type.getBlockEntityType(), pos, state);
 
         this.type = type;
         this.clientEnergyStorage = LazyOptional.of(() -> new ClientEnergyPipeEnergyStorage(type));
@@ -47,7 +47,7 @@ public class EnergyPipeTileEntity extends PipeTileEntity {
     }
 
     @Override
-    protected Pipe createPipe(Level world, BlockPos pos) {
-        return new EnergyPipe(world, pos, type);
+    protected Pipe createPipe(Level level, BlockPos pos) {
+        return new EnergyPipe(level, pos, type);
     }
 }

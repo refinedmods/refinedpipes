@@ -1,16 +1,16 @@
 package com.refinedmods.refinedpipes.setup;
 
 import com.refinedmods.refinedpipes.RefinedPipes;
+import com.refinedmods.refinedpipes.RefinedPipesBlockEntities;
 import com.refinedmods.refinedpipes.RefinedPipesBlocks;
-import com.refinedmods.refinedpipes.RefinedPipesContainers;
-import com.refinedmods.refinedpipes.RefinedPipesTileEntities;
+import com.refinedmods.refinedpipes.RefinedPipesContainerMenus;
 import com.refinedmods.refinedpipes.network.pipe.attachment.AttachmentFactory;
 import com.refinedmods.refinedpipes.network.pipe.attachment.AttachmentRegistry;
 import com.refinedmods.refinedpipes.network.pipe.energy.EnergyPipeType;
 import com.refinedmods.refinedpipes.network.pipe.fluid.FluidPipeType;
 import com.refinedmods.refinedpipes.network.pipe.item.ItemPipeType;
-import com.refinedmods.refinedpipes.render.FluidPipeTileEntityRenderer;
-import com.refinedmods.refinedpipes.render.ItemPipeTileEntityRenderer;
+import com.refinedmods.refinedpipes.render.FluidPipeBlockEntityRenderer;
+import com.refinedmods.refinedpipes.render.ItemPipeBlockEntityRenderer;
 import com.refinedmods.refinedpipes.render.PipeBakedModel;
 import com.refinedmods.refinedpipes.screen.ExtractorAttachmentScreen;
 import net.minecraft.client.gui.screens.MenuScreens;
@@ -71,7 +71,7 @@ public final class ClientSetup {
 
         ForgeModelBakery.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/attachment/inventory_attachment"));
 
-        MenuScreens.register(RefinedPipesContainers.EXTRACTOR_ATTACHMENT, ExtractorAttachmentScreen::new);
+        MenuScreens.register(RefinedPipesContainerMenus.EXTRACTOR_ATTACHMENT, ExtractorAttachmentScreen::new);
 
         ItemBlockRenderTypes.setRenderLayer(RefinedPipesBlocks.BASIC_ITEM_PIPE, RenderType.cutout());
         ItemBlockRenderTypes.setRenderLayer(RefinedPipesBlocks.IMPROVED_ITEM_PIPE, RenderType.cutout());
@@ -83,15 +83,15 @@ public final class ClientSetup {
         ItemBlockRenderTypes.setRenderLayer(RefinedPipesBlocks.ELITE_FLUID_PIPE, RenderType.cutout());
         ItemBlockRenderTypes.setRenderLayer(RefinedPipesBlocks.ULTIMATE_FLUID_PIPE, RenderType.cutout());
 
-        BlockEntityRenderers.register(RefinedPipesTileEntities.BASIC_ITEM_PIPE, ctx -> new ItemPipeTileEntityRenderer());
-        BlockEntityRenderers.register(RefinedPipesTileEntities.IMPROVED_ITEM_PIPE, ctx -> new ItemPipeTileEntityRenderer());
-        BlockEntityRenderers.register(RefinedPipesTileEntities.ADVANCED_ITEM_PIPE, ctx -> new ItemPipeTileEntityRenderer());
+        BlockEntityRenderers.register(RefinedPipesBlockEntities.BASIC_ITEM_PIPE, ctx -> new ItemPipeBlockEntityRenderer());
+        BlockEntityRenderers.register(RefinedPipesBlockEntities.IMPROVED_ITEM_PIPE, ctx -> new ItemPipeBlockEntityRenderer());
+        BlockEntityRenderers.register(RefinedPipesBlockEntities.ADVANCED_ITEM_PIPE, ctx -> new ItemPipeBlockEntityRenderer());
 
-        BlockEntityRenderers.register(RefinedPipesTileEntities.BASIC_FLUID_PIPE, ctx -> new FluidPipeTileEntityRenderer());
-        BlockEntityRenderers.register(RefinedPipesTileEntities.IMPROVED_FLUID_PIPE, ctx -> new FluidPipeTileEntityRenderer());
-        BlockEntityRenderers.register(RefinedPipesTileEntities.ADVANCED_FLUID_PIPE, ctx -> new FluidPipeTileEntityRenderer());
-        BlockEntityRenderers.register(RefinedPipesTileEntities.ELITE_FLUID_PIPE, ctx -> new FluidPipeTileEntityRenderer());
-        BlockEntityRenderers.register(RefinedPipesTileEntities.ULTIMATE_FLUID_PIPE, ctx -> new FluidPipeTileEntityRenderer());
+        BlockEntityRenderers.register(RefinedPipesBlockEntities.BASIC_FLUID_PIPE, ctx -> new FluidPipeBlockEntityRenderer());
+        BlockEntityRenderers.register(RefinedPipesBlockEntities.IMPROVED_FLUID_PIPE, ctx -> new FluidPipeBlockEntityRenderer());
+        BlockEntityRenderers.register(RefinedPipesBlockEntities.ADVANCED_FLUID_PIPE, ctx -> new FluidPipeBlockEntityRenderer());
+        BlockEntityRenderers.register(RefinedPipesBlockEntities.ELITE_FLUID_PIPE, ctx -> new FluidPipeBlockEntityRenderer());
+        BlockEntityRenderers.register(RefinedPipesBlockEntities.ULTIMATE_FLUID_PIPE, ctx -> new FluidPipeBlockEntityRenderer());
     }
 
     @SubscribeEvent

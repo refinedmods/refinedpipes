@@ -35,8 +35,8 @@ public class ItemPipeGoneTransportCallback implements TransportCallback {
     }
 
     @Override
-    public void call(Network network, Level world, BlockPos currentPos, TransportCallback cancelCallback) {
-        Containers.dropItemStack(world, currentPos.getX(), currentPos.getY(), currentPos.getZ(), stack);
+    public void call(Network network, Level level, BlockPos currentPos, TransportCallback cancelCallback) {
+        Containers.dropItemStack(level, currentPos.getX(), currentPos.getY(), currentPos.getZ(), stack);
     }
 
     @Override

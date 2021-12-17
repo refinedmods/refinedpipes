@@ -1,7 +1,7 @@
 package com.refinedmods.refinedpipes;
 
 import com.refinedmods.refinedpipes.config.ServerConfig;
-import com.refinedmods.refinedpipes.item.group.MainItemGroup;
+import com.refinedmods.refinedpipes.item.creativetab.MainCreativeModeTab;
 import com.refinedmods.refinedpipes.setup.ClientSetup;
 import com.refinedmods.refinedpipes.setup.CommonSetup;
 import net.minecraft.world.inventory.MenuType;
@@ -20,7 +20,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 @Mod(RefinedPipes.ID)
 public class RefinedPipes {
     public static final String ID = "refinedpipes";
-    public static final CreativeModeTab MAIN_GROUP = new MainItemGroup();
+    public static final CreativeModeTab MAIN_GROUP = new MainCreativeModeTab();
     public static final RefinedPipesNetwork NETWORK = new RefinedPipesNetwork();
     public static final ServerConfig SERVER_CONFIG = new ServerConfig();
 
@@ -36,9 +36,9 @@ public class RefinedPipes {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(CommonSetup::onCommonSetup);
         FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(Block.class, CommonSetup::onRegisterBlocks);
         FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(Item.class, CommonSetup::onRegisterItems);
-        FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(BlockEntityType.class, CommonSetup::onRegisterTileEntities);
-        FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(MenuType.class, CommonSetup::onRegisterContainers);
+        FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(BlockEntityType.class, CommonSetup::onRegisterBlockEntities);
+        FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(MenuType.class, CommonSetup::onRegisterContainerMenus);
 
-        MinecraftForge.EVENT_BUS.addListener(CommonSetup::onWorldTick);
+        MinecraftForge.EVENT_BUS.addListener(CommonSetup::onLevelTick);
     }
 }

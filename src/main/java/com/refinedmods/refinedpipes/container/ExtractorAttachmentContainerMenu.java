@@ -1,7 +1,7 @@
 package com.refinedmods.refinedpipes.container;
 
 import com.refinedmods.refinedpipes.RefinedPipes;
-import com.refinedmods.refinedpipes.RefinedPipesContainers;
+import com.refinedmods.refinedpipes.RefinedPipesContainerMenus;
 import com.refinedmods.refinedpipes.container.slot.FilterSlot;
 import com.refinedmods.refinedpipes.container.slot.FluidFilterSlot;
 import com.refinedmods.refinedpipes.inventory.fluid.FluidInventory;
@@ -21,7 +21,7 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
-public class ExtractorAttachmentContainer extends BaseContainer {
+public class ExtractorAttachmentContainerMenu extends BaseContainerMenu {
     private final BlockPos pos;
     private final Direction dir;
     private final ExtractorAttachmentType extractorAttachmentType;
@@ -33,7 +33,7 @@ public class ExtractorAttachmentContainer extends BaseContainer {
     private int stackSize;
     private boolean exactMode;
 
-    public ExtractorAttachmentContainer(
+    public ExtractorAttachmentContainerMenu(
         int windowId,
         Player player,
         BlockPos pos,
@@ -47,7 +47,7 @@ public class ExtractorAttachmentContainer extends BaseContainer {
         ItemStackHandler itemFilter,
         FluidInventory fluidFilter,
         boolean fluidMode) {
-        super(RefinedPipesContainers.EXTRACTOR_ATTACHMENT, windowId, player);
+        super(RefinedPipesContainerMenus.EXTRACTOR_ATTACHMENT, windowId, player);
 
         addPlayerInventory(8, 111);
 

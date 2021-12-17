@@ -1,4 +1,4 @@
-package com.refinedmods.refinedpipes.tile;
+package com.refinedmods.refinedpipes.blockentity;
 
 import com.refinedmods.refinedpipes.network.NetworkManager;
 import com.refinedmods.refinedpipes.network.fluid.FluidNetwork;
@@ -13,15 +13,15 @@ import net.minecraftforge.fluids.FluidStack;
 
 import javax.annotation.Nullable;
 
-public class FluidPipeTileEntity extends PipeTileEntity {
+public class FluidPipeBlockEntity extends PipeBlockEntity {
     private final FluidPipeType type;
 
     private FluidStack fluid = FluidStack.EMPTY;
     private float fullness = 0;
     private float renderFullness = 0;
 
-    public FluidPipeTileEntity(BlockPos pos, BlockState state, FluidPipeType type) {
-        super(type.getTileType(), pos, state);
+    public FluidPipeBlockEntity(BlockPos pos, BlockState state, FluidPipeType type) {
+        super(type.getBlockEntityType(), pos, state);
 
         this.type = type;
     }
@@ -89,7 +89,7 @@ public class FluidPipeTileEntity extends PipeTileEntity {
     }
 
     @Override
-    protected Pipe createPipe(Level world, BlockPos pos) {
-        return new FluidPipe(world, pos, type);
+    protected Pipe createPipe(Level level, BlockPos pos) {
+        return new FluidPipe(level, pos, type);
     }
 }

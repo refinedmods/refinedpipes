@@ -176,14 +176,14 @@ public class ItemTransport {
         return getDirection(currentPipe.getPos(), nextPipe);
     }
 
-    private boolean onDone(Network network, Level world, ItemPipe currentPipe) {
-        finishedCallback.call(network, world, currentPipe.getPos(), cancelCallback);
+    private boolean onDone(Network network, Level level, ItemPipe currentPipe) {
+        finishedCallback.call(network, level, currentPipe.getPos(), cancelCallback);
         return true;
     }
 
-    private boolean onPipeGone(Network network, Level world, BlockPos posWherePipeIsGone) {
+    private boolean onPipeGone(Network network, Level level, BlockPos posWherePipeIsGone) {
         LOGGER.warn("Pipe on path is gone");
-        pipeGoneCallback.call(network, world, posWherePipeIsGone, cancelCallback);
+        pipeGoneCallback.call(network, level, posWherePipeIsGone, cancelCallback);
         return true;
     }
 
@@ -193,9 +193,9 @@ public class ItemTransport {
         double progress = (double) progressInCurrentPipe / (double) getMaxTicksInPipe(currentPipe);
 
         BlockPos nextPos = currentPipe.getPos().relative(getDirection(currentPipe));
-        if (progress > 0.25 && currentPipe.getWorld().isEmptyBlock(nextPos)) {
+        if (progress > 0.25 && currentPipe.getLevel().isEmptyBlock(nextPos)) {
             currentPipe.removeTransport(this);
-            return onPipeGone(network, currentPipe.getWorld(), nextPos);
+            return onPipeGone(network, currentPipe.getLevel(), nextPos);
         }
 
         if (progressInCurrentPipe >= getMaxTicksInPipe(currentPipe)) {
@@ -204,12 +204,12 @@ public class ItemTransport {
 
             BlockPos nextPipePos = path.poll();
             if (nextPipePos == null) {
-                return onDone(network, currentPipe.getWorld(), currentPipe);
+                return onDone(network, currentPipe.getLevel(), currentPipe);
             }
 
             Pipe nextPipe = network.getPipe(nextPipePos);
             if (nextPipe == null) {
-                return onPipeGone(network, currentPipe.getWorld(), nextPipePos);
+                return onPipeGone(network, currentPipe.getLevel(), nextPipePos);
             }
 
             progressInCurrentPipe = 0;
