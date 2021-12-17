@@ -52,16 +52,16 @@ public class BaseContainer extends Container {
     }
 
     @Override
-    public ItemStack slotClick(int id, int dragType, ClickType clickType, PlayerEntity player) {
+    public ItemStack clicked(int id, int dragType, ClickType clickType, PlayerEntity player) {
         Slot slot = id >= 0 ? getSlot(id) : null;
 
-        ItemStack holding = player.inventory.getItemStack();
+        ItemStack holding = player.inventory.getCarried();
 
         if (slot instanceof FilterSlot) {
             if (holding.isEmpty()) {
-                slot.putStack(ItemStack.EMPTY);
-            } else if (slot.isItemValid(holding)) {
-                slot.putStack(holding.copy());
+                slot.set(ItemStack.EMPTY);
+            } else if (slot.mayPlace(holding)) {
+                slot.set(holding.copy());
             }
 
             return holding;
@@ -75,7 +75,7 @@ public class BaseContainer extends Container {
             return holding;
         }
 
-        return super.slotClick(id, dragType, clickType, player);
+        return super.clicked(id, dragType, clickType, player);
     }
 
     @Override
@@ -89,8 +89,8 @@ public class BaseContainer extends Container {
     }
 
     @Override
-    public void detectAndSendChanges() {
-        super.detectAndSendChanges();
+    public void broadcastChanges() {
+        super.broadcastChanges();
 
         if (!(player instanceof ServerPlayerEntity)) {
             return;
@@ -105,13 +105,13 @@ public class BaseContainer extends Container {
             if (!cached.equals(actual)) {
                 this.fluids.set(i, actual.copy());
 
-                RefinedPipes.NETWORK.sendToClient((ServerPlayerEntity) player, new FluidFilterSlotUpdateMessage(slot.slotNumber, actual));
+                RefinedPipes.NETWORK.sendToClient((ServerPlayerEntity) player, new FluidFilterSlotUpdateMessage(slot.getInventoryIndex(), actual));
             }
         }
     }
 
     @Override
-    public boolean canInteractWith(PlayerEntity player) {
+    public boolean stillValid(PlayerEntity player) {
         return true;
     }
 
@@ -120,11 +120,11 @@ public class BaseContainer extends Container {
     }
 
     @Override
-    public boolean canMergeSlot(ItemStack stack, Slot slot) {
+    public boolean canTakeItemForPickAll(ItemStack stack, Slot slot) {
         if (slot instanceof FilterSlot || slot instanceof FluidFilterSlot) {
             return false;
         }
 
-        return super.canMergeSlot(stack, slot);
+        return super.canTakeItemForPickAll(stack, slot);
     }
 }

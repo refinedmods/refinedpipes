@@ -13,9 +13,9 @@ public enum RedstoneMode {
             case IGNORED:
                 return true;
             case HIGH:
-                return world.isBlockPowered(pos);
+                return world.hasNeighborSignal(pos);
             case LOW:
-                return !world.isBlockPowered(pos);
+                return !world.hasNeighborSignal(pos);
             default:
                 return false;
         }

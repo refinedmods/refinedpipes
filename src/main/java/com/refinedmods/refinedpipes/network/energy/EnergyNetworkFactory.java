@@ -27,7 +27,7 @@ public class EnergyNetworkFactory implements NetworkFactory {
 
     @Override
     public Network create(CompoundNBT tag) {
-        EnergyNetwork network = new EnergyNetwork(BlockPos.fromLong(tag.getLong("origin")), tag.getString("id"), pipeType);
+        EnergyNetwork network = new EnergyNetwork(BlockPos.of(tag.getLong("origin")), tag.getString("id"), pipeType);
 
         LOGGER.debug("Deserialized energy network {} of type {}", network.getId(), network.getType().toString());
 

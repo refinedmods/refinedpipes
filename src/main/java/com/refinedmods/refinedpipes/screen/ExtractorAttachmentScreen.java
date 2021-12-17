@@ -41,8 +41,8 @@ public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentCon
     public ExtractorAttachmentScreen(ExtractorAttachmentContainer container, PlayerInventory inv, ITextComponent title) {
         super(container, inv, title);
 
-        this.xSize = 176;
-        this.ySize = 193;
+        this.imageWidth = 176;
+        this.imageHeight = 193;
     }
 
     @Override
@@ -50,57 +50,57 @@ public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentCon
         super.init();
 
         redstoneModeButton = addButton(new IconButton(
-            this.guiLeft + 32,
-            this.guiTop + 76,
+            this.leftPos + 32,
+            this.topPos + 76,
             IconButtonPreset.NORMAL,
-            getRedstoneModeX(container.getRedstoneMode()),
+            getRedstoneModeX(menu.getRedstoneMode()),
             61,
-            getRedstoneModeText(container.getRedstoneMode()),
-            btn -> setRedstoneMode((IconButton) btn, container.getRedstoneMode().next())
+            getRedstoneModeText(menu.getRedstoneMode()),
+            btn -> setRedstoneMode((IconButton) btn, menu.getRedstoneMode().next())
         ));
 
-        redstoneModeButton.active = container.getExtractorAttachmentType().getCanSetRedstoneMode();
+        redstoneModeButton.active = menu.getExtractorAttachmentType().getCanSetRedstoneMode();
 
         blacklistWhitelistButton = addButton(new IconButton(
-            this.guiLeft + 55,
-            this.guiTop + 76,
+            this.leftPos + 55,
+            this.topPos + 76,
             IconButtonPreset.NORMAL,
-            getBlacklistWhitelistX(container.getBlacklistWhitelist()),
+            getBlacklistWhitelistX(menu.getBlacklistWhitelist()),
             82,
-            getBlacklistWhitelistText(container.getBlacklistWhitelist()),
-            btn -> setBlacklistWhitelist((IconButton) btn, container.getBlacklistWhitelist().next())
+            getBlacklistWhitelistText(menu.getBlacklistWhitelist()),
+            btn -> setBlacklistWhitelist((IconButton) btn, menu.getBlacklistWhitelist().next())
         ));
 
-        blacklistWhitelistButton.active = container.getExtractorAttachmentType().getCanSetWhitelistBlacklist();
+        blacklistWhitelistButton.active = menu.getExtractorAttachmentType().getCanSetWhitelistBlacklist();
 
         exactModeButton = addButton(new IconButton(
-            this.guiLeft + 78,
-            this.guiTop + 76,
+            this.leftPos + 78,
+            this.topPos + 76,
             IconButtonPreset.NORMAL,
-            getExactModeX(container.isExactMode()),
+            getExactModeX(menu.isExactMode()),
             103,
-            getExactModeText(container.isExactMode()),
-            btn -> setExactMode((IconButton) btn, !container.isExactMode())
+            getExactModeText(menu.isExactMode()),
+            btn -> setExactMode((IconButton) btn, !menu.isExactMode())
         ));
 
-        exactModeButton.active = container.getExtractorAttachmentType().getCanSetExactMode();
+        exactModeButton.active = menu.getExtractorAttachmentType().getCanSetExactMode();
 
-        if (!container.isFluidMode()) {
+        if (!menu.isFluidMode()) {
             routingModeButton = addButton(new IconButton(
-                this.guiLeft + 101,
-                this.guiTop + 76,
+                this.leftPos + 101,
+                this.topPos + 76,
                 IconButtonPreset.NORMAL,
-                getRoutingModeX(container.getRoutingMode()),
+                getRoutingModeX(menu.getRoutingMode()),
                 194,
-                getRoutingModeText(container.getRoutingMode()),
-                btn -> setRoutingMode((IconButton) btn, container.getRoutingMode().next())
+                getRoutingModeText(menu.getRoutingMode()),
+                btn -> setRoutingMode((IconButton) btn, menu.getRoutingMode().next())
             ));
 
-            routingModeButton.active = container.getExtractorAttachmentType().getCanSetWhitelistBlacklist();
+            routingModeButton.active = menu.getExtractorAttachmentType().getCanSetWhitelistBlacklist();
 
             plusButton = addButton(new IconButton(
-                this.guiLeft + 125,
-                this.guiTop + 76 - 3,
+                this.leftPos + 125,
+                this.topPos + 76 - 3,
                 IconButtonPreset.SMALL,
                 198,
                 19,
@@ -109,8 +109,8 @@ public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentCon
             ));
 
             minusButton = addButton(new IconButton(
-                this.guiLeft + 125,
-                this.guiTop + 76 + 14 - 3,
+                this.leftPos + 125,
+                this.topPos + 76 + 14 - 3,
                 IconButtonPreset.SMALL,
                 198,
                 34,
@@ -118,8 +118,8 @@ public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentCon
                 btn -> updateStackSize(-1)
             ));
 
-            minusButton.active = container.getStackSize() > 0;
-            plusButton.active = container.getStackSize() < container.getExtractorAttachmentType().getItemsToExtract();
+            minusButton.active = menu.getStackSize() > 0;
+            plusButton.active = menu.getStackSize() < menu.getExtractorAttachmentType().getItemsToExtract();
         }
     }
 
@@ -128,19 +128,19 @@ public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentCon
             amount *= 4;
         }
 
-        int newAmount = container.getStackSize() + amount;
+        int newAmount = menu.getStackSize() + amount;
         if (newAmount < 0) {
             newAmount = 0;
         }
 
-        if (newAmount > container.getExtractorAttachmentType().getItemsToExtract()) {
-            newAmount = container.getExtractorAttachmentType().getItemsToExtract();
+        if (newAmount > menu.getExtractorAttachmentType().getItemsToExtract()) {
+            newAmount = menu.getExtractorAttachmentType().getItemsToExtract();
         }
 
         minusButton.active = newAmount > 0;
-        plusButton.active = newAmount < container.getExtractorAttachmentType().getItemsToExtract();
+        plusButton.active = newAmount < menu.getExtractorAttachmentType().getItemsToExtract();
 
-        container.setStackSize(newAmount);
+        menu.setStackSize(newAmount);
     }
 
     private int getRedstoneModeX(RedstoneMode redstoneMode) {
@@ -164,7 +164,7 @@ public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentCon
         button.setMessage(getRedstoneModeText(redstoneMode));
         button.setOverlayTexX(getRedstoneModeX(redstoneMode));
 
-        container.setRedstoneMode(redstoneMode);
+        menu.setRedstoneMode(redstoneMode);
     }
 
     private int getBlacklistWhitelistX(BlacklistWhitelist blacklistWhitelist) {
@@ -186,7 +186,7 @@ public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentCon
         button.setMessage(getBlacklistWhitelistText(blacklistWhitelist));
         button.setOverlayTexX(getBlacklistWhitelistX(blacklistWhitelist));
 
-        container.setBlacklistWhitelist(blacklistWhitelist);
+        menu.setBlacklistWhitelist(blacklistWhitelist);
     }
 
     private int getRoutingModeX(RoutingMode routingMode) {
@@ -212,7 +212,7 @@ public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentCon
         button.setMessage(getRoutingModeText(routingMode));
         button.setOverlayTexX(getRoutingModeX(routingMode));
 
-        container.setRoutingMode(routingMode);
+        menu.setRoutingMode(routingMode);
     }
 
     private int getExactModeX(boolean exactMode) {
@@ -227,57 +227,57 @@ public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentCon
         button.setMessage(getExactModeText(exactMode));
         button.setOverlayTexX(getExactModeX(exactMode));
 
-        container.setExactMode(exactMode);
+        menu.setExactMode(exactMode);
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int mouseX, int mouseY) {
-        font.drawString(matrixStack, title.getString(), 7, 7, 4210752);
-        font.drawString(matrixStack, I18n.format("container.inventory"), 7, 103 - 4, 4210752);
+    protected void renderLabels(MatrixStack matrixStack, int mouseX, int mouseY) {
+        font.draw(matrixStack, title.getString(), 7, 7, 4210752);
+        font.draw(matrixStack, I18n.get("container.inventory"), 7, 103 - 4, 4210752);
 
-        if (!container.isFluidMode()) {
-            font.drawString(matrixStack, "" + container.getStackSize(), 143, 83, 4210752);
+        if (!menu.isFluidMode()) {
+            font.draw(matrixStack, "" + menu.getStackSize(), 143, 83, 4210752);
         }
 
-        func_230459_a_(matrixStack, mouseX - guiLeft, mouseY - guiTop);
+        renderTooltip(matrixStack, mouseX - leftPos, mouseY - topPos);
 
         tooltip.clear();
 
         if (blacklistWhitelistButton.isHovered()) {
             tooltip.add(new TranslationTextComponent("misc.refinedpipes.mode"));
-            tooltip.add(getBlacklistWhitelistText(container.getBlacklistWhitelist()).mergeStyle(TextFormatting.GRAY));
+            tooltip.add(getBlacklistWhitelistText(menu.getBlacklistWhitelist()).withStyle(TextFormatting.GRAY));
         } else if (redstoneModeButton.isHovered()) {
             tooltip.add(new TranslationTextComponent("misc.refinedpipes.redstone_mode"));
-            tooltip.add(getRedstoneModeText(container.getRedstoneMode()).mergeStyle(TextFormatting.GRAY));
+            tooltip.add(getRedstoneModeText(menu.getRedstoneMode()).withStyle(TextFormatting.GRAY));
         } else if (routingModeButton != null && routingModeButton.isHovered()) {
             tooltip.add(new TranslationTextComponent("misc.refinedpipes.routing_mode"));
-            tooltip.add(getRoutingModeText(container.getRoutingMode()).mergeStyle(TextFormatting.GRAY));
+            tooltip.add(getRoutingModeText(menu.getRoutingMode()).withStyle(TextFormatting.GRAY));
         } else if (exactModeButton.isHovered()) {
             tooltip.add(new TranslationTextComponent("misc.refinedpipes.exact_mode"));
-            tooltip.add(getExactModeText(container.isExactMode()).mergeStyle(TextFormatting.GRAY));
+            tooltip.add(getExactModeText(menu.isExactMode()).withStyle(TextFormatting.GRAY));
         }
 
         if (!tooltip.isEmpty()) {
-            GuiUtils.drawHoveringText(matrixStack, tooltip, mouseX - guiLeft, mouseY - guiTop, width, height, -1, Minecraft.getInstance().fontRenderer);
+            GuiUtils.drawHoveringText(matrixStack, tooltip, mouseX - leftPos, mouseY - topPos, width, height, -1, Minecraft.getInstance().font);
         }
 
-        super.drawGuiContainerForegroundLayer(matrixStack, mouseX, mouseY);
+        super.renderLabels(matrixStack, mouseX, mouseY);
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
+    protected void renderBg(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
         renderBackground(matrixStack);
 
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        this.minecraft.getTextureManager().bindTexture(RESOURCE);
-        int i = (this.width - this.xSize) / 2;
-        int j = (this.height - this.ySize) / 2;
-        this.blit(matrixStack, i, j, 0, 0, this.xSize, this.ySize);
+        this.minecraft.getTextureManager().bind(RESOURCE);
+        int i = (this.width - this.imageWidth) / 2;
+        int j = (this.height - this.imageHeight) / 2;
+        this.blit(matrixStack, i, j, 0, 0, this.imageWidth, this.imageHeight);
 
         int x = 43;
         int y = 18;
         for (int filterSlotId = 1; filterSlotId <= ExtractorAttachment.MAX_FILTER_SLOTS; ++filterSlotId) {
-            if (filterSlotId > container.getExtractorAttachmentType().getFilterSlots()) {
+            if (filterSlotId > menu.getExtractorAttachmentType().getFilterSlots()) {
                 this.blit(matrixStack, i + x, j + y, 198, 0, 18, 18);
             }
 
@@ -289,6 +289,6 @@ public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentCon
             }
         }
 
-        super.drawGuiContainerBackgroundLayer(matrixStack, partialTicks, mouseX, mouseY);
+        super.renderBg(matrixStack, partialTicks, mouseX, mouseY);
     }
 }

@@ -35,7 +35,7 @@ public class ItemInsertTransportCallback implements TransportCallback {
 
     @Override
     public void call(Network network, World world, BlockPos currentPos, TransportCallback cancelCallback) {
-        TileEntity tile = world.getTileEntity(itemHandlerPosition);
+        TileEntity tile = world.getBlockEntity(itemHandlerPosition);
         if (tile == null) {
             LOGGER.warn("Destination item handler is gone at " + itemHandlerPosition);
             cancelCallback.call(network, world, currentPos, cancelCallback);
@@ -63,8 +63,8 @@ public class ItemInsertTransportCallback implements TransportCallback {
 
     @Nullable
     public static ItemInsertTransportCallback of(CompoundNBT tag) {
-        BlockPos itemHandlerPosition = BlockPos.fromLong(tag.getLong("ihpos"));
-        ItemStack toInsert = ItemStack.read(tag.getCompound("s"));
+        BlockPos itemHandlerPosition = BlockPos.of(tag.getLong("ihpos"));
+        ItemStack toInsert = ItemStack.of(tag.getCompound("s"));
         Direction incomingDirection = DirectionUtil.safeGet((byte) tag.getInt("incdir"));
 
         if (toInsert.isEmpty()) {
@@ -77,8 +77,8 @@ public class ItemInsertTransportCallback implements TransportCallback {
 
     @Override
     public CompoundNBT writeToNbt(CompoundNBT tag) {
-        tag.putLong("ihpos", itemHandlerPosition.toLong());
-        tag.put("s", toInsert.write(new CompoundNBT()));
+        tag.putLong("ihpos", itemHandlerPosition.asLong());
+        tag.put("s", toInsert.save(new CompoundNBT()));
         tag.putInt("incdir", incomingDirection.ordinal());
 
         return tag;

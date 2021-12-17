@@ -93,8 +93,8 @@ public class ItemTransport {
 
         double progress = (double) progressInCurrentPipe / (double) getMaxTicksInPipe(currentPipe);
 
-        BlockPos nextPos = currentPipe.getPos().offset(getDirection(currentPipe));
-        if (progress > 0.25 && currentPipe.getWorld().isAirBlock(nextPos)) {
+        BlockPos nextPos = currentPipe.getPos().relative(getDirection(currentPipe));
+        if (progress > 0.25 && currentPipe.getWorld().isEmptyBlock(nextPos)) {
             currentPipe.removeTransport(this);
             return onPipeGone(network, currentPipe.getWorld(), nextPos);
         }
@@ -125,27 +125,27 @@ public class ItemTransport {
     }
 
     private static Direction getDirection(BlockPos a, BlockPos b) {
-        if (a.offset(Direction.NORTH).equals(b)) {
+        if (a.relative(Direction.NORTH).equals(b)) {
             return Direction.NORTH;
         }
 
-        if (a.offset(Direction.EAST).equals(b)) {
+        if (a.relative(Direction.EAST).equals(b)) {
             return Direction.EAST;
         }
 
-        if (a.offset(Direction.SOUTH).equals(b)) {
+        if (a.relative(Direction.SOUTH).equals(b)) {
             return Direction.SOUTH;
         }
 
-        if (a.offset(Direction.WEST).equals(b)) {
+        if (a.relative(Direction.WEST).equals(b)) {
             return Direction.WEST;
         }
 
-        if (a.offset(Direction.UP).equals(b)) {
+        if (a.relative(Direction.UP).equals(b)) {
             return Direction.UP;
         }
 
-        if (a.offset(Direction.DOWN).equals(b)) {
+        if (a.relative(Direction.DOWN).equals(b)) {
             return Direction.DOWN;
         }
 
@@ -179,13 +179,13 @@ public class ItemTransport {
     }
 
     public CompoundNBT writeToNbt(CompoundNBT tag) {
-        tag.put("v", value.write(new CompoundNBT()));
-        tag.putLong("src", source.toLong());
-        tag.putLong("dst", destination.toLong());
+        tag.put("v", value.save(new CompoundNBT()));
+        tag.putLong("src", source.asLong());
+        tag.putLong("dst", destination.asLong());
 
         ListNBT path = new ListNBT();
         for (BlockPos pathItem : this.path) {
-            path.add(LongNBT.valueOf(pathItem.toLong()));
+            path.add(LongNBT.valueOf(pathItem.asLong()));
         }
         tag.put("pth", path);
 
@@ -206,19 +206,19 @@ public class ItemTransport {
 
     @Nullable
     public static ItemTransport of(CompoundNBT tag) {
-        ItemStack value = ItemStack.read(tag.getCompound("v"));
+        ItemStack value = ItemStack.of(tag.getCompound("v"));
         if (value.isEmpty()) {
             LOGGER.warn("Item no longer exists");
             return null;
         }
 
-        BlockPos source = BlockPos.fromLong(tag.getLong("src"));
-        BlockPos destination = BlockPos.fromLong(tag.getLong("dst"));
+        BlockPos source = BlockPos.of(tag.getLong("src"));
+        BlockPos destination = BlockPos.of(tag.getLong("dst"));
 
         ListNBT pathTag = tag.getList("pth", Constants.NBT.TAG_LONG);
         Deque<BlockPos> path = new ArrayDeque<>();
         for (INBT pathItem : pathTag) {
-            path.add(BlockPos.fromLong(((LongNBT) pathItem).getLong()));
+            path.add(BlockPos.of(((LongNBT) pathItem).getAsLong()));
         }
 
         Direction initialDirection = DirectionUtil.safeGet((byte) tag.getInt("initd"));

@@ -84,9 +84,9 @@ public class ExtractorAttachment extends Attachment {
             return;
         }
 
-        BlockPos destinationPos = pipe.getPos().offset(getDirection());
+        BlockPos destinationPos = pipe.getPos().relative(getDirection());
 
-        TileEntity tile = pipe.getWorld().getTileEntity(destinationPos);
+        TileEntity tile = pipe.getWorld().getBlockEntity(destinationPos);
         if (tile == null) {
             return;
         }
@@ -125,7 +125,7 @@ public class ExtractorAttachment extends Attachment {
             return;
         }
 
-        BlockPos fromPos = pipe.getPos().offset(getDirection());
+        BlockPos fromPos = pipe.getPos().relative(getDirection());
 
         ((ItemPipe) pipe).addTransport(new ItemTransport(
             extracted.copy(),
@@ -187,7 +187,7 @@ public class ExtractorAttachment extends Attachment {
 
         network.getFluidTank().fill(drained, IFluidHandler.FluidAction.EXECUTE);
 
-        NetworkManager.get(pipe.getWorld()).markDirty();
+        NetworkManager.get(pipe.getWorld()).setDirty();
     }
 
     private boolean acceptsItem(ItemStack stack) {
@@ -195,9 +195,9 @@ public class ExtractorAttachment extends Attachment {
             for (int i = 0; i < itemFilter.getSlots(); ++i) {
                 ItemStack filtered = itemFilter.getStackInSlot(i);
 
-                boolean equals = filtered.isItemEqual(stack);
+                boolean equals = filtered.sameItem(stack);
                 if (exactMode) {
-                    equals = equals && ItemStack.areItemStackTagsEqual(filtered, stack);
+                    equals = equals && ItemStack.tagMatches(filtered, stack);
                 }
 
                 if (equals) {
@@ -210,9 +210,9 @@ public class ExtractorAttachment extends Attachment {
             for (int i = 0; i < itemFilter.getSlots(); ++i) {
                 ItemStack filtered = itemFilter.getStackInSlot(i);
 
-                boolean equals = filtered.isItemEqual(stack);
+                boolean equals = filtered.sameItem(stack);
                 if (exactMode) {
-                    equals = equals && ItemStack.areItemStackTagsEqual(filtered, stack);
+                    equals = equals && ItemStack.tagMatches(filtered, stack);
                 }
 
                 if (equals) {
@@ -380,7 +380,7 @@ public class ExtractorAttachment extends Attachment {
                 super.onContentsChanged(slot);
 
                 if (attachment != null) {
-                    NetworkManager.get(attachment.pipe.getWorld()).markDirty();
+                    NetworkManager.get(attachment.pipe.getWorld()).setDirty();
                 }
             }
         };
@@ -393,7 +393,7 @@ public class ExtractorAttachment extends Attachment {
                 super.onContentsChanged();
 
                 if (attachment != null) {
-                    NetworkManager.get(attachment.pipe.getWorld()).markDirty();
+                    NetworkManager.get(attachment.pipe.getWorld()).setDirty();
                 }
             }
         };

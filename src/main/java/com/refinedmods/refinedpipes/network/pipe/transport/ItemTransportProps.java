@@ -25,7 +25,7 @@ public class ItemTransportProps {
     }
 
     public void writeToBuffer(PacketBuffer buf) {
-        buf.writeItemStack(stack);
+        buf.writeItem(stack);
         buf.writeInt(maxTicksInPipe);
         buf.writeInt(progress);
         buf.writeInt(direction.ordinal());
@@ -36,7 +36,7 @@ public class ItemTransportProps {
 
     public static ItemTransportProps create(PacketBuffer buf) {
         return new ItemTransportProps(
-            buf.readItemStack(),
+            buf.readItem(),
             buf.readInt(),
             buf.readInt(),
             DirectionUtil.safeGet((byte) buf.readInt()),

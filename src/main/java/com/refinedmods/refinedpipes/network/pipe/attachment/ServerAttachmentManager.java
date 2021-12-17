@@ -114,7 +114,7 @@ public class ServerAttachmentManager implements AttachmentManager {
         for (Direction dir : Direction.values()) {
             if (hasAttachment(dir)) {
                 tag.putString("attch_" + dir.ordinal(), getAttachment(dir).getId().toString());
-                tag.put("pb_" + dir.ordinal(), getAttachment(dir).getDrop().write(new CompoundNBT()));
+                tag.put("pb_" + dir.ordinal(), getAttachment(dir).getDrop().save(new CompoundNBT()));
             }
         }
     }

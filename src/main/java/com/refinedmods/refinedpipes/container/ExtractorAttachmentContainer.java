@@ -139,17 +139,17 @@ public class ExtractorAttachmentContainer extends BaseContainer {
     }
 
     @Override
-    public ItemStack transferStackInSlot(PlayerEntity player, int index) {
-        Slot slot = inventorySlots.get(index);
-        if (slot != null && slot.getHasStack() && index < 9 * 4) {
-            for (int i = 9 * 4; i < inventorySlots.size(); ++i) {
-                Slot filterSlot = inventorySlots.get(i);
+    public ItemStack quickMoveStack(PlayerEntity player, int index) {
+        Slot slot = slots.get(index);
+        if (slot != null && slot.hasItem() && index < 9 * 4) {
+            for (int i = 9 * 4; i < slots.size(); ++i) {
+                Slot filterSlot = slots.get(i);
 
                 if (filterSlot instanceof FluidFilterSlot) {
                     FluidFilterSlot fluidSlot = (FluidFilterSlot) filterSlot;
 
                     if (fluidSlot.getFluidInventory().getFluid(fluidSlot.getSlotIndex()).isEmpty()) {
-                        FluidStack toInsert = FluidUtil.getFromStack(slot.getStack(), true).getValue();
+                        FluidStack toInsert = FluidUtil.getFromStack(slot.getItem(), true).getValue();
 
                         boolean foundExistingFluid = false;
 
@@ -161,7 +161,7 @@ public class ExtractorAttachmentContainer extends BaseContainer {
                         }
 
                         if (!foundExistingFluid) {
-                            fluidSlot.onContainerClicked(slot.getStack());
+                            fluidSlot.onContainerClicked(slot.getItem());
                         }
 
                         break;
@@ -169,20 +169,20 @@ public class ExtractorAttachmentContainer extends BaseContainer {
                 } else if (filterSlot instanceof SlotItemHandler) {
                     SlotItemHandler itemSlot = (SlotItemHandler) filterSlot;
 
-                    if (!itemSlot.getHasStack()) {
-                        ItemStack toInsert = ItemHandlerHelper.copyStackWithSize(slot.getStack(), 1);
+                    if (!itemSlot.hasItem()) {
+                        ItemStack toInsert = ItemHandlerHelper.copyStackWithSize(slot.getItem(), 1);
 
                         boolean foundExistingItem = false;
 
                         for (int j = 0; j < itemSlot.getItemHandler().getSlots(); ++j) {
-                            if (ItemStack.areItemStacksEqual(itemSlot.getItemHandler().getStackInSlot(j), toInsert)) {
+                            if (ItemStack.matches(itemSlot.getItemHandler().getStackInSlot(j), toInsert)) {
                                 foundExistingItem = true;
                                 break;
                             }
                         }
 
                         if (!foundExistingItem) {
-                            itemSlot.putStack(toInsert);
+                            itemSlot.set(toInsert);
                         }
 
                         break;

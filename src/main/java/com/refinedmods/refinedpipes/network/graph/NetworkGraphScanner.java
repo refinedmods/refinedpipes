@@ -70,7 +70,7 @@ public class NetworkGraphScanner {
                 for (Direction dir : Direction.values()) {
                     addRequest(new NetworkGraphScannerRequest(
                         request.getWorld(),
-                        request.getPos().offset(dir),
+                        request.getPos().relative(dir),
                         dir,
                         request
                     ));
@@ -85,7 +85,7 @@ public class NetworkGraphScanner {
 
             // If this destination is connected to a pipe with an attachment, then this is not a valid destination.
             if (!connectedPipe.getAttachmentManager().hasAttachment(request.getDirection())) {
-                TileEntity tile = request.getWorld().getTileEntity(request.getPos());
+                TileEntity tile = request.getWorld().getBlockEntity(request.getPos());
 
                 if (tile != null) {
                     tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, request.getDirection().getOpposite())

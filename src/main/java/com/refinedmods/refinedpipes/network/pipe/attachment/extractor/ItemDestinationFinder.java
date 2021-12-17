@@ -80,7 +80,7 @@ public class ItemDestinationFinder {
     }
 
     private boolean isDestinationApplicable(BlockPos sourcePos, ItemStack extracted, Destination destination) {
-        TileEntity tile = destination.getConnectedPipe().getWorld().getTileEntity(destination.getReceiver());
+        TileEntity tile = destination.getConnectedPipe().getWorld().getBlockEntity(destination.getReceiver());
         if (tile == null) {
             return false;
         }

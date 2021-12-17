@@ -30,10 +30,10 @@ public class EnergyPipeTileEntity extends PipeTileEntity {
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
         if (cap == CapabilityEnergy.ENERGY) {
-            if (!world.isRemote) {
-                NetworkManager mgr = NetworkManager.get(world);
+            if (!level.isClientSide) {
+                NetworkManager mgr = NetworkManager.get(level);
 
-                Pipe pipe = mgr.getPipe(pos);
+                Pipe pipe = mgr.getPipe(worldPosition);
                 if (pipe instanceof EnergyPipe) {
                     return ((EnergyPipe) pipe).getEnergyStorage().cast();
                 }

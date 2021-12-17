@@ -27,7 +27,7 @@ public class FluidNetworkFactory implements NetworkFactory {
 
     @Override
     public Network create(CompoundNBT tag) {
-        FluidNetwork network = new FluidNetwork(BlockPos.fromLong(tag.getLong("origin")), tag.getString("id"), pipeType);
+        FluidNetwork network = new FluidNetwork(BlockPos.of(tag.getLong("origin")), tag.getString("id"), pipeType);
 
         if (tag.contains("tank")) {
             network.getFluidTank().readFromNBT(tag.getCompound("tank"));

@@ -15,7 +15,7 @@ public class AttachmentItem extends Item {
     private final AttachmentFactory type;
 
     public AttachmentItem(AttachmentFactory type) {
-        super(new Item.Properties().group(RefinedPipes.MAIN_GROUP));
+        super(new Item.Properties().tab(RefinedPipes.MAIN_GROUP));
 
         this.type = type;
 
@@ -23,8 +23,8 @@ public class AttachmentItem extends Item {
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, ITooltipFlag flag) {
-        super.addInformation(stack, world, tooltip, flag);
+    public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, ITooltipFlag flag) {
+        super.appendHoverText(stack, world, tooltip, flag);
 
         type.addInformation(tooltip);
     }

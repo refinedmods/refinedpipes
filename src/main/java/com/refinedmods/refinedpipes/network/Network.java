@@ -42,7 +42,7 @@ public abstract class Network {
 
     public CompoundNBT writeToNbt(CompoundNBT tag) {
         tag.putString("id", id);
-        tag.putLong("origin", originPos.toLong());
+        tag.putLong("origin", originPos.asLong());
 
         return tag;
     }

@@ -38,7 +38,7 @@ if (System.getenv('RELEASE') != null) {
 java.toolchain.languageVersion = JavaLanguageVersion.of(8)
 
 minecraft {
-    mappings channel: 'snapshot', version: '20200723-1.16.1'
+    mappings channel: 'official', version: '1.16.5'
 
     runs {
         client {
@@ -50,12 +50,6 @@ minecraft {
                     source sourceSets.main
                 }
             }
-        }
-
-        intellijClient {
-            parent runs.client
-            ideaModule "${project.name}.main"
-            environment 'MOD_CLASSES', "${project.file("out/production/resources").canonicalPath};${project.file("out/production/classes").canonicalPath}"
         }
 
         server {

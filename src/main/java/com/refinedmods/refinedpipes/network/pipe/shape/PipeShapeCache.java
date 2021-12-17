@@ -37,19 +37,19 @@ public class PipeShapeCache {
     public PipeShapeCache(PipeShapeFactory shapeFactory) {
         this.shapeFactory = shapeFactory;
 
-        attachmentShapes.add(PipeShapeProps.NORTH_ATTACHMENT_SHAPE.getBoundingBox());
-        attachmentShapes.add(PipeShapeProps.EAST_ATTACHMENT_SHAPE.getBoundingBox());
-        attachmentShapes.add(PipeShapeProps.SOUTH_ATTACHMENT_SHAPE.getBoundingBox());
-        attachmentShapes.add(PipeShapeProps.WEST_ATTACHMENT_SHAPE.getBoundingBox());
-        attachmentShapes.add(PipeShapeProps.UP_ATTACHMENT_SHAPE.getBoundingBox());
-        attachmentShapes.add(PipeShapeProps.DOWN_ATTACHMENT_SHAPE.getBoundingBox());
+        attachmentShapes.add(PipeShapeProps.NORTH_ATTACHMENT_SHAPE.bounds());
+        attachmentShapes.add(PipeShapeProps.EAST_ATTACHMENT_SHAPE.bounds());
+        attachmentShapes.add(PipeShapeProps.SOUTH_ATTACHMENT_SHAPE.bounds());
+        attachmentShapes.add(PipeShapeProps.WEST_ATTACHMENT_SHAPE.bounds());
+        attachmentShapes.add(PipeShapeProps.UP_ATTACHMENT_SHAPE.bounds());
+        attachmentShapes.add(PipeShapeProps.DOWN_ATTACHMENT_SHAPE.bounds());
     }
 
     public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext ctx) {
         VoxelShape shape = createShapeIfNeeded(state, world, pos);
 
         if (ctx.getEntity() instanceof PlayerEntity) {
-            Item inHand = ((PlayerEntity) ctx.getEntity()).getHeldItemMainhand().getItem();
+            Item inHand = ((PlayerEntity) ctx.getEntity()).getMainHandItem().getItem();
 
             if (inHand instanceof AttachmentItem) {
                 shape = addFakeAttachmentShape(state.getBlock(), pos, ctx.getEntity(), shape, ((AttachmentItem) inHand).getFactory());
@@ -77,7 +77,7 @@ public class PipeShapeCache {
     private VoxelShape createShapeIfNeeded(BlockState state, IBlockReader world, BlockPos pos) {
         ResourceLocation[] attachmentState;
 
-        TileEntity tile = world.getTileEntity(pos);
+        TileEntity tile = world.getBlockEntity(pos);
         if (tile instanceof PipeTileEntity) {
             attachmentState = ((PipeTileEntity) tile).getAttachmentManager().getState();
         } else {

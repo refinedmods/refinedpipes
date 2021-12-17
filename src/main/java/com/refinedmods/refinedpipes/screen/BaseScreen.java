@@ -26,34 +26,34 @@ public abstract class BaseScreen<T extends BaseContainer> extends ContainerScree
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
+    protected void renderBg(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 
-        for (FluidFilterSlot slot : container.getFluidSlots()) {
+        for (FluidFilterSlot slot : menu.getFluidSlots()) {
             FluidStack stack = slot.getFluidInventory().getFluid(slot.getSlotIndex());
             if (stack.isEmpty()) {
                 continue;
             }
 
-            FluidRenderer.INSTANCE.render(guiLeft + slot.xPos, guiTop + slot.yPos, stack);
+            FluidRenderer.INSTANCE.render(leftPos + slot.x, topPos + slot.y, stack);
         }
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int mouseX, int mouseY) {
-        for (FluidFilterSlot slot : container.getFluidSlots()) {
+    protected void renderLabels(MatrixStack matrixStack, int mouseX, int mouseY) {
+        for (FluidFilterSlot slot : menu.getFluidSlots()) {
             FluidStack stack = slot.getFluidInventory().getFluid(slot.getSlotIndex());
             if (stack.isEmpty()) {
                 continue;
             }
 
-            if (!isPointInRegion(slot.xPos, slot.yPos, 17, 17, mouseX, mouseY)) {
+            if (!isHovering(slot.x, slot.y, 17, 17, mouseX, mouseY)) {
                 continue;
             }
 
             fluidTooltip.set(0, stack.getDisplayName());
 
-            GuiUtils.drawHoveringText(matrixStack, fluidTooltip, mouseX - guiLeft, mouseY - guiTop, width, height, -1, font);
+            GuiUtils.drawHoveringText(matrixStack, fluidTooltip, mouseX - leftPos, mouseY - topPos, width, height, -1, font);
         }
     }
 }

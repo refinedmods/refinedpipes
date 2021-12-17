@@ -38,7 +38,7 @@ public class RefinedPipesNetwork {
             pos.getY(),
             pos.getZ(),
             radius,
-            world.func_234923_W_()
+            world.dimension()
         )), message);
     }
 
@@ -47,6 +47,6 @@ public class RefinedPipesNetwork {
     }
 
     public void sendToClient(ServerPlayerEntity player, Object message) {
-        handler.sendTo(message, player.connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
+        handler.sendTo(message, player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
     }
 }

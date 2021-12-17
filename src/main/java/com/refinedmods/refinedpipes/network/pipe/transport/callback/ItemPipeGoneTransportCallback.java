@@ -26,7 +26,7 @@ public class ItemPipeGoneTransportCallback implements TransportCallback {
 
     @Override
     public void call(Network network, World world, BlockPos currentPos, TransportCallback cancelCallback) {
-        InventoryHelper.spawnItemStack(world, currentPos.getX(), currentPos.getY(), currentPos.getZ(), stack);
+        InventoryHelper.dropItemStack(world, currentPos.getX(), currentPos.getY(), currentPos.getZ(), stack);
     }
 
     @Override
@@ -36,7 +36,7 @@ public class ItemPipeGoneTransportCallback implements TransportCallback {
 
     @Nullable
     public static ItemPipeGoneTransportCallback of(CompoundNBT tag) {
-        ItemStack stack = ItemStack.read(tag.getCompound("s"));
+        ItemStack stack = ItemStack.of(tag.getCompound("s"));
 
         if (stack.isEmpty()) {
             LOGGER.warn("Item no longer exists");
@@ -48,7 +48,7 @@ public class ItemPipeGoneTransportCallback implements TransportCallback {
 
     @Override
     public CompoundNBT writeToNbt(CompoundNBT tag) {
-        tag.put("s", stack.write(new CompoundNBT()));
+        tag.put("s", stack.save(new CompoundNBT()));
 
         return tag;
     }

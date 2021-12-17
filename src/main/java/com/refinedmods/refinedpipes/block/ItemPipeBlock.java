@@ -40,14 +40,14 @@ public class ItemPipeBlock extends PipeBlock {
 
     @Override
     protected boolean hasConnection(IWorld world, BlockPos pos, Direction direction) {
-        TileEntity currentTile = world.getTileEntity(pos);
+        TileEntity currentTile = world.getBlockEntity(pos);
         if (currentTile instanceof ItemPipeTileEntity &&
             ((ItemPipeTileEntity) currentTile).getAttachmentManager().hasAttachment(direction)) {
             return false;
         }
 
-        BlockState facingState = world.getBlockState(pos.offset(direction));
-        TileEntity facingTile = world.getTileEntity(pos.offset(direction));
+        BlockState facingState = world.getBlockState(pos.relative(direction));
+        TileEntity facingTile = world.getBlockEntity(pos.relative(direction));
 
         if (facingTile instanceof ItemPipeTileEntity &&
             ((ItemPipeTileEntity) facingTile).getAttachmentManager().hasAttachment(direction.getOpposite())) {
@@ -59,7 +59,7 @@ public class ItemPipeBlock extends PipeBlock {
 
     @Override
     protected boolean hasInvConnection(IWorld world, BlockPos pos, Direction direction) {
-        TileEntity facingTile = world.getTileEntity(pos.offset(direction));
+        TileEntity facingTile = world.getBlockEntity(pos.relative(direction));
 
         return facingTile != null
             && facingTile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, direction.getOpposite()).isPresent();

@@ -31,7 +31,7 @@ public class ItemBounceBackTransportCallback implements TransportCallback {
     @Override
     public void call(Network network, World world, BlockPos currentPos, TransportCallback cancelCallback) {
         // TODO: Actually bounce back...
-        InventoryHelper.spawnItemStack(world, originalItemHandlerPosition.getX(), originalItemHandlerPosition.getY(), originalItemHandlerPosition.getZ(), toInsert);
+        InventoryHelper.dropItemStack(world, originalItemHandlerPosition.getX(), originalItemHandlerPosition.getY(), originalItemHandlerPosition.getZ(), toInsert);
     }
 
     @Override
@@ -41,9 +41,9 @@ public class ItemBounceBackTransportCallback implements TransportCallback {
 
     @Nullable
     public static ItemBounceBackTransportCallback of(CompoundNBT tag) {
-        BlockPos originalItemHandlerPosition = BlockPos.fromLong(tag.getLong("oihpos"));
-        BlockPos bounceBackItemHandlerPosition = BlockPos.fromLong(tag.getLong("bbihpos"));
-        ItemStack toInsert = ItemStack.read(tag.getCompound("s"));
+        BlockPos originalItemHandlerPosition = BlockPos.of(tag.getLong("oihpos"));
+        BlockPos bounceBackItemHandlerPosition = BlockPos.of(tag.getLong("bbihpos"));
+        ItemStack toInsert = ItemStack.of(tag.getCompound("s"));
 
         if (toInsert.isEmpty()) {
             LOGGER.warn("Item no longer exists");
@@ -55,9 +55,9 @@ public class ItemBounceBackTransportCallback implements TransportCallback {
 
     @Override
     public CompoundNBT writeToNbt(CompoundNBT tag) {
-        tag.putLong("oihpos", originalItemHandlerPosition.toLong());
-        tag.putLong("bbihpos", bounceBackItemHandlerPosition.toLong());
-        tag.put("s", toInsert.write(new CompoundNBT()));
+        tag.putLong("oihpos", originalItemHandlerPosition.asLong());
+        tag.putLong("bbihpos", bounceBackItemHandlerPosition.asLong());
+        tag.put("s", toInsert.save(new CompoundNBT()));
 
         return tag;
     }

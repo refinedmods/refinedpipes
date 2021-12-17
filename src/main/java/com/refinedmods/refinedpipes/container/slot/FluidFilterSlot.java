@@ -10,15 +10,21 @@ import javax.annotation.Nonnull;
 
 public class FluidFilterSlot extends SlotItemHandler {
     private FluidInventory fluidInventory;
+    private final int inventoryIndex;
 
     public FluidFilterSlot(FluidInventory inventory, int inventoryIndex, int x, int y) {
         super(new ItemStackHandler(inventory.getSlots()), inventoryIndex, x, y);
 
         this.fluidInventory = inventory;
+        this.inventoryIndex = inventoryIndex;
+    }
+
+    public int getInventoryIndex() {
+        return inventoryIndex;
     }
 
     @Override
-    public boolean isItemValid(@Nonnull ItemStack stack) {
+    public boolean mayPlace(@Nonnull ItemStack stack) {
         return false;
     }
 

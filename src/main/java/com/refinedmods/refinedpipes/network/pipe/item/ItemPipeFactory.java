@@ -12,7 +12,7 @@ import net.minecraftforge.common.util.Constants;
 public class ItemPipeFactory implements PipeFactory {
     @Override
     public Pipe createFromNbt(World world, CompoundNBT tag) {
-        BlockPos pos = BlockPos.fromLong(tag.getLong("pos"));
+        BlockPos pos = BlockPos.of(tag.getLong("pos"));
 
         ItemPipeType pipeType = ItemPipeType.values()[tag.getInt("type")];
 

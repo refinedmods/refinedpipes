@@ -20,7 +20,7 @@ public class CubeBuilder {
     }
 
     public void putCube(MatrixStack matrixStack, IVertexBuilder builder, float x1, float y1, float z1, float x2, float y2, float z2, int r, int g, int b, int a, int light, TextureAtlasSprite sprite, @Nullable Direction exclude) {
-        matrixStack.push();
+        matrixStack.pushPose();
 
         for (Direction face : Direction.values()) {
             if (face != exclude) {
@@ -28,7 +28,7 @@ public class CubeBuilder {
             }
         }
 
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     public void putFace(MatrixStack matrixStack, IVertexBuilder builder, float x1, float y1, float z1, float x2, float y2, float z2, int r, int g, int b, int a, int light, TextureAtlasSprite sprite, Direction face) {
@@ -80,40 +80,40 @@ public class CubeBuilder {
 
         switch (face) {
             case DOWN:
-                uv.u1 = texture.getInterpolatedU(x1 * 16);
-                uv.v1 = texture.getInterpolatedV(z1 * 16);
-                uv.u2 = texture.getInterpolatedU(x2 * 16);
-                uv.v2 = texture.getInterpolatedV(z2 * 16);
+                uv.u1 = texture.getU(x1 * 16);
+                uv.v1 = texture.getV(z1 * 16);
+                uv.u2 = texture.getU(x2 * 16);
+                uv.v2 = texture.getV(z2 * 16);
                 break;
             case UP:
-                uv.u1 = texture.getInterpolatedU(x1 * 16);
-                uv.v1 = texture.getInterpolatedV(z1 * 16);
-                uv.u2 = texture.getInterpolatedU(x2 * 16);
-                uv.v2 = texture.getInterpolatedV(z2 * 16);
+                uv.u1 = texture.getU(x1 * 16);
+                uv.v1 = texture.getV(z1 * 16);
+                uv.u2 = texture.getU(x2 * 16);
+                uv.v2 = texture.getV(z2 * 16);
                 break;
             case NORTH:
-                uv.u1 = texture.getInterpolatedU(x1 * 16);
-                uv.v1 = texture.getInterpolatedV(16 - y1 * 16);
-                uv.u2 = texture.getInterpolatedU(x2 * 16);
-                uv.v2 = texture.getInterpolatedV(16 - y2 * 16);
+                uv.u1 = texture.getU(x1 * 16);
+                uv.v1 = texture.getV(16 - y1 * 16);
+                uv.u2 = texture.getU(x2 * 16);
+                uv.v2 = texture.getV(16 - y2 * 16);
                 break;
             case SOUTH:
-                uv.u1 = texture.getInterpolatedU(x1 * 16);
-                uv.v1 = texture.getInterpolatedV(16 - y1 * 16);
-                uv.u2 = texture.getInterpolatedU(x2 * 16);
-                uv.v2 = texture.getInterpolatedV(16 - y2 * 16);
+                uv.u1 = texture.getU(x1 * 16);
+                uv.v1 = texture.getV(16 - y1 * 16);
+                uv.u2 = texture.getU(x2 * 16);
+                uv.v2 = texture.getV(16 - y2 * 16);
                 break;
             case WEST:
-                uv.u1 = texture.getInterpolatedU(z1 * 16);
-                uv.v1 = texture.getInterpolatedV(16 - y1 * 16);
-                uv.u2 = texture.getInterpolatedU(z2 * 16);
-                uv.v2 = texture.getInterpolatedV(16 - y2 * 16);
+                uv.u1 = texture.getU(z1 * 16);
+                uv.v1 = texture.getV(16 - y1 * 16);
+                uv.u2 = texture.getU(z2 * 16);
+                uv.v2 = texture.getV(16 - y2 * 16);
                 break;
             case EAST:
-                uv.u1 = texture.getInterpolatedU(z2 * 16);
-                uv.v1 = texture.getInterpolatedV(16 - y1 * 16);
-                uv.u2 = texture.getInterpolatedU(z1 * 16);
-                uv.v2 = texture.getInterpolatedV(16 - y2 * 16);
+                uv.u1 = texture.getU(z2 * 16);
+                uv.v1 = texture.getV(16 - y1 * 16);
+                uv.u2 = texture.getU(z1 * 16);
+                uv.v2 = texture.getV(16 - y2 * 16);
                 break;
         }
 
@@ -233,10 +233,10 @@ public class CubeBuilder {
     }
 
     private void putVertex(IVertexBuilder builder, MatrixStack matrixStack, int r, int g, int b, int a, int light, float x, float y, float z, float u, float v) {
-        builder.pos(matrixStack.getLast().getMatrix(), x, y, z)
+        builder.vertex(matrixStack.last().pose(), x, y, z)
             .color(r, g, b, a)
-            .tex(u, v)
-            .lightmap(light)
+            .uv(u, v)
+            .uv2(light)
             .endVertex();
     }
 

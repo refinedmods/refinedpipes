@@ -40,7 +40,7 @@ public class FluidPipeMessage {
 
     public static void handle(FluidPipeMessage message, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            TileEntity tile = Minecraft.getInstance().world.getTileEntity(message.pos);
+            TileEntity tile = Minecraft.getInstance().level.getBlockEntity(message.pos);
 
             if (tile instanceof FluidPipeTileEntity) {
                 ((FluidPipeTileEntity) tile).setFluid(message.fluid);

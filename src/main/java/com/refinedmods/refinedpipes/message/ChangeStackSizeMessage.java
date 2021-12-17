@@ -40,7 +40,7 @@ public class ChangeStackSizeMessage {
 
     public static void handle(ChangeStackSizeMessage message, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            TileEntity tile = ctx.get().getSender().world.getTileEntity(message.pos);
+            TileEntity tile = ctx.get().getSender().level.getBlockEntity(message.pos);
 
             if (tile instanceof PipeTileEntity) {
                 Attachment attachment = ((PipeTileEntity) tile).getAttachmentManager().getAttachment(message.direction);
@@ -48,7 +48,7 @@ public class ChangeStackSizeMessage {
                 if (attachment instanceof ExtractorAttachment) {
                     ((ExtractorAttachment) attachment).setStackSize(message.stackSize);
 
-                    NetworkManager.get(tile.getWorld()).markDirty();
+                    NetworkManager.get(tile.getLevel()).setDirty();
                 }
             }
         });

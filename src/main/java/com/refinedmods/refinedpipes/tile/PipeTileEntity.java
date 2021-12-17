@@ -29,11 +29,11 @@ public abstract class PipeTileEntity extends BaseTileEntity {
     private final AttachmentManager clientAttachmentManager = new ClientAttachmentManager();
 
     public AttachmentManager getAttachmentManager() {
-        if (world.isRemote) {
+        if (level.isClientSide) {
             return clientAttachmentManager;
         }
 
-        Pipe pipe = NetworkManager.get(world).getPipe(pos);
+        Pipe pipe = NetworkManager.get(level).getPipe(worldPosition);
 
         if (pipe != null) {
             return pipe.getAttachmentManager();
@@ -43,35 +43,35 @@ public abstract class PipeTileEntity extends BaseTileEntity {
     }
 
     @Override
-    public void validate() {
-        super.validate();
+    public void clearRemoved() {
+        super.clearRemoved();
 
-        if (!world.isRemote) {
-            NetworkManager mgr = NetworkManager.get(world);
+        if (!level.isClientSide) {
+            NetworkManager mgr = NetworkManager.get(level);
 
-            if (mgr.getPipe(pos) == null) {
-                mgr.addPipe(createPipe(world, pos));
+            if (mgr.getPipe(worldPosition) == null) {
+                mgr.addPipe(createPipe(level, worldPosition));
             }
         }
     }
 
     @Override
-    public void remove() {
-        super.remove();
+    public void setRemoved() {
+        super.setRemoved();
 
-        if (!world.isRemote) {
-            NetworkManager mgr = NetworkManager.get(world);
+        if (!level.isClientSide) {
+            NetworkManager mgr = NetworkManager.get(level);
 
-            Pipe pipe = mgr.getPipe(pos);
+            Pipe pipe = mgr.getPipe(worldPosition);
             if (pipe != null) {
                 spawnDrops(pipe);
 
                 for (Attachment attachment : pipe.getAttachmentManager().getAttachments()) {
-                    InventoryHelper.spawnItemStack(world, pos.getX(), pos.getY(), pos.getZ(), attachment.getDrop());
+                    InventoryHelper.dropItemStack(level, worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), attachment.getDrop());
                 }
             }
 
-            mgr.removePipe(pos);
+            mgr.removePipe(worldPosition);
         }
     }
 
@@ -97,8 +97,8 @@ public abstract class PipeTileEntity extends BaseTileEntity {
 
         requestModelDataUpdate();
 
-        BlockState state = world.getBlockState(pos);
-        world.notifyBlockUpdate(pos, state, state, 1 | 2);
+        BlockState state = level.getBlockState(worldPosition);
+        level.sendBlockUpdated(worldPosition, state, state, 1 | 2);
     }
 
     protected abstract Pipe createPipe(World world, BlockPos pos);

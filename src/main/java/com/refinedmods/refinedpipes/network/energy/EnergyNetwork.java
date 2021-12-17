@@ -62,7 +62,7 @@ public class EnergyNetwork extends Network {
             }
 
             for (Destination destination : destinations) {
-                TileEntity tile = destination.getConnectedPipe().getWorld().getTileEntity(destination.getReceiver());
+                TileEntity tile = destination.getConnectedPipe().getWorld().getBlockEntity(destination.getReceiver());
                 if (tile == null) {
                     continue;
                 }

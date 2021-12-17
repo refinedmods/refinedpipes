@@ -42,7 +42,7 @@ public class ItemTransportMessage {
 
     public static void handle(ItemTransportMessage message, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            TileEntity tile = Minecraft.getInstance().world.getTileEntity(message.pos);
+            TileEntity tile = Minecraft.getInstance().level.getBlockEntity(message.pos);
 
             if (tile instanceof ItemPipeTileEntity) {
                 ((ItemPipeTileEntity) tile).setProps(message.props);

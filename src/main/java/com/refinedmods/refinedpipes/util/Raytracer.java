@@ -13,9 +13,9 @@ import java.util.Collections;
 // https://github.com/mekanism/Mekanism/blob/9a3fe1a5d78bb38fa963a3bcbc8d3846412315e4/src/main/java/mekanism/common/util/MultipartUtils.java
 public class Raytracer {
     public static Pair<Vector3d, Vector3d> getVectors(Entity entity) {
-        float pitch = entity.rotationPitch;
-        float yaw = entity.rotationYaw;
-        Vector3d start = new Vector3d(entity.getPosX(), entity.getPosY() + entity.getEyeHeight(), entity.getPosZ());
+        float pitch = entity.xRot;
+        float yaw = entity.yRot;
+        Vector3d start = new Vector3d(entity.getX(), entity.getY() + entity.getEyeHeight(), entity.getZ());
         float f1 = MathHelper.cos(-yaw * 0.017453292F - (float) Math.PI);
         float f2 = MathHelper.sin(-yaw * 0.017453292F - (float) Math.PI);
         float f3 = -MathHelper.cos(-pitch * 0.017453292F);
@@ -51,7 +51,7 @@ public class Raytracer {
     }
 
     public static AdvancedRayTraceResult<BlockRayTraceResult> collisionRayTrace(BlockPos pos, Vector3d start, Vector3d end, AxisAlignedBB bounds, int subHit, Object hitInfo) {
-        BlockRayTraceResult result = AxisAlignedBB.rayTrace(Collections.singleton(bounds), start, end, pos);
+        BlockRayTraceResult result = AxisAlignedBB.clip(Collections.singleton(bounds), start, end, pos);
         if (result == null) {
             return null;
         }
@@ -76,7 +76,7 @@ public class Raytracer {
         }
 
         public double squareDistanceTo(Vector3d vec) {
-            return hit.getHitVec().squareDistanceTo(vec);
+            return hit.getLocation().distanceToSqr(vec);
         }
     }
 

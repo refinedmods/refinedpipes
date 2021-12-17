@@ -37,19 +37,19 @@ public class ItemPipe extends Pipe {
         transports.removeAll(transportsToRemove);
 
         if (!transportsToAdd.isEmpty() || !transportsToRemove.isEmpty()) {
-            NetworkManager.get(world).markDirty();
+            NetworkManager.get(world).setDirty();
             sendTransportUpdate();
         }
 
         if (!transports.isEmpty()) {
-            NetworkManager.get(world).markDirty();
+            NetworkManager.get(world).setDirty();
         }
 
         transportsToAdd.clear();
         transportsToRemove.clear();
 
         if (transports.removeIf(t -> t.update(network, this))) {
-            NetworkManager.get(world).markDirty();
+            NetworkManager.get(world).setDirty();
         }
     }
 

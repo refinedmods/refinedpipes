@@ -23,14 +23,14 @@ public class ItemPipeBlockItem extends BaseBlockItem {
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, ITooltipFlag flag) {
-        super.addInformation(stack, world, tooltip, flag);
+    public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, ITooltipFlag flag) {
+        super.appendHoverText(stack, world, tooltip, flag);
 
-        tooltip.add(new TranslationTextComponent("misc.refinedpipes.tier", new TranslationTextComponent("enchantment.level." + type.getTier())).mergeStyle(TextFormatting.YELLOW));
+        tooltip.add(new TranslationTextComponent("misc.refinedpipes.tier", new TranslationTextComponent("enchantment.level." + type.getTier())).withStyle(TextFormatting.YELLOW));
 
         tooltip.add(new TranslationTextComponent(
             "tooltip.refinedpipes.item_pipe.speed",
-            new StringTextComponent(type.getSpeedComparedToBasicTier() + "%").mergeStyle(TextFormatting.WHITE)
-        ).mergeStyle(TextFormatting.GRAY));
+            new StringTextComponent(type.getSpeedComparedToBasicTier() + "%").withStyle(TextFormatting.WHITE)
+        ).withStyle(TextFormatting.GRAY));
     }
 }

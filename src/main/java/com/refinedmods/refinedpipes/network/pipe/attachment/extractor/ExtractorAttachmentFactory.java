@@ -88,41 +88,41 @@ public class ExtractorAttachmentFactory implements AttachmentFactory {
 
     @Override
     public void addInformation(List<ITextComponent> tooltip) {
-        tooltip.add(new TranslationTextComponent("misc.refinedpipes.tier", new TranslationTextComponent("enchantment.level." + type.getTier())).mergeStyle(TextFormatting.YELLOW));
+        tooltip.add(new TranslationTextComponent("misc.refinedpipes.tier", new TranslationTextComponent("enchantment.level." + type.getTier())).withStyle(TextFormatting.YELLOW));
 
         ITextComponent itemsToExtract = new StringTextComponent(StringUtil.formatNumber(type.getItemsToExtract()) + " ")
             .append(new TranslationTextComponent("misc.refinedpipes.item" + (type.getItemsToExtract() == 1 ? "" : "s")))
-            .mergeStyle(TextFormatting.WHITE);
+            .withStyle(TextFormatting.WHITE);
 
         float itemSecondsInterval = type.getItemTickInterval() / 20F;
         ITextComponent itemTickInterval = new StringTextComponent(StringUtil.formatNumber(itemSecondsInterval) + " ")
             .append(new TranslationTextComponent("misc.refinedpipes.second" + (itemSecondsInterval == 1 ? "" : "s")))
-            .mergeStyle(TextFormatting.WHITE);
+            .withStyle(TextFormatting.WHITE);
 
         tooltip.add(new TranslationTextComponent(
             "tooltip.refinedpipes.extractor_attachment.item_extraction_rate",
             itemsToExtract,
             itemTickInterval
-        ).mergeStyle(TextFormatting.GRAY));
+        ).withStyle(TextFormatting.GRAY));
 
         ITextComponent fluidsToExtract = new StringTextComponent(StringUtil.formatNumber(type.getFluidsToExtract()) + " mB")
-            .mergeStyle(TextFormatting.WHITE);
+            .withStyle(TextFormatting.WHITE);
 
         float fluidSecondsInterval = type.getFluidTickInterval() / 20F;
         ITextComponent fluidTickInterval = new StringTextComponent(StringUtil.formatNumber(fluidSecondsInterval) + " ")
             .append(new TranslationTextComponent("misc.refinedpipes.second" + (fluidSecondsInterval == 1 ? "" : "s")))
-            .mergeStyle(TextFormatting.WHITE);
+            .withStyle(TextFormatting.WHITE);
 
         tooltip.add(new TranslationTextComponent(
             "tooltip.refinedpipes.extractor_attachment.fluid_extraction_rate",
             fluidsToExtract,
             fluidTickInterval
-        ).mergeStyle(TextFormatting.GRAY));
+        ).withStyle(TextFormatting.GRAY));
 
         tooltip.add(new TranslationTextComponent(
             "tooltip.refinedpipes.extractor_attachment.filter_slots",
-            new StringTextComponent("" + type.getFilterSlots()).mergeStyle(TextFormatting.WHITE)
-        ).mergeStyle(TextFormatting.GRAY));
+            new StringTextComponent("" + type.getFilterSlots()).withStyle(TextFormatting.WHITE)
+        ).withStyle(TextFormatting.GRAY));
 
         addAbilityToInformation(tooltip, type.getCanSetRedstoneMode(), "misc.refinedpipes.redstone_mode");
         addAbilityToInformation(tooltip, type.getCanSetWhitelistBlacklist(), "misc.refinedpipes.mode");
@@ -133,7 +133,7 @@ public class ExtractorAttachmentFactory implements AttachmentFactory {
     private void addAbilityToInformation(List<ITextComponent> tooltip, boolean possible, String key) {
         tooltip.add(
             new StringTextComponent(possible ? "✓ " : "❌ ").append(new TranslationTextComponent(key))
-                .mergeStyle(possible ? TextFormatting.GREEN : TextFormatting.RED)
+                .withStyle(possible ? TextFormatting.GREEN : TextFormatting.RED)
         );
     }
 

@@ -41,7 +41,7 @@ public class ChangeRedstoneModeMessage {
 
     public static void handle(ChangeRedstoneModeMessage message, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            TileEntity tile = ctx.get().getSender().world.getTileEntity(message.pos);
+            TileEntity tile = ctx.get().getSender().level.getBlockEntity(message.pos);
 
             if (tile instanceof PipeTileEntity) {
                 Attachment attachment = ((PipeTileEntity) tile).getAttachmentManager().getAttachment(message.direction);
@@ -49,7 +49,7 @@ public class ChangeRedstoneModeMessage {
                 if (attachment instanceof ExtractorAttachment) {
                     ((ExtractorAttachment) attachment).setRedstoneMode(message.redstoneMode);
 
-                    NetworkManager.get(tile.getWorld()).markDirty();
+                    NetworkManager.get(tile.getLevel()).setDirty();
                 }
             }
         });

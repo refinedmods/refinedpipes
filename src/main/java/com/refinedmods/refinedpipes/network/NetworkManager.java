@@ -31,7 +31,7 @@ public class NetworkManager extends WorldSavedData {
     }
 
     public static NetworkManager get(ServerWorld world) {
-        return world.getSavedData().getOrCreate(() -> new NetworkManager(NAME, world), NAME);
+        return world.getDataStorage().computeIfAbsent(() -> new NetworkManager(NAME, world), NAME);
     }
 
     private final World world;
@@ -53,7 +53,7 @@ public class NetworkManager extends WorldSavedData {
 
         LOGGER.debug("Network {} created", network.getId());
 
-        markDirty();
+        setDirty();
     }
 
     public void removeNetwork(String id) {
@@ -65,7 +65,7 @@ public class NetworkManager extends WorldSavedData {
 
         LOGGER.debug("Network {} removed", id);
 
-        markDirty();
+        setDirty();
     }
 
     private void formNetworkAt(World world, BlockPos pos, ResourceLocation type) {
@@ -124,7 +124,7 @@ public class NetworkManager extends WorldSavedData {
 
         LOGGER.debug("Pipe added at {}", pipe.getPos());
 
-        markDirty();
+        setDirty();
 
         Set<Pipe> adjacentPipes = findAdjacentPipes(pipe.getPos(), pipe.getNetworkType());
 
@@ -149,7 +149,7 @@ public class NetworkManager extends WorldSavedData {
 
         LOGGER.debug("Pipe removed at {}", pipe.getPos());
 
-        markDirty();
+        setDirty();
 
         if (pipe.getNetwork() != null) {
             splitNetworks(pipe);
@@ -174,7 +174,7 @@ public class NetworkManager extends WorldSavedData {
 
         if (otherPipeInNetwork != null) {
             otherPipeInNetwork.getNetwork().setOriginPos(otherPipeInNetwork.getPos());
-            markDirty();
+            setDirty();
 
             NetworkGraphScannerResult result = otherPipeInNetwork.getNetwork().scanGraph(
                 otherPipeInNetwork.getWorld(),
@@ -213,7 +213,7 @@ public class NetworkManager extends WorldSavedData {
         Set<Pipe> pipes = new HashSet<>();
 
         for (Direction dir : Direction.values()) {
-            Pipe pipe = getPipe(pos.offset(dir));
+            Pipe pipe = getPipe(pos.relative(dir));
 
             if (pipe != null && pipe.getNetworkType().equals(networkType)) {
                 pipes.add(pipe);
@@ -226,7 +226,7 @@ public class NetworkManager extends WorldSavedData {
     @Nullable
     private Pipe findFirstAdjacentPipe(BlockPos pos, ResourceLocation networkType) {
         for (Direction dir : Direction.values()) {
-            Pipe pipe = getPipe(pos.offset(dir));
+            Pipe pipe = getPipe(pos.relative(dir));
 
             if (pipe != null && pipe.getNetworkType().equals(networkType)) {
                 return pipe;
@@ -246,7 +246,7 @@ public class NetworkManager extends WorldSavedData {
     }
 
     @Override
-    public void read(CompoundNBT tag) {
+    public void load(CompoundNBT tag) {
         ListNBT pipes = tag.getList("pipes", Constants.NBT.TAG_COMPOUND);
         for (INBT pipeTag : pipes) {
             CompoundNBT pipeTagCompound = (CompoundNBT) pipeTag;
@@ -291,7 +291,7 @@ public class NetworkManager extends WorldSavedData {
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tag) {
+    public CompoundNBT save(CompoundNBT tag) {
         ListNBT pipes = new ListNBT();
         this.pipes.values().forEach(p -> {
             CompoundNBT pipeTag = new CompoundNBT();

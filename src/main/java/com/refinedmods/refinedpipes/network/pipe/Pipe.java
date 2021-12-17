@@ -67,11 +67,11 @@ public abstract class Pipe {
 
     public void sendBlockUpdate() {
         BlockState state = world.getBlockState(pos);
-        world.notifyBlockUpdate(pos, state, state, 1 | 2);
+        world.sendBlockUpdated(pos, state, state, 1 | 2);
     }
 
     public CompoundNBT writeToNbt(CompoundNBT tag) {
-        tag.putLong("pos", pos.toLong());
+        tag.putLong("pos", pos.asLong());
 
         attachmentManager.writeToNbt(tag);
 

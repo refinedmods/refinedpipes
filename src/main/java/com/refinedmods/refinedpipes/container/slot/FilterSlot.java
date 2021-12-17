@@ -12,11 +12,11 @@ public class FilterSlot extends SlotItemHandler {
     }
 
     @Override
-    public void putStack(@Nonnull ItemStack stack) {
+    public void set(@Nonnull ItemStack stack) {
         if (!stack.isEmpty()) {
             stack.setCount(1);
         }
 
-        super.putStack(stack);
+        super.set(stack);
     }
 }

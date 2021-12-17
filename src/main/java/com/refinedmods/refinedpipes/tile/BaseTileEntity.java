@@ -18,17 +18,17 @@ public abstract class BaseTileEntity extends TileEntity {
 
     @Override
     public final SUpdateTileEntityPacket getUpdatePacket() {
-        return new SUpdateTileEntityPacket(pos, 1, getUpdateTag());
+        return new SUpdateTileEntityPacket(worldPosition, 1, getUpdateTag());
     }
 
     @Override
     public final void onDataPacket(net.minecraft.network.NetworkManager net, SUpdateTileEntityPacket packet) {
-        readUpdate(packet.getNbtCompound());
+        readUpdate(packet.getTag());
     }
 
     @Override
     public final void handleUpdateTag(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
+        super.load(state, tag);
 
         readUpdate(tag);
     }

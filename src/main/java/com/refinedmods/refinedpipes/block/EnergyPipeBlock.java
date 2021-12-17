@@ -42,14 +42,14 @@ public class EnergyPipeBlock extends PipeBlock {
 
     @Override
     protected boolean hasConnection(IWorld world, BlockPos pos, Direction direction) {
-        TileEntity currentTile = world.getTileEntity(pos);
+        TileEntity currentTile = world.getBlockEntity(pos);
         if (currentTile instanceof EnergyPipeTileEntity &&
             ((EnergyPipeTileEntity) currentTile).getAttachmentManager().hasAttachment(direction)) {
             return false;
         }
 
-        BlockState facingState = world.getBlockState(pos.offset(direction));
-        TileEntity facingTile = world.getTileEntity(pos.offset(direction));
+        BlockState facingState = world.getBlockState(pos.relative(direction));
+        TileEntity facingTile = world.getBlockEntity(pos.relative(direction));
 
         if (facingTile instanceof EnergyPipeTileEntity &&
             ((EnergyPipeTileEntity) facingTile).getAttachmentManager().hasAttachment(direction.getOpposite())) {
@@ -62,7 +62,7 @@ public class EnergyPipeBlock extends PipeBlock {
 
     @Override
     protected boolean hasInvConnection(IWorld world, BlockPos pos, Direction direction) {
-        TileEntity facingTile = world.getTileEntity(pos.offset(direction));
+        TileEntity facingTile = world.getBlockEntity(pos.relative(direction));
         if (facingTile == null) {
             return false;
         }

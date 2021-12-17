@@ -26,7 +26,7 @@ public class ItemPipeTileEntity extends PipeTileEntity implements ITickableTileE
 
     @Override
     public void tick() {
-        if (world.isRemote) {
+        if (level.isClientSide) {
             props.forEach(ItemTransportProps::tick);
         }
     }
@@ -44,7 +44,7 @@ public class ItemPipeTileEntity extends PipeTileEntity implements ITickableTileE
         super.spawnDrops(pipe);
 
         for (ItemTransport transport : ((ItemPipe) pipe).getTransports()) {
-            InventoryHelper.spawnItemStack(world, pos.getX(), pos.getY(), pos.getZ(), transport.getValue());
+            InventoryHelper.dropItemStack(level, worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), transport.getValue());
         }
     }
 

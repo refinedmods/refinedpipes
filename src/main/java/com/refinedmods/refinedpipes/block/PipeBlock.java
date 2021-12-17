@@ -53,19 +53,19 @@ public abstract class PipeBlock extends Block {
     private final PipeShapeCache shapeCache;
 
     public PipeBlock(PipeShapeCache shapeCache) {
-        super(Block.Properties.create(Material.ROCK).hardnessAndResistance(0.35F));
+        super(Block.Properties.of(Material.STONE).strength(0.35F));
 
         this.shapeCache = shapeCache;
 
-        this.setDefaultState(getDefaultState()
-            .with(NORTH, false).with(EAST, false).with(SOUTH, false).with(WEST, false).with(UP, false).with(DOWN, false)
-            .with(INV_NORTH, false).with(INV_EAST, false).with(INV_SOUTH, false).with(INV_WEST, false).with(INV_UP, false).with(INV_DOWN, false)
+        this.registerDefaultState(defaultBlockState()
+            .setValue(NORTH, false).setValue(EAST, false).setValue(SOUTH, false).setValue(WEST, false).setValue(UP, false).setValue(DOWN, false)
+            .setValue(INV_NORTH, false).setValue(INV_EAST, false).setValue(INV_SOUTH, false).setValue(INV_WEST, false).setValue(INV_UP, false).setValue(INV_DOWN, false)
         );
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        super.fillStateContainer(builder);
+    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
 
         builder.add(
             NORTH, EAST, SOUTH, WEST, UP, DOWN,
@@ -78,7 +78,7 @@ public abstract class PipeBlock extends Block {
     public void neighborChanged(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
         super.neighborChanged(state, world, pos, block, fromPos, isMoving);
 
-        if (!world.isRemote) {
+        if (!world.isClientSide) {
             Pipe pipe = NetworkManager.get(world).getPipe(pos);
 
             if (pipe != null && pipe.getNetwork() != null) {
@@ -89,12 +89,12 @@ public abstract class PipeBlock extends Block {
 
     @Override
     @SuppressWarnings("deprecation")
-    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
-        Direction dirClicked = getAttachmentDirectionClicked(pos, hit.getHitVec());
+    public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
+        Direction dirClicked = getAttachmentDirectionClicked(pos, hit.getLocation());
 
         if (dirClicked != null) {
-            ItemStack held = player.getHeldItemMainhand();
-            TileEntity tile = world.getTileEntity(pos);
+            ItemStack held = player.getMainHandItem();
+            TileEntity tile = world.getBlockEntity(pos);
 
             if (held.isEmpty() && player.isCrouching()) {
                 return removeAttachment(world, pos, dirClicked);
@@ -105,11 +105,11 @@ public abstract class PipeBlock extends Block {
             }
         }
 
-        return super.onBlockActivated(state, world, pos, player, hand, hit);
+        return super.use(state, world, pos, player, hand, hit);
     }
 
     private ActionResultType addAttachment(PlayerEntity player, World world, BlockPos pos, ItemStack attachment, Direction dir) {
-        if (!world.isRemote) {
+        if (!world.isClientSide) {
             Pipe pipe = NetworkManager.get(world).getPipe(pos);
 
             if (pipe != null && !pipe.getAttachmentManager().hasAttachment(dir)) {
@@ -119,10 +119,10 @@ public abstract class PipeBlock extends Block {
                 }
 
                 pipe.getAttachmentManager().setAttachmentAndScanGraph(dir, type.create(pipe, dir));
-                NetworkManager.get(world).markDirty();
+                NetworkManager.get(world).setDirty();
 
                 pipe.sendBlockUpdate();
-                world.setBlockState(pos, getState(world.getBlockState(pos), world, pos));
+                world.setBlockAndUpdate(pos, getState(world.getBlockState(pos), world, pos));
 
                 if (!player.isCreative()) {
                     attachment.shrink(1);
@@ -134,24 +134,24 @@ public abstract class PipeBlock extends Block {
     }
 
     private ActionResultType removeAttachment(World world, BlockPos pos, Direction dir) {
-        if (!world.isRemote) {
+        if (!world.isClientSide) {
             Pipe pipe = NetworkManager.get(world).getPipe(pos);
 
             if (pipe != null && pipe.getAttachmentManager().hasAttachment(dir)) {
                 Attachment attachment = pipe.getAttachmentManager().getAttachment(dir);
 
                 pipe.getAttachmentManager().removeAttachmentAndScanGraph(dir);
-                NetworkManager.get(world).markDirty();
+                NetworkManager.get(world).setDirty();
 
                 pipe.sendBlockUpdate();
-                world.setBlockState(pos, getState(world.getBlockState(pos), world, pos));
+                world.setBlockAndUpdate(pos, getState(world.getBlockState(pos), world, pos));
 
-                Block.spawnAsEntity(world, pos.offset(dir), attachment.getDrop());
+                Block.popResource(world, pos.relative(dir), attachment.getDrop());
             }
 
             return ActionResultType.SUCCESS;
         } else {
-            return ((PipeTileEntity) world.getTileEntity(pos)).getAttachmentManager().hasAttachment(dir) ? ActionResultType.SUCCESS : ActionResultType.FAIL;
+            return ((PipeTileEntity) world.getBlockEntity(pos)).getAttachmentManager().hasAttachment(dir) ? ActionResultType.SUCCESS : ActionResultType.FAIL;
         }
     }
 
@@ -166,12 +166,12 @@ public abstract class PipeBlock extends Block {
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockItemUseContext ctx) {
-        return getState(getDefaultState(), ctx.getWorld(), ctx.getPos());
+        return getState(defaultBlockState(), ctx.getLevel(), ctx.getClickedPos());
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public BlockState updatePostPlacement(BlockState state, Direction dir, BlockState facingState, IWorld world, BlockPos pos, BlockPos facingPos) {
+    public BlockState updateShape(BlockState state, Direction dir, BlockState facingState, IWorld world, BlockPos pos, BlockPos facingPos) {
         return getState(state, world, pos);
     }
 
@@ -183,26 +183,26 @@ public abstract class PipeBlock extends Block {
 
     private BlockState getState(BlockState currentState, IWorld world, BlockPos pos) {
         return currentState
-            .with(NORTH, hasConnection(world, pos, Direction.NORTH))
-            .with(EAST, hasConnection(world, pos, Direction.EAST))
-            .with(SOUTH, hasConnection(world, pos, Direction.SOUTH))
-            .with(WEST, hasConnection(world, pos, Direction.WEST))
-            .with(UP, hasConnection(world, pos, Direction.UP))
-            .with(DOWN, hasConnection(world, pos, Direction.DOWN))
-            .with(INV_NORTH, hasInvConnection(world, pos, Direction.NORTH))
-            .with(INV_EAST, hasInvConnection(world, pos, Direction.EAST))
-            .with(INV_SOUTH, hasInvConnection(world, pos, Direction.SOUTH))
-            .with(INV_WEST, hasInvConnection(world, pos, Direction.WEST))
-            .with(INV_UP, hasInvConnection(world, pos, Direction.UP))
-            .with(INV_DOWN, hasInvConnection(world, pos, Direction.DOWN));
+            .setValue(NORTH, hasConnection(world, pos, Direction.NORTH))
+            .setValue(EAST, hasConnection(world, pos, Direction.EAST))
+            .setValue(SOUTH, hasConnection(world, pos, Direction.SOUTH))
+            .setValue(WEST, hasConnection(world, pos, Direction.WEST))
+            .setValue(UP, hasConnection(world, pos, Direction.UP))
+            .setValue(DOWN, hasConnection(world, pos, Direction.DOWN))
+            .setValue(INV_NORTH, hasInvConnection(world, pos, Direction.NORTH))
+            .setValue(INV_EAST, hasInvConnection(world, pos, Direction.EAST))
+            .setValue(INV_SOUTH, hasInvConnection(world, pos, Direction.SOUTH))
+            .setValue(INV_WEST, hasInvConnection(world, pos, Direction.WEST))
+            .setValue(INV_UP, hasInvConnection(world, pos, Direction.UP))
+            .setValue(INV_DOWN, hasInvConnection(world, pos, Direction.DOWN));
     }
 
     @Override
     public ItemStack getPickBlock(BlockState state, RayTraceResult target, IBlockReader world, BlockPos pos, PlayerEntity player) {
-        Direction dirClicked = getAttachmentDirectionClicked(pos, target.getHitVec());
+        Direction dirClicked = getAttachmentDirectionClicked(pos, target.getLocation());
 
         if (dirClicked != null) {
-            TileEntity tile = world.getTileEntity(pos);
+            TileEntity tile = world.getBlockEntity(pos);
             if (tile instanceof PipeTileEntity) {
                 return ((PipeTileEntity) tile).getAttachmentManager().getPickBlock(dirClicked);
             }
@@ -213,27 +213,27 @@ public abstract class PipeBlock extends Block {
 
     @Nullable
     public Direction getAttachmentDirectionClicked(BlockPos pos, Vector3d hit) {
-        if (Raytracer.inclusiveContains(PipeShapeProps.NORTH_ATTACHMENT_SHAPE.getBoundingBox().offset(pos), hit)) {
+        if (Raytracer.inclusiveContains(PipeShapeProps.NORTH_ATTACHMENT_SHAPE.bounds().move(pos), hit)) {
             return Direction.NORTH;
         }
 
-        if (Raytracer.inclusiveContains(PipeShapeProps.EAST_ATTACHMENT_SHAPE.getBoundingBox().offset(pos), hit)) {
+        if (Raytracer.inclusiveContains(PipeShapeProps.EAST_ATTACHMENT_SHAPE.bounds().move(pos), hit)) {
             return Direction.EAST;
         }
 
-        if (Raytracer.inclusiveContains(PipeShapeProps.SOUTH_ATTACHMENT_SHAPE.getBoundingBox().offset(pos), hit)) {
+        if (Raytracer.inclusiveContains(PipeShapeProps.SOUTH_ATTACHMENT_SHAPE.bounds().move(pos), hit)) {
             return Direction.SOUTH;
         }
 
-        if (Raytracer.inclusiveContains(PipeShapeProps.WEST_ATTACHMENT_SHAPE.getBoundingBox().offset(pos), hit)) {
+        if (Raytracer.inclusiveContains(PipeShapeProps.WEST_ATTACHMENT_SHAPE.bounds().move(pos), hit)) {
             return Direction.WEST;
         }
 
-        if (Raytracer.inclusiveContains(PipeShapeProps.UP_ATTACHMENT_SHAPE.getBoundingBox().offset(pos), hit)) {
+        if (Raytracer.inclusiveContains(PipeShapeProps.UP_ATTACHMENT_SHAPE.bounds().move(pos), hit)) {
             return Direction.UP;
         }
 
-        if (Raytracer.inclusiveContains(PipeShapeProps.DOWN_ATTACHMENT_SHAPE.getBoundingBox().offset(pos), hit)) {
+        if (Raytracer.inclusiveContains(PipeShapeProps.DOWN_ATTACHMENT_SHAPE.bounds().move(pos), hit)) {
             return Direction.DOWN;
         }
 

@@ -9,7 +9,7 @@ import net.minecraft.world.World;
 public class EnergyPipeFactory implements PipeFactory {
     @Override
     public Pipe createFromNbt(World world, CompoundNBT tag) {
-        BlockPos pos = BlockPos.fromLong(tag.getLong("pos"));
+        BlockPos pos = BlockPos.of(tag.getLong("pos"));
 
         EnergyPipeType pipeType = EnergyPipeType.values()[tag.getInt("type")];
 

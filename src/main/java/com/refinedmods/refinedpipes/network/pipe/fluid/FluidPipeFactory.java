@@ -9,7 +9,7 @@ import net.minecraft.world.World;
 public class FluidPipeFactory implements PipeFactory {
     @Override
     public Pipe createFromNbt(World world, CompoundNBT tag) {
-        BlockPos pos = BlockPos.fromLong(tag.getLong("pos"));
+        BlockPos pos = BlockPos.of(tag.getLong("pos"));
 
         FluidPipeType pipeType = FluidPipeType.values()[tag.getInt("type")];
 

@@ -24,19 +24,19 @@ public class FluidPipeBlockItem extends BaseBlockItem {
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, ITooltipFlag flag) {
-        super.addInformation(stack, world, tooltip, flag);
+    public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, ITooltipFlag flag) {
+        super.appendHoverText(stack, world, tooltip, flag);
 
-        tooltip.add(new TranslationTextComponent("misc.refinedpipes.tier", new TranslationTextComponent("enchantment.level." + type.getTier())).mergeStyle(TextFormatting.YELLOW));
+        tooltip.add(new TranslationTextComponent("misc.refinedpipes.tier", new TranslationTextComponent("enchantment.level." + type.getTier())).withStyle(TextFormatting.YELLOW));
 
         tooltip.add(new TranslationTextComponent(
             "tooltip.refinedpipes.fluid_pipe.capacity",
-            new StringTextComponent(StringUtil.formatNumber(type.getCapacity()) + " mB").mergeStyle(TextFormatting.WHITE)
-        ).mergeStyle(TextFormatting.GRAY));
+            new StringTextComponent(StringUtil.formatNumber(type.getCapacity()) + " mB").withStyle(TextFormatting.WHITE)
+        ).withStyle(TextFormatting.GRAY));
 
         tooltip.add(new TranslationTextComponent(
             "tooltip.refinedpipes.fluid_pipe.transfer_rate",
-            new StringTextComponent(StringUtil.formatNumber(type.getTransferRate()) + " mB/t").mergeStyle(TextFormatting.WHITE)
-        ).mergeStyle(TextFormatting.GRAY));
+            new StringTextComponent(StringUtil.formatNumber(type.getTransferRate()) + " mB/t").withStyle(TextFormatting.WHITE)
+        ).withStyle(TextFormatting.GRAY));
     }
 }

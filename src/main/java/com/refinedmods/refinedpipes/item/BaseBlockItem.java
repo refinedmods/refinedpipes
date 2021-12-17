@@ -7,7 +7,7 @@ import net.minecraft.item.Item;
 
 public class BaseBlockItem extends BlockItem {
     public BaseBlockItem(Block block) {
-        super(block, new Item.Properties().group(RefinedPipes.MAIN_GROUP));
+        super(block, new Item.Properties().tab(RefinedPipes.MAIN_GROUP));
 
         this.setRegistryName(block.getRegistryName());
     }

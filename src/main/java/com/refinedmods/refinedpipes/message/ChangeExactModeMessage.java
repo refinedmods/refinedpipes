@@ -40,7 +40,7 @@ public class ChangeExactModeMessage {
 
     public static void handle(ChangeExactModeMessage message, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            TileEntity tile = ctx.get().getSender().world.getTileEntity(message.pos);
+            TileEntity tile = ctx.get().getSender().level.getBlockEntity(message.pos);
 
             if (tile instanceof PipeTileEntity) {
                 Attachment attachment = ((PipeTileEntity) tile).getAttachmentManager().getAttachment(message.direction);
@@ -48,7 +48,7 @@ public class ChangeExactModeMessage {
                 if (attachment instanceof ExtractorAttachment) {
                     ((ExtractorAttachment) attachment).setExactMode(message.exactMode);
 
-                    NetworkManager.get(tile.getWorld()).markDirty();
+                    NetworkManager.get(tile.getLevel()).setDirty();
                 }
             }
         });

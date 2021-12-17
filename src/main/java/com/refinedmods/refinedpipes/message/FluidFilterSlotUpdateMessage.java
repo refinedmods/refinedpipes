@@ -30,12 +30,12 @@ public class FluidFilterSlotUpdateMessage {
 
     public static void handle(FluidFilterSlotUpdateMessage message, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            Container container = Minecraft.getInstance().player.openContainer;
+            Container container = Minecraft.getInstance().player.containerMenu;
             if (container == null) {
                 return;
             }
 
-            if (message.containerSlot < 0 || message.containerSlot >= container.inventorySlots.size()) {
+            if (message.containerSlot < 0 || message.containerSlot >= container.slots.size()) {
                 return;
             }
 

@@ -53,23 +53,23 @@ public class ItemPipeTileEntityRenderer extends TileEntityRenderer<ItemPipeTileE
             }
 
             // If the next pipe is gone..
-            if (v > 0.25 && tile.getWorld().isAirBlock(tile.getPos().offset(prop.getDirection()))) {
+            if (v > 0.25 && tile.getLevel().isEmptyBlock(tile.getBlockPos().relative(prop.getDirection()))) {
                 continue;
             }
 
             v = Math.min(1F, v);
 
-            matrixStack.push();
+            matrixStack.pushPose();
 
             matrixStack.translate(
-                0.5 + (dir.getXOffset() * v),
-                0.5 + (dir.getYOffset() * v),
-                0.5 + (dir.getZOffset() * v)
+                0.5 + (dir.getStepX() * v),
+                0.5 + (dir.getStepY() * v),
+                0.5 + (dir.getStepZ() * v)
             );
-            matrixStack.rotate(new Quaternion(0, (float) ((Minecraft.getInstance().world.getGameTime() / 25D) % (Math.PI * 2) + (partialTicks / 25D)), 0, false));
+            matrixStack.mulPose(new Quaternion(0, (float) ((Minecraft.getInstance().level.getGameTime() / 25D) % (Math.PI * 2) + (partialTicks / 25D)), 0, false));
             matrixStack.scale(0.5F, 0.5F, 0.5F);
 
-            Minecraft.getInstance().getItemRenderer().renderItem(
+            Minecraft.getInstance().getItemRenderer().renderStatic(
                 prop.getStack(),
                 ItemCameraTransforms.TransformType.FIXED,
                 combinedLight,
@@ -78,7 +78,7 @@ public class ItemPipeTileEntityRenderer extends TileEntityRenderer<ItemPipeTileE
                 bufferType
             );
 
-            matrixStack.pop();
+            matrixStack.popPose();
         }
     }
 }

@@ -58,12 +58,12 @@ public class PipeBakedModel implements IBakedModel {
         List<BakedQuad> quads = new ArrayList<>();
 
         if (state.getState() != null) {
-            boolean north = state.getState().get(PipeBlock.NORTH);
-            boolean east = state.getState().get(PipeBlock.EAST);
-            boolean south = state.getState().get(PipeBlock.SOUTH);
-            boolean west = state.getState().get(PipeBlock.WEST);
-            boolean up = state.getState().get(PipeBlock.UP);
-            boolean down = state.getState().get(PipeBlock.DOWN);
+            boolean north = state.getState().getValue(PipeBlock.NORTH);
+            boolean east = state.getState().getValue(PipeBlock.EAST);
+            boolean south = state.getState().getValue(PipeBlock.SOUTH);
+            boolean west = state.getState().getValue(PipeBlock.WEST);
+            boolean up = state.getState().getValue(PipeBlock.UP);
+            boolean down = state.getState().getValue(PipeBlock.DOWN);
 
             if (north && south && !east && !west && !up && !down) {
                 quads.addAll(straight.getQuads(state.getState(), state.getSide(), state.getRand(), EmptyModelData.INSTANCE));
@@ -113,12 +113,12 @@ public class PipeBakedModel implements IBakedModel {
         }
 
         if (state.getState() != null) {
-            boolean invNorth = state.getState().get(PipeBlock.INV_NORTH);
-            boolean invEast = state.getState().get(PipeBlock.INV_EAST);
-            boolean invSouth = state.getState().get(PipeBlock.INV_SOUTH);
-            boolean invWest = state.getState().get(PipeBlock.INV_WEST);
-            boolean invUp = state.getState().get(PipeBlock.INV_UP);
-            boolean invDown = state.getState().get(PipeBlock.INV_DOWN);
+            boolean invNorth = state.getState().getValue(PipeBlock.INV_NORTH);
+            boolean invEast = state.getState().getValue(PipeBlock.INV_EAST);
+            boolean invSouth = state.getState().getValue(PipeBlock.INV_SOUTH);
+            boolean invWest = state.getState().getValue(PipeBlock.INV_WEST);
+            boolean invUp = state.getState().getValue(PipeBlock.INV_UP);
+            boolean invDown = state.getState().getValue(PipeBlock.INV_DOWN);
 
             if (invNorth && !state.hasAttachmentState(Direction.NORTH)) {
                 quads.addAll(getTransformedQuads(inventoryAttachment, Direction.NORTH, state));
@@ -156,7 +156,7 @@ public class PipeBakedModel implements IBakedModel {
             } else if (face == Direction.DOWN) {
                 quaternion = TransformationHelper.quatFromXYZ(new Vector3f(270, 0, 0), true);
             } else {
-                double r = Math.PI * (360 - face.getOpposite().getHorizontalIndex() * 90) / 180d;
+                double r = Math.PI * (360 - face.getOpposite().get2DDataValue() * 90) / 180d;
 
                 quaternion = TransformationHelper.quatFromXYZ(new Vector3f(0, (float) r, 0), false);
             }
@@ -167,13 +167,13 @@ public class PipeBakedModel implements IBakedModel {
         ImmutableList.Builder<BakedQuad> quads = ImmutableList.builder();
         Direction side = state.getSide();
 
-        if (side != null && side.getHorizontalIndex() > -1) {
-            int faceOffset = 4 + Direction.NORTH.getHorizontalIndex() - facing.getHorizontalIndex();
-            side = Direction.byHorizontalIndex((side.getHorizontalIndex() + faceOffset) % 4);
+        if (side != null && side.get2DDataValue() > -1) {
+            int faceOffset = 4 + Direction.NORTH.get2DDataValue() - facing.get2DDataValue();
+            side = Direction.from2DDataValue((side.get2DDataValue() + faceOffset) % 4);
         }
 
         for (BakedQuad quad : model.getQuads(state.getState(), side, state.getRand(), EmptyModelData.INSTANCE)) {
-            BakedQuadBuilder builder = new BakedQuadBuilder(quad.func_187508_a());
+            BakedQuadBuilder builder = new BakedQuadBuilder(quad.getSprite());
             TRSRTransformer transformer = new TRSRTransformer(builder, transformation);
 
             quad.pipe(transformer);
@@ -185,8 +185,8 @@ public class PipeBakedModel implements IBakedModel {
     }
 
     @Override
-    public boolean isAmbientOcclusion() {
-        return core.isAmbientOcclusion();
+    public boolean useAmbientOcclusion() {
+        return core.useAmbientOcclusion();
     }
 
     @Override
@@ -195,19 +195,19 @@ public class PipeBakedModel implements IBakedModel {
     }
 
     @Override
-    public boolean func_230044_c_() {
+    public boolean usesBlockLight() {
         return true;
     }
 
     @Override
-    public boolean isBuiltInRenderer() {
-        return core.isBuiltInRenderer();
+    public boolean isCustomRenderer() {
+        return core.isCustomRenderer();
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public TextureAtlasSprite getParticleTexture() {
-        return core.getParticleTexture();
+    public TextureAtlasSprite getParticleIcon() {
+        return core.getParticleIcon();
     }
 
     @Override
