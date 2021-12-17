@@ -1,25 +1,12 @@
 package com.refinedmods.refinedpipes.network.pipe.attachment.extractor;
 
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 public enum RedstoneMode {
     IGNORED,
     HIGH,
     LOW;
-
-    public boolean isEnabled(World world, BlockPos pos) {
-        switch (this) {
-            case IGNORED:
-                return true;
-            case HIGH:
-                return world.isBlockPowered(pos);
-            case LOW:
-                return !world.isBlockPowered(pos);
-            default:
-                return false;
-        }
-    }
 
     public static RedstoneMode get(byte b) {
         RedstoneMode[] m = values();
@@ -29,6 +16,19 @@ public enum RedstoneMode {
         }
 
         return m[b];
+    }
+
+    public boolean isEnabled(Level level, BlockPos pos) {
+        switch (this) {
+            case IGNORED:
+                return true;
+            case HIGH:
+                return level.hasNeighborSignal(pos);
+            case LOW:
+                return !level.hasNeighborSignal(pos);
+            default:
+                return false;
+        }
     }
 
     public RedstoneMode next() {

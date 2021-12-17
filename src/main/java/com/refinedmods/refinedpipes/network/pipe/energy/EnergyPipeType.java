@@ -1,10 +1,10 @@
 package com.refinedmods.refinedpipes.network.pipe.energy;
 
 import com.refinedmods.refinedpipes.RefinedPipes;
-import com.refinedmods.refinedpipes.RefinedPipesTileEntities;
-import com.refinedmods.refinedpipes.tile.EnergyPipeTileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.ResourceLocation;
+import com.refinedmods.refinedpipes.RefinedPipesBlockEntities;
+import com.refinedmods.refinedpipes.blockentity.EnergyPipeBlockEntity;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 
 public enum EnergyPipeType {
     BASIC(1),
@@ -91,18 +91,18 @@ public enum EnergyPipeType {
         }
     }
 
-    public TileEntityType<EnergyPipeTileEntity> getTileType() {
+    public BlockEntityType<EnergyPipeBlockEntity> getBlockEntityType() {
         switch (this) {
             case BASIC:
-                return RefinedPipesTileEntities.BASIC_ENERGY_PIPE;
+                return RefinedPipesBlockEntities.BASIC_ENERGY_PIPE;
             case IMPROVED:
-                return RefinedPipesTileEntities.IMPROVED_ENERGY_PIPE;
+                return RefinedPipesBlockEntities.IMPROVED_ENERGY_PIPE;
             case ADVANCED:
-                return RefinedPipesTileEntities.ADVANCED_ENERGY_PIPE;
+                return RefinedPipesBlockEntities.ADVANCED_ENERGY_PIPE;
             case ELITE:
-                return RefinedPipesTileEntities.ELITE_ENERGY_PIPE;
+                return RefinedPipesBlockEntities.ELITE_ENERGY_PIPE;
             case ULTIMATE:
-                return RefinedPipesTileEntities.ULTIMATE_ENERGY_PIPE;
+                return RefinedPipesBlockEntities.ULTIMATE_ENERGY_PIPE;
             default:
                 throw new RuntimeException("?");
         }

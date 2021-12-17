@@ -1,24 +1,27 @@
-package com.refinedmods.refinedpipes.tile;
+package com.refinedmods.refinedpipes.blockentity;
 
 import com.refinedmods.refinedpipes.network.NetworkManager;
 import com.refinedmods.refinedpipes.network.fluid.FluidNetwork;
 import com.refinedmods.refinedpipes.network.pipe.Pipe;
 import com.refinedmods.refinedpipes.network.pipe.fluid.FluidPipe;
 import com.refinedmods.refinedpipes.network.pipe.fluid.FluidPipeType;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.fluids.FluidStack;
 
-public class FluidPipeTileEntity extends PipeTileEntity {
+import javax.annotation.Nullable;
+
+public class FluidPipeBlockEntity extends PipeBlockEntity {
     private final FluidPipeType type;
 
     private FluidStack fluid = FluidStack.EMPTY;
     private float fullness = 0;
     private float renderFullness = 0;
 
-    public FluidPipeTileEntity(FluidPipeType type) {
-        super(type.getTileType());
+    public FluidPipeBlockEntity(BlockPos pos, BlockState state, FluidPipeType type) {
+        super(type.getBlockEntityType(), pos, state);
 
         this.type = type;
     }
@@ -52,10 +55,10 @@ public class FluidPipeTileEntity extends PipeTileEntity {
     }
 
     @Override
-    public CompoundNBT writeUpdate(CompoundNBT tag) {
-        Pipe pipe = NetworkManager.get(world).getPipe(pos);
+    public CompoundTag writeUpdate(CompoundTag tag) {
+        Pipe pipe = NetworkManager.get(level).getPipe(worldPosition);
         if (pipe instanceof FluidPipe && pipe.getNetwork() != null) {
-            tag.put("fluid", ((FluidNetwork) pipe.getNetwork()).getFluidTank().getFluid().writeToNBT(new CompoundNBT()));
+            tag.put("fluid", ((FluidNetwork) pipe.getNetwork()).getFluidTank().getFluid().writeToNBT(new CompoundTag()));
             tag.putFloat("fullness", ((FluidPipe) pipe).getFullness());
         }
 
@@ -63,14 +66,19 @@ public class FluidPipeTileEntity extends PipeTileEntity {
     }
 
     @Override
-    public void readUpdate(CompoundNBT tag) {
-        if (tag.contains("fluid")) {
+    public void readUpdate(@Nullable CompoundTag tag) {
+        if (tag != null && tag.contains("fluid")) {
             fluid = FluidStack.loadFluidStackFromNBT(tag.getCompound("fluid"));
+        } else {
+            fluid = FluidStack.EMPTY;
         }
 
-        if (tag.contains("fullness")) {
+        if (tag != null && tag.contains("fullness")) {
             fullness = tag.getFloat("fullness");
             renderFullness = fullness;
+        } else {
+            fullness = 0;
+            renderFullness = 0;
         }
 
         super.readUpdate(tag);
@@ -81,7 +89,7 @@ public class FluidPipeTileEntity extends PipeTileEntity {
     }
 
     @Override
-    protected Pipe createPipe(World world, BlockPos pos) {
-        return new FluidPipe(world, pos, type);
+    protected Pipe createPipe(Level level, BlockPos pos) {
+        return new FluidPipe(level, pos, type);
     }
 }

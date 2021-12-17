@@ -4,10 +4,10 @@ import com.refinedmods.refinedpipes.RefinedPipes;
 import com.refinedmods.refinedpipes.network.Network;
 import com.refinedmods.refinedpipes.network.energy.EnergyNetwork;
 import com.refinedmods.refinedpipes.network.pipe.Pipe;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.util.LazyOptional;
 
 public class EnergyPipe extends Pipe {
@@ -17,8 +17,8 @@ public class EnergyPipe extends Pipe {
 
     private LazyOptional<ServerEnergyPipeEnergyStorage> energyStorage = LazyOptional.empty();
 
-    public EnergyPipe(World world, BlockPos pos, EnergyPipeType type) {
-        super(world, pos);
+    public EnergyPipe(Level level, BlockPos pos, EnergyPipeType type) {
+        super(level, pos);
         this.type = type;
     }
 
@@ -45,7 +45,7 @@ public class EnergyPipe extends Pipe {
     }
 
     @Override
-    public CompoundNBT writeToNbt(CompoundNBT tag) {
+    public CompoundTag writeToNbt(CompoundTag tag) {
         tag = super.writeToNbt(tag);
 
         tag.putInt("type", type.ordinal());

@@ -1,16 +1,16 @@
 package com.refinedmods.refinedpipes.message;
 
+import com.refinedmods.refinedpipes.blockentity.PipeBlockEntity;
 import com.refinedmods.refinedpipes.network.NetworkManager;
 import com.refinedmods.refinedpipes.network.pipe.attachment.Attachment;
 import com.refinedmods.refinedpipes.network.pipe.attachment.extractor.ExtractorAttachment;
 import com.refinedmods.refinedpipes.network.pipe.attachment.extractor.RedstoneMode;
-import com.refinedmods.refinedpipes.tile.PipeTileEntity;
 import com.refinedmods.refinedpipes.util.DirectionUtil;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -25,13 +25,13 @@ public class ChangeRedstoneModeMessage {
         this.redstoneMode = redstoneMode;
     }
 
-    public static void encode(ChangeRedstoneModeMessage message, PacketBuffer buf) {
+    public static void encode(ChangeRedstoneModeMessage message, FriendlyByteBuf buf) {
         buf.writeBlockPos(message.pos);
         buf.writeByte(message.direction.ordinal());
         buf.writeByte(message.redstoneMode.ordinal());
     }
 
-    public static ChangeRedstoneModeMessage decode(PacketBuffer buf) {
+    public static ChangeRedstoneModeMessage decode(FriendlyByteBuf buf) {
         BlockPos pos = buf.readBlockPos();
         Direction direction = DirectionUtil.safeGet(buf.readByte());
         RedstoneMode redstoneMode = RedstoneMode.get(buf.readByte());
@@ -41,15 +41,15 @@ public class ChangeRedstoneModeMessage {
 
     public static void handle(ChangeRedstoneModeMessage message, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            TileEntity tile = ctx.get().getSender().world.getTileEntity(message.pos);
+            BlockEntity blockEntity = ctx.get().getSender().level.getBlockEntity(message.pos);
 
-            if (tile instanceof PipeTileEntity) {
-                Attachment attachment = ((PipeTileEntity) tile).getAttachmentManager().getAttachment(message.direction);
+            if (blockEntity instanceof PipeBlockEntity) {
+                Attachment attachment = ((PipeBlockEntity) blockEntity).getAttachmentManager().getAttachment(message.direction);
 
                 if (attachment instanceof ExtractorAttachment) {
                     ((ExtractorAttachment) attachment).setRedstoneMode(message.redstoneMode);
 
-                    NetworkManager.get(tile.getWorld()).markDirty();
+                    NetworkManager.get(blockEntity.getLevel()).setDirty();
                 }
             }
         });

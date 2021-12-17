@@ -6,10 +6,10 @@ import com.refinedmods.refinedpipes.network.pipe.Destination;
 import com.refinedmods.refinedpipes.network.pipe.DestinationType;
 import com.refinedmods.refinedpipes.network.pipe.energy.EnergyPipe;
 import com.refinedmods.refinedpipes.network.pipe.energy.EnergyPipeType;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 
@@ -28,8 +28,8 @@ public class EnergyNetwork extends Network {
     }
 
     @Override
-    public NetworkGraphScannerResult scanGraph(World world, BlockPos pos) {
-        NetworkGraphScannerResult result = super.scanGraph(world, pos);
+    public NetworkGraphScannerResult scanGraph(Level level, BlockPos pos) {
+        NetworkGraphScannerResult result = super.scanGraph(level, pos);
 
         energyStorage.setCapacityAndMaxExtract(
             result.getFoundPipes()
@@ -51,8 +51,8 @@ public class EnergyNetwork extends Network {
     }
 
     @Override
-    public void update(World world) {
-        super.update(world);
+    public void update(Level level) {
+        super.update(level);
 
         List<Destination> destinations = graph.getDestinations(DestinationType.ENERGY_STORAGE);
 
@@ -62,12 +62,12 @@ public class EnergyNetwork extends Network {
             }
 
             for (Destination destination : destinations) {
-                TileEntity tile = destination.getConnectedPipe().getWorld().getTileEntity(destination.getReceiver());
-                if (tile == null) {
+                BlockEntity blockEntity = destination.getConnectedPipe().getLevel().getBlockEntity(destination.getReceiver());
+                if (blockEntity == null) {
                     continue;
                 }
 
-                IEnergyStorage handler = tile.getCapability(CapabilityEnergy.ENERGY, destination.getIncomingDirection().getOpposite()).orElse(null);
+                IEnergyStorage handler = blockEntity.getCapability(CapabilityEnergy.ENERGY, destination.getIncomingDirection().getOpposite()).orElse(null);
                 if (handler == null) {
                     continue;
                 }

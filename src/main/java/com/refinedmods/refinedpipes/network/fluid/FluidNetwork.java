@@ -6,11 +6,11 @@ import com.refinedmods.refinedpipes.network.pipe.Destination;
 import com.refinedmods.refinedpipes.network.pipe.DestinationType;
 import com.refinedmods.refinedpipes.network.pipe.fluid.FluidPipe;
 import com.refinedmods.refinedpipes.network.pipe.fluid.FluidPipeType;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
@@ -35,8 +35,8 @@ public class FluidNetwork extends Network {
     }
 
     @Override
-    public NetworkGraphScannerResult scanGraph(World world, BlockPos pos) {
-        NetworkGraphScannerResult result = super.scanGraph(world, pos);
+    public NetworkGraphScannerResult scanGraph(Level level, BlockPos pos) {
+        NetworkGraphScannerResult result = super.scanGraph(level, pos);
 
         fluidTank.setCapacity(
             result.getFoundPipes()
@@ -54,8 +54,8 @@ public class FluidNetwork extends Network {
     }
 
     @Override
-    public void update(World world) {
-        super.update(world);
+    public void update(Level level) {
+        super.update(level);
 
         List<Destination> destinations = graph.getDestinations(DestinationType.FLUID_HANDLER);
 
@@ -64,12 +64,12 @@ public class FluidNetwork extends Network {
         }
 
         for (Destination destination : destinations) {
-            TileEntity tile = destination.getConnectedPipe().getWorld().getTileEntity(destination.getReceiver());
-            if (tile == null) {
+            BlockEntity blockEntity = destination.getConnectedPipe().getLevel().getBlockEntity(destination.getReceiver());
+            if (blockEntity == null) {
                 continue;
             }
 
-            IFluidHandler handler = tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, destination.getIncomingDirection().getOpposite()).orElse(null);
+            IFluidHandler handler = blockEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, destination.getIncomingDirection().getOpposite()).orElse(null);
             if (handler == null) {
                 continue;
             }
@@ -107,8 +107,8 @@ public class FluidNetwork extends Network {
     }
 
     @Override
-    public CompoundNBT writeToNbt(CompoundNBT tag) {
-        tag.put("tank", fluidTank.writeToNBT(new CompoundNBT()));
+    public CompoundTag writeToNbt(CompoundTag tag) {
+        tag.put("tank", fluidTank.writeToNBT(new CompoundTag()));
 
         return super.writeToNbt(tag);
     }

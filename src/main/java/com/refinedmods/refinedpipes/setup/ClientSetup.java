@@ -1,30 +1,29 @@
 package com.refinedmods.refinedpipes.setup;
 
 import com.refinedmods.refinedpipes.RefinedPipes;
+import com.refinedmods.refinedpipes.RefinedPipesBlockEntities;
 import com.refinedmods.refinedpipes.RefinedPipesBlocks;
-import com.refinedmods.refinedpipes.RefinedPipesContainers;
-import com.refinedmods.refinedpipes.RefinedPipesTileEntities;
+import com.refinedmods.refinedpipes.RefinedPipesContainerMenus;
 import com.refinedmods.refinedpipes.network.pipe.attachment.AttachmentFactory;
 import com.refinedmods.refinedpipes.network.pipe.attachment.AttachmentRegistry;
 import com.refinedmods.refinedpipes.network.pipe.energy.EnergyPipeType;
 import com.refinedmods.refinedpipes.network.pipe.fluid.FluidPipeType;
 import com.refinedmods.refinedpipes.network.pipe.item.ItemPipeType;
-import com.refinedmods.refinedpipes.render.FluidPipeTileEntityRenderer;
-import com.refinedmods.refinedpipes.render.ItemPipeTileEntityRenderer;
+import com.refinedmods.refinedpipes.render.FluidPipeBlockEntityRenderer;
+import com.refinedmods.refinedpipes.render.ItemPipeBlockEntityRenderer;
 import com.refinedmods.refinedpipes.render.PipeBakedModel;
 import com.refinedmods.refinedpipes.screen.ExtractorAttachmentScreen;
-import net.minecraft.client.gui.ScreenManager;
+import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.RenderTypeLookup;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.ModelResourceLocation;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.event.ModelBakeEvent;
-import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.client.model.ForgeModelBakery;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -32,74 +31,72 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class ClientSetup {
+public final class ClientSetup {
     private static final Logger LOGGER = LogManager.getLogger(ClientSetup.class);
 
-    public ClientSetup() {
+    private ClientSetup() {
+    }
+
+    @SubscribeEvent
+    public static void onClientSetup(FMLClientSetupEvent e) {
         for (AttachmentFactory factory : AttachmentRegistry.INSTANCE.all()) {
             LOGGER.debug("Registering attachment model {}", factory.getModelLocation());
 
-            ModelLoader.addSpecialModel(factory.getModelLocation());
+            ForgeModelBakery.addSpecialModel(factory.getModelLocation());
         }
 
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onClientSetup);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onModelBake);
-
         for (String type : new String[]{"item", "fluid", "energy"}) {
-            ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/" + type + "/basic/core"));
-            ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/" + type + "/basic/extension"));
-            ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/" + type + "/basic/straight"));
+            ForgeModelBakery.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/" + type + "/basic/core"));
+            ForgeModelBakery.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/" + type + "/basic/extension"));
+            ForgeModelBakery.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/" + type + "/basic/straight"));
 
-            ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/" + type + "/improved/core"));
-            ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/" + type + "/improved/extension"));
-            ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/" + type + "/improved/straight"));
+            ForgeModelBakery.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/" + type + "/improved/core"));
+            ForgeModelBakery.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/" + type + "/improved/extension"));
+            ForgeModelBakery.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/" + type + "/improved/straight"));
 
-            ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/" + type + "/advanced/core"));
-            ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/" + type + "/advanced/extension"));
-            ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/" + type + "/advanced/straight"));
+            ForgeModelBakery.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/" + type + "/advanced/core"));
+            ForgeModelBakery.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/" + type + "/advanced/extension"));
+            ForgeModelBakery.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/" + type + "/advanced/straight"));
 
             if (type.equals("fluid") || type.equals("energy")) {
-                ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/" + type + "/elite/core"));
-                ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/" + type + "/elite/extension"));
-                ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/" + type + "/elite/straight"));
+                ForgeModelBakery.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/" + type + "/elite/core"));
+                ForgeModelBakery.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/" + type + "/elite/extension"));
+                ForgeModelBakery.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/" + type + "/elite/straight"));
 
-                ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/" + type + "/ultimate/core"));
-                ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/" + type + "/ultimate/extension"));
-                ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/" + type + "/ultimate/straight"));
+                ForgeModelBakery.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/" + type + "/ultimate/core"));
+                ForgeModelBakery.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/" + type + "/ultimate/extension"));
+                ForgeModelBakery.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/" + type + "/ultimate/straight"));
             }
         }
 
-        ModelLoader.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/attachment/inventory_attachment"));
+        ForgeModelBakery.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/attachment/inventory_attachment"));
+
+        MenuScreens.register(RefinedPipesContainerMenus.EXTRACTOR_ATTACHMENT, ExtractorAttachmentScreen::new);
+
+        ItemBlockRenderTypes.setRenderLayer(RefinedPipesBlocks.BASIC_ITEM_PIPE, RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(RefinedPipesBlocks.IMPROVED_ITEM_PIPE, RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(RefinedPipesBlocks.ADVANCED_ITEM_PIPE, RenderType.cutout());
+
+        ItemBlockRenderTypes.setRenderLayer(RefinedPipesBlocks.BASIC_FLUID_PIPE, RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(RefinedPipesBlocks.IMPROVED_FLUID_PIPE, RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(RefinedPipesBlocks.ADVANCED_FLUID_PIPE, RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(RefinedPipesBlocks.ELITE_FLUID_PIPE, RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(RefinedPipesBlocks.ULTIMATE_FLUID_PIPE, RenderType.cutout());
+
+        BlockEntityRenderers.register(RefinedPipesBlockEntities.BASIC_ITEM_PIPE, ctx -> new ItemPipeBlockEntityRenderer());
+        BlockEntityRenderers.register(RefinedPipesBlockEntities.IMPROVED_ITEM_PIPE, ctx -> new ItemPipeBlockEntityRenderer());
+        BlockEntityRenderers.register(RefinedPipesBlockEntities.ADVANCED_ITEM_PIPE, ctx -> new ItemPipeBlockEntityRenderer());
+
+        BlockEntityRenderers.register(RefinedPipesBlockEntities.BASIC_FLUID_PIPE, ctx -> new FluidPipeBlockEntityRenderer());
+        BlockEntityRenderers.register(RefinedPipesBlockEntities.IMPROVED_FLUID_PIPE, ctx -> new FluidPipeBlockEntityRenderer());
+        BlockEntityRenderers.register(RefinedPipesBlockEntities.ADVANCED_FLUID_PIPE, ctx -> new FluidPipeBlockEntityRenderer());
+        BlockEntityRenderers.register(RefinedPipesBlockEntities.ELITE_FLUID_PIPE, ctx -> new FluidPipeBlockEntityRenderer());
+        BlockEntityRenderers.register(RefinedPipesBlockEntities.ULTIMATE_FLUID_PIPE, ctx -> new FluidPipeBlockEntityRenderer());
     }
 
     @SubscribeEvent
-    public void onClientSetup(FMLClientSetupEvent e) {
-        ScreenManager.registerFactory(RefinedPipesContainers.EXTRACTOR_ATTACHMENT, ExtractorAttachmentScreen::new);
-
-        RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.BASIC_ITEM_PIPE, RenderType.getCutout());
-        RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.IMPROVED_ITEM_PIPE, RenderType.getCutout());
-        RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.ADVANCED_ITEM_PIPE, RenderType.getCutout());
-
-        RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.BASIC_FLUID_PIPE, RenderType.getCutout());
-        RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.IMPROVED_FLUID_PIPE, RenderType.getCutout());
-        RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.ADVANCED_FLUID_PIPE, RenderType.getCutout());
-        RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.ELITE_FLUID_PIPE, RenderType.getCutout());
-        RenderTypeLookup.setRenderLayer(RefinedPipesBlocks.ULTIMATE_FLUID_PIPE, RenderType.getCutout());
-
-        ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.BASIC_ITEM_PIPE, ItemPipeTileEntityRenderer::new);
-        ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.IMPROVED_ITEM_PIPE, ItemPipeTileEntityRenderer::new);
-        ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.ADVANCED_ITEM_PIPE, ItemPipeTileEntityRenderer::new);
-
-        ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.BASIC_FLUID_PIPE, FluidPipeTileEntityRenderer::new);
-        ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.IMPROVED_FLUID_PIPE, FluidPipeTileEntityRenderer::new);
-        ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.ADVANCED_FLUID_PIPE, FluidPipeTileEntityRenderer::new);
-        ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.ELITE_FLUID_PIPE, FluidPipeTileEntityRenderer::new);
-        ClientRegistry.bindTileEntityRenderer(RefinedPipesTileEntities.ULTIMATE_FLUID_PIPE, FluidPipeTileEntityRenderer::new);
-    }
-
-    @SubscribeEvent
-    public void onModelBake(ModelBakeEvent e) {
-        Map<ResourceLocation, IBakedModel> attachmentModels = new HashMap<>();
+    public static void onModelBake(ModelBakeEvent e) {
+        Map<ResourceLocation, BakedModel> attachmentModels = new HashMap<>();
 
         for (AttachmentFactory factory : AttachmentRegistry.INSTANCE.all()) {
             attachmentModels.put(factory.getId(), e.getModelRegistry().get(factory.getModelLocation()));
@@ -209,7 +206,7 @@ public class ClientSetup {
         }
     }
 
-    private boolean isPipeModel(ResourceLocation modelId, ResourceLocation pipeId) {
+    private static boolean isPipeModel(ResourceLocation modelId, ResourceLocation pipeId) {
         return modelId instanceof ModelResourceLocation
             && modelId.getNamespace().equals(RefinedPipes.ID)
             && modelId.getPath().equals(pipeId.getPath())

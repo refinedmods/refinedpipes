@@ -9,6 +9,12 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Ported to Minecraft 1.18.1.
+
+## [0.5.1] - 2021-11-28
+
+### Added
+
 - Added Italian translation by [@maicol07](https://github.com/maicol07).
 - Updated Russian translation by [@KnottyManatee55](https://github.com/KnottyManatee55).
 - Updated Spanish translations by [@d-l-n](https://github.com/d-l-n).

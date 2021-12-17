@@ -1,6 +1,6 @@
 package com.refinedmods.refinedpipes.util;
 
-import net.minecraft.util.Direction;
+import net.minecraft.core.Direction;
 
 public class DirectionUtil {
     public static Direction safeGet(byte d) {

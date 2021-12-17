@@ -2,7 +2,7 @@ package com.refinedmods.refinedpipes.network.item.routing;
 
 import com.refinedmods.refinedpipes.network.pipe.Destination;
 import com.refinedmods.refinedpipes.routing.Path;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;

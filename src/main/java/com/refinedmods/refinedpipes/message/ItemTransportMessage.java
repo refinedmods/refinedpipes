@@ -1,12 +1,12 @@
 package com.refinedmods.refinedpipes.message;
 
+import com.refinedmods.refinedpipes.blockentity.ItemPipeBlockEntity;
 import com.refinedmods.refinedpipes.network.pipe.transport.ItemTransportProps;
-import com.refinedmods.refinedpipes.tile.ItemPipeTileEntity;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,14 +21,14 @@ public class ItemTransportMessage {
         this.props = props;
     }
 
-    public static void encode(ItemTransportMessage message, PacketBuffer buf) {
+    public static void encode(ItemTransportMessage message, FriendlyByteBuf buf) {
         buf.writeBlockPos(message.pos);
         buf.writeInt(message.props.size());
 
         message.props.forEach(p -> p.writeToBuffer(buf));
     }
 
-    public static ItemTransportMessage decode(PacketBuffer buf) {
+    public static ItemTransportMessage decode(FriendlyByteBuf buf) {
         BlockPos pos = buf.readBlockPos();
         int count = buf.readInt();
         List<ItemTransportProps> props = new ArrayList<>();
@@ -42,10 +42,10 @@ public class ItemTransportMessage {
 
     public static void handle(ItemTransportMessage message, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            TileEntity tile = Minecraft.getInstance().world.getTileEntity(message.pos);
+            BlockEntity blockEntity = Minecraft.getInstance().level.getBlockEntity(message.pos);
 
-            if (tile instanceof ItemPipeTileEntity) {
-                ((ItemPipeTileEntity) tile).setProps(message.props);
+            if (blockEntity instanceof ItemPipeBlockEntity) {
+                ((ItemPipeBlockEntity) blockEntity).setProps(message.props);
             }
         });
 

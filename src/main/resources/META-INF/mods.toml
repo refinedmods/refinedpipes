@@ -1,12 +1,11 @@
 modLoader="javafml"
-loaderVersion="[36,)"
+loaderVersion="[39,)"
 issueTrackerURL="https://github.com/refinedmods/refinedpipes"
 license="MIT"
 [[mods]]
 modId="refinedpipes"
 version="${version}"
 displayName="Refined Pipes"
-updateJSONURL="https://refinedmods.com/refined-pipes/update.json"
 displayURL="https://refinedmods.com/refined-pipes"
 authors="Refined Mods"
 description='''

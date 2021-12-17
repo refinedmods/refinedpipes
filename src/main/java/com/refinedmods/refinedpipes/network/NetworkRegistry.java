@@ -1,6 +1,6 @@
 package com.refinedmods.refinedpipes.network;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -9,10 +9,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class NetworkRegistry {
-    private static final Logger LOGGER = LogManager.getLogger(NetworkRegistry.class);
-
     public static final NetworkRegistry INSTANCE = new NetworkRegistry();
-
+    private static final Logger LOGGER = LogManager.getLogger(NetworkRegistry.class);
     private final Map<ResourceLocation, NetworkFactory> factories = new HashMap<>();
 
     private NetworkRegistry() {

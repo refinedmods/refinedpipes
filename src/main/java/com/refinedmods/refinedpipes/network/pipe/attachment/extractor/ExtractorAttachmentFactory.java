@@ -7,14 +7,14 @@ import com.refinedmods.refinedpipes.network.pipe.attachment.Attachment;
 import com.refinedmods.refinedpipes.network.pipe.attachment.AttachmentFactory;
 import com.refinedmods.refinedpipes.util.DirectionUtil;
 import com.refinedmods.refinedpipes.util.StringUtil;
-import net.minecraft.block.Block;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Block;
 
 import java.util.List;
 
@@ -26,7 +26,7 @@ public class ExtractorAttachmentFactory implements AttachmentFactory {
     }
 
     @Override
-    public Attachment createFromNbt(Pipe pipe, CompoundNBT tag) {
+    public Attachment createFromNbt(Pipe pipe, CompoundTag tag) {
         Direction dir = DirectionUtil.safeGet((byte) tag.getInt("dir"));
 
         ExtractorAttachment attachment = new ExtractorAttachment(pipe, dir, type);
@@ -87,42 +87,42 @@ public class ExtractorAttachmentFactory implements AttachmentFactory {
     }
 
     @Override
-    public void addInformation(List<ITextComponent> tooltip) {
-        tooltip.add(new TranslationTextComponent("misc.refinedpipes.tier", new TranslationTextComponent("enchantment.level." + type.getTier())).mergeStyle(TextFormatting.YELLOW));
+    public void addInformation(List<Component> tooltip) {
+        tooltip.add(new TranslatableComponent("misc.refinedpipes.tier", new TranslatableComponent("enchantment.level." + type.getTier())).withStyle(ChatFormatting.YELLOW));
 
-        ITextComponent itemsToExtract = new StringTextComponent(StringUtil.formatNumber(type.getItemsToExtract()) + " ")
-            .append(new TranslationTextComponent("misc.refinedpipes.item" + (type.getItemsToExtract() == 1 ? "" : "s")))
-            .mergeStyle(TextFormatting.WHITE);
+        Component itemsToExtract = new TextComponent(StringUtil.formatNumber(type.getItemsToExtract()) + " ")
+            .append(new TranslatableComponent("misc.refinedpipes.item" + (type.getItemsToExtract() == 1 ? "" : "s")))
+            .withStyle(ChatFormatting.WHITE);
 
         float itemSecondsInterval = type.getItemTickInterval() / 20F;
-        ITextComponent itemTickInterval = new StringTextComponent(StringUtil.formatNumber(itemSecondsInterval) + " ")
-            .append(new TranslationTextComponent("misc.refinedpipes.second" + (itemSecondsInterval == 1 ? "" : "s")))
-            .mergeStyle(TextFormatting.WHITE);
+        Component itemTickInterval = new TextComponent(StringUtil.formatNumber(itemSecondsInterval) + " ")
+            .append(new TranslatableComponent("misc.refinedpipes.second" + (itemSecondsInterval == 1 ? "" : "s")))
+            .withStyle(ChatFormatting.WHITE);
 
-        tooltip.add(new TranslationTextComponent(
+        tooltip.add(new TranslatableComponent(
             "tooltip.refinedpipes.extractor_attachment.item_extraction_rate",
             itemsToExtract,
             itemTickInterval
-        ).mergeStyle(TextFormatting.GRAY));
+        ).withStyle(ChatFormatting.GRAY));
 
-        ITextComponent fluidsToExtract = new StringTextComponent(StringUtil.formatNumber(type.getFluidsToExtract()) + " mB")
-            .mergeStyle(TextFormatting.WHITE);
+        Component fluidsToExtract = new TextComponent(StringUtil.formatNumber(type.getFluidsToExtract()) + " mB")
+            .withStyle(ChatFormatting.WHITE);
 
         float fluidSecondsInterval = type.getFluidTickInterval() / 20F;
-        ITextComponent fluidTickInterval = new StringTextComponent(StringUtil.formatNumber(fluidSecondsInterval) + " ")
-            .append(new TranslationTextComponent("misc.refinedpipes.second" + (fluidSecondsInterval == 1 ? "" : "s")))
-            .mergeStyle(TextFormatting.WHITE);
+        Component fluidTickInterval = new TextComponent(StringUtil.formatNumber(fluidSecondsInterval) + " ")
+            .append(new TranslatableComponent("misc.refinedpipes.second" + (fluidSecondsInterval == 1 ? "" : "s")))
+            .withStyle(ChatFormatting.WHITE);
 
-        tooltip.add(new TranslationTextComponent(
+        tooltip.add(new TranslatableComponent(
             "tooltip.refinedpipes.extractor_attachment.fluid_extraction_rate",
             fluidsToExtract,
             fluidTickInterval
-        ).mergeStyle(TextFormatting.GRAY));
+        ).withStyle(ChatFormatting.GRAY));
 
-        tooltip.add(new TranslationTextComponent(
+        tooltip.add(new TranslatableComponent(
             "tooltip.refinedpipes.extractor_attachment.filter_slots",
-            new StringTextComponent("" + type.getFilterSlots()).mergeStyle(TextFormatting.WHITE)
-        ).mergeStyle(TextFormatting.GRAY));
+            new TextComponent("" + type.getFilterSlots()).withStyle(ChatFormatting.WHITE)
+        ).withStyle(ChatFormatting.GRAY));
 
         addAbilityToInformation(tooltip, type.getCanSetRedstoneMode(), "misc.refinedpipes.redstone_mode");
         addAbilityToInformation(tooltip, type.getCanSetWhitelistBlacklist(), "misc.refinedpipes.mode");
@@ -130,10 +130,10 @@ public class ExtractorAttachmentFactory implements AttachmentFactory {
         addAbilityToInformation(tooltip, type.getCanSetExactMode(), "misc.refinedpipes.exact_mode");
     }
 
-    private void addAbilityToInformation(List<ITextComponent> tooltip, boolean possible, String key) {
+    private void addAbilityToInformation(List<Component> tooltip, boolean possible, String key) {
         tooltip.add(
-            new StringTextComponent(possible ? "✓ " : "❌ ").append(new TranslationTextComponent(key))
-                .mergeStyle(possible ? TextFormatting.GREEN : TextFormatting.RED)
+            new TextComponent(possible ? "✓ " : "❌ ").append(new TranslatableComponent(key))
+                .withStyle(possible ? ChatFormatting.GREEN : ChatFormatting.RED)
         );
     }
 

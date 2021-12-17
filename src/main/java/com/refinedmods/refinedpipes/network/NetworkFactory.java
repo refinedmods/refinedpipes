@@ -1,10 +1,10 @@
 package com.refinedmods.refinedpipes.network;
 
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 
 public interface NetworkFactory {
     Network create(BlockPos pos);
 
-    Network create(CompoundNBT tag);
+    Network create(CompoundTag tag);
 }

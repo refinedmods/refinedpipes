@@ -1,19 +1,17 @@
 package com.refinedmods.refinedpipes.block;
 
+import com.refinedmods.refinedpipes.blockentity.FluidPipeBlockEntity;
 import com.refinedmods.refinedpipes.network.pipe.fluid.FluidPipeType;
 import com.refinedmods.refinedpipes.network.pipe.shape.PipeShapeCache;
-import com.refinedmods.refinedpipes.tile.FluidPipeTileEntity;
-import net.minecraft.block.BlockState;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 
-import javax.annotation.Nullable;
-
-public class FluidPipeBlock extends PipeBlock {
+public class FluidPipeBlock extends PipeBlock implements EntityBlock {
     private final FluidPipeType type;
 
     public FluidPipeBlock(PipeShapeCache shapeCache, FluidPipeType type) {
@@ -28,29 +26,18 @@ public class FluidPipeBlock extends PipeBlock {
     }
 
     @Override
-    public boolean hasTileEntity(BlockState state) {
-        return true;
-    }
-
-    @Nullable
-    @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return new FluidPipeTileEntity(type);
-    }
-
-    @Override
-    protected boolean hasConnection(IWorld world, BlockPos pos, Direction direction) {
-        TileEntity currentTile = world.getTileEntity(pos);
-        if (currentTile instanceof FluidPipeTileEntity &&
-            ((FluidPipeTileEntity) currentTile).getAttachmentManager().hasAttachment(direction)) {
+    protected boolean hasConnection(LevelAccessor level, BlockPos pos, Direction direction) {
+        BlockEntity currentBlockEntity = level.getBlockEntity(pos);
+        if (currentBlockEntity instanceof FluidPipeBlockEntity &&
+            ((FluidPipeBlockEntity) currentBlockEntity).getAttachmentManager().hasAttachment(direction)) {
             return false;
         }
 
-        BlockState facingState = world.getBlockState(pos.offset(direction));
-        TileEntity facingTile = world.getTileEntity(pos.offset(direction));
+        BlockState facingState = level.getBlockState(pos.relative(direction));
+        BlockEntity facingBlockEntity = level.getBlockEntity(pos.relative(direction));
 
-        if (facingTile instanceof FluidPipeTileEntity &&
-            ((FluidPipeTileEntity) facingTile).getAttachmentManager().hasAttachment(direction.getOpposite())) {
+        if (facingBlockEntity instanceof FluidPipeBlockEntity &&
+            ((FluidPipeBlockEntity) facingBlockEntity).getAttachmentManager().hasAttachment(direction.getOpposite())) {
             return false;
         }
 
@@ -59,10 +46,15 @@ public class FluidPipeBlock extends PipeBlock {
     }
 
     @Override
-    protected boolean hasInvConnection(IWorld world, BlockPos pos, Direction direction) {
-        TileEntity facingTile = world.getTileEntity(pos.offset(direction));
+    protected boolean hasInvConnection(LevelAccessor level, BlockPos pos, Direction direction) {
+        BlockEntity facingBlockEntity = level.getBlockEntity(pos.relative(direction));
 
-        return facingTile != null
-            && facingTile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, direction.getOpposite()).isPresent();
+        return facingBlockEntity != null
+            && facingBlockEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, direction.getOpposite()).isPresent();
+    }
+
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new FluidPipeBlockEntity(pos, state, type);
     }
 }

@@ -1,21 +1,20 @@
 package com.refinedmods.refinedpipes.block;
 
+import com.refinedmods.refinedpipes.blockentity.EnergyPipeBlockEntity;
 import com.refinedmods.refinedpipes.network.pipe.energy.EnergyPipeEnergyStorage;
 import com.refinedmods.refinedpipes.network.pipe.energy.EnergyPipeType;
 import com.refinedmods.refinedpipes.network.pipe.shape.PipeShapeCache;
-import com.refinedmods.refinedpipes.tile.EnergyPipeTileEntity;
-import net.minecraft.block.BlockState;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
-
-public class EnergyPipeBlock extends PipeBlock {
+public class EnergyPipeBlock extends PipeBlock implements EntityBlock {
     private final EnergyPipeType type;
 
     public EnergyPipeBlock(PipeShapeCache shapeCache, EnergyPipeType type) {
@@ -30,29 +29,18 @@ public class EnergyPipeBlock extends PipeBlock {
     }
 
     @Override
-    public boolean hasTileEntity(BlockState state) {
-        return true;
-    }
-
-    @Nullable
-    @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return new EnergyPipeTileEntity(type);
-    }
-
-    @Override
-    protected boolean hasConnection(IWorld world, BlockPos pos, Direction direction) {
-        TileEntity currentTile = world.getTileEntity(pos);
-        if (currentTile instanceof EnergyPipeTileEntity &&
-            ((EnergyPipeTileEntity) currentTile).getAttachmentManager().hasAttachment(direction)) {
+    protected boolean hasConnection(LevelAccessor level, BlockPos pos, Direction direction) {
+        BlockEntity currentBlockEntity = level.getBlockEntity(pos);
+        if (currentBlockEntity instanceof EnergyPipeBlockEntity &&
+            ((EnergyPipeBlockEntity) currentBlockEntity).getAttachmentManager().hasAttachment(direction)) {
             return false;
         }
 
-        BlockState facingState = world.getBlockState(pos.offset(direction));
-        TileEntity facingTile = world.getTileEntity(pos.offset(direction));
+        BlockState facingState = level.getBlockState(pos.relative(direction));
+        BlockEntity facingBlockEntity = level.getBlockEntity(pos.relative(direction));
 
-        if (facingTile instanceof EnergyPipeTileEntity &&
-            ((EnergyPipeTileEntity) facingTile).getAttachmentManager().hasAttachment(direction.getOpposite())) {
+        if (facingBlockEntity instanceof EnergyPipeBlockEntity &&
+            ((EnergyPipeBlockEntity) facingBlockEntity).getAttachmentManager().hasAttachment(direction.getOpposite())) {
             return false;
         }
 
@@ -61,13 +49,13 @@ public class EnergyPipeBlock extends PipeBlock {
     }
 
     @Override
-    protected boolean hasInvConnection(IWorld world, BlockPos pos, Direction direction) {
-        TileEntity facingTile = world.getTileEntity(pos.offset(direction));
-        if (facingTile == null) {
+    protected boolean hasInvConnection(LevelAccessor level, BlockPos pos, Direction direction) {
+        BlockEntity facingBlockEntityy = level.getBlockEntity(pos.relative(direction));
+        if (facingBlockEntityy == null) {
             return false;
         }
 
-        IEnergyStorage energyStorage = facingTile.getCapability(CapabilityEnergy.ENERGY, direction.getOpposite()).orElse(null);
+        IEnergyStorage energyStorage = facingBlockEntityy.getCapability(CapabilityEnergy.ENERGY, direction.getOpposite()).orElse(null);
         if (energyStorage == null) {
             return false;
         }
@@ -77,5 +65,11 @@ public class EnergyPipeBlock extends PipeBlock {
         }
 
         return true;
+    }
+
+    @Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new EnergyPipeBlockEntity(pos, state, type);
     }
 }

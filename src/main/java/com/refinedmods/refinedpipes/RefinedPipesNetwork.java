@@ -1,14 +1,14 @@
 package com.refinedmods.refinedpipes;
 
 import com.refinedmods.refinedpipes.message.*;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkRegistry;
-import net.minecraftforge.fml.network.PacketDistributor;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.PacketDistributor;
+import net.minecraftforge.network.simple.SimpleChannel;
 
 public class RefinedPipesNetwork {
     private final String protocolVersion = Integer.toString(1);
@@ -32,13 +32,13 @@ public class RefinedPipesNetwork {
         handler.registerMessage(id++, FluidFilterSlotUpdateMessage.class, FluidFilterSlotUpdateMessage::encode, FluidFilterSlotUpdateMessage::decode, FluidFilterSlotUpdateMessage::handle);
     }
 
-    public void sendInArea(World world, BlockPos pos, int radius, Object message) {
+    public void sendInArea(Level level, BlockPos pos, int radius, Object message) {
         handler.send(PacketDistributor.NEAR.with(() -> new PacketDistributor.TargetPoint(
             pos.getX(),
             pos.getY(),
             pos.getZ(),
             radius,
-            world.func_234923_W_()
+            level.dimension()
         )), message);
     }
 
@@ -46,7 +46,7 @@ public class RefinedPipesNetwork {
         handler.sendToServer(message);
     }
 
-    public void sendToClient(ServerPlayerEntity player, Object message) {
-        handler.sendTo(message, player.connection.netManager, NetworkDirection.PLAY_TO_CLIENT);
+    public void sendToClient(ServerPlayer player, Object message) {
+        handler.sendTo(message, player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
     }
 }

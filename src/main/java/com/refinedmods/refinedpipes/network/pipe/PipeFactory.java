@@ -1,8 +1,8 @@
 package com.refinedmods.refinedpipes.network.pipe;
 
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.world.World;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.Level;
 
 public interface PipeFactory {
-    Pipe createFromNbt(World world, CompoundNBT tag);
+    Pipe createFromNbt(Level level, CompoundTag tag);
 }

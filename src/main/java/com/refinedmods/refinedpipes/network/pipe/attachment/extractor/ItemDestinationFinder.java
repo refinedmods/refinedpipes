@@ -4,9 +4,9 @@ import com.refinedmods.refinedpipes.network.item.ItemNetwork;
 import com.refinedmods.refinedpipes.network.pipe.Destination;
 import com.refinedmods.refinedpipes.network.pipe.DestinationType;
 import com.refinedmods.refinedpipes.network.pipe.attachment.Attachment;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -36,7 +36,7 @@ public class ItemDestinationFinder {
                 List<Destination> destinations = new ArrayList<>(network.getDestinations(DestinationType.ITEM_HANDLER));
 
                 while (!destinations.isEmpty()) {
-                    int randomIndex = attachment.getPipe().getWorld().getRandom().nextInt(destinations.size());
+                    int randomIndex = attachment.getPipe().getLevel().getRandom().nextInt(destinations.size());
                     Destination randomDestination = destinations.get(randomIndex);
 
                     if (isDestinationApplicable(sourcePos, extracted, randomDestination)) {
@@ -80,12 +80,12 @@ public class ItemDestinationFinder {
     }
 
     private boolean isDestinationApplicable(BlockPos sourcePos, ItemStack extracted, Destination destination) {
-        TileEntity tile = destination.getConnectedPipe().getWorld().getTileEntity(destination.getReceiver());
-        if (tile == null) {
+        BlockEntity blockEntity = destination.getConnectedPipe().getLevel().getBlockEntity(destination.getReceiver());
+        if (blockEntity == null) {
             return false;
         }
 
-        IItemHandler handler = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, destination.getIncomingDirection().getOpposite()).orElse(null);
+        IItemHandler handler = blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, destination.getIncomingDirection().getOpposite()).orElse(null);
         if (handler == null) {
             return false;
         }

@@ -1,18 +1,18 @@
 package com.refinedmods.refinedpipes.network.pipe.transport;
 
 import com.refinedmods.refinedpipes.util.DirectionUtil;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.Direction;
+import net.minecraft.core.Direction;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.item.ItemStack;
 
 public class ItemTransportProps {
     private final ItemStack stack;
     private final int maxTicksInPipe;
-    private int progress;
     private final Direction direction;
     private final Direction initialDirection;
     private final boolean lastPipe;
     private final boolean firstPipe;
+    private int progress;
 
     public ItemTransportProps(ItemStack stack, int maxTicksInPipe, int progress, Direction direction, Direction initialDirection, boolean lastPipe, boolean firstPipe) {
         this.stack = stack;
@@ -24,19 +24,9 @@ public class ItemTransportProps {
         this.firstPipe = firstPipe;
     }
 
-    public void writeToBuffer(PacketBuffer buf) {
-        buf.writeItemStack(stack);
-        buf.writeInt(maxTicksInPipe);
-        buf.writeInt(progress);
-        buf.writeInt(direction.ordinal());
-        buf.writeInt(initialDirection.ordinal());
-        buf.writeBoolean(lastPipe);
-        buf.writeBoolean(firstPipe);
-    }
-
-    public static ItemTransportProps create(PacketBuffer buf) {
+    public static ItemTransportProps create(FriendlyByteBuf buf) {
         return new ItemTransportProps(
-            buf.readItemStack(),
+            buf.readItem(),
             buf.readInt(),
             buf.readInt(),
             DirectionUtil.safeGet((byte) buf.readInt()),
@@ -44,6 +34,16 @@ public class ItemTransportProps {
             buf.readBoolean(),
             buf.readBoolean()
         );
+    }
+
+    public void writeToBuffer(FriendlyByteBuf buf) {
+        buf.writeItem(stack);
+        buf.writeInt(maxTicksInPipe);
+        buf.writeInt(progress);
+        buf.writeInt(direction.ordinal());
+        buf.writeInt(initialDirection.ordinal());
+        buf.writeBoolean(lastPipe);
+        buf.writeBoolean(firstPipe);
     }
 
     public void tick() {

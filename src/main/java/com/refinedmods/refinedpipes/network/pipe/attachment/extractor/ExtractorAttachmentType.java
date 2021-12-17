@@ -3,8 +3,8 @@ package com.refinedmods.refinedpipes.network.pipe.attachment.extractor;
 import com.refinedmods.refinedpipes.RefinedPipes;
 import com.refinedmods.refinedpipes.RefinedPipesItems;
 import com.refinedmods.refinedpipes.config.ServerConfig;
-import net.minecraft.item.Item;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
 
 public enum ExtractorAttachmentType {
     BASIC(1),
@@ -17,6 +17,16 @@ public enum ExtractorAttachmentType {
 
     ExtractorAttachmentType(int tier) {
         this.tier = tier;
+    }
+
+    public static ExtractorAttachmentType get(byte b) {
+        ExtractorAttachmentType[] v = values();
+
+        if (b < 0 || b >= v.length) {
+            return BASIC;
+        }
+
+        return v[b];
     }
 
     public int getTier() {
@@ -142,15 +152,5 @@ public enum ExtractorAttachmentType {
             default:
                 throw new RuntimeException("?");
         }
-    }
-
-    public static ExtractorAttachmentType get(byte b) {
-        ExtractorAttachmentType[] v = values();
-
-        if (b < 0 || b >= v.length) {
-            return BASIC;
-        }
-
-        return v[b];
     }
 }

@@ -3,13 +3,13 @@ package com.refinedmods.refinedpipes.network.pipe.transport.callback;
 import com.refinedmods.refinedpipes.RefinedPipes;
 import com.refinedmods.refinedpipes.network.Network;
 import com.refinedmods.refinedpipes.util.DirectionUtil;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -19,10 +19,8 @@ import org.apache.logging.log4j.Logger;
 import javax.annotation.Nullable;
 
 public class ItemInsertTransportCallback implements TransportCallback {
-    private static final Logger LOGGER = LogManager.getLogger(ItemInsertTransportCallback.class);
-
     public static final ResourceLocation ID = new ResourceLocation(RefinedPipes.ID, "item_insert");
-
+    private static final Logger LOGGER = LogManager.getLogger(ItemInsertTransportCallback.class);
     private final BlockPos itemHandlerPosition;
     private final Direction incomingDirection;
     private final ItemStack toInsert;
@@ -33,38 +31,10 @@ public class ItemInsertTransportCallback implements TransportCallback {
         this.toInsert = toInsert;
     }
 
-    @Override
-    public void call(Network network, World world, BlockPos currentPos, TransportCallback cancelCallback) {
-        TileEntity tile = world.getTileEntity(itemHandlerPosition);
-        if (tile == null) {
-            LOGGER.warn("Destination item handler is gone at " + itemHandlerPosition);
-            cancelCallback.call(network, world, currentPos, cancelCallback);
-            return;
-        }
-
-        IItemHandler itemHandler = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, incomingDirection.getOpposite()).orElse(null);
-        if (itemHandler == null) {
-            LOGGER.warn("Destination item handler is no longer exposing a capability at " + itemHandlerPosition);
-            cancelCallback.call(network, world, currentPos, cancelCallback);
-            return;
-        }
-
-        if (ItemHandlerHelper.insertItem(itemHandler, toInsert, true).isEmpty()) {
-            ItemHandlerHelper.insertItem(itemHandler, toInsert, false);
-        } else {
-            cancelCallback.call(network, world, currentPos, cancelCallback);
-        }
-    }
-
-    @Override
-    public ResourceLocation getId() {
-        return ID;
-    }
-
     @Nullable
-    public static ItemInsertTransportCallback of(CompoundNBT tag) {
-        BlockPos itemHandlerPosition = BlockPos.fromLong(tag.getLong("ihpos"));
-        ItemStack toInsert = ItemStack.read(tag.getCompound("s"));
+    public static ItemInsertTransportCallback of(CompoundTag tag) {
+        BlockPos itemHandlerPosition = BlockPos.of(tag.getLong("ihpos"));
+        ItemStack toInsert = ItemStack.of(tag.getCompound("s"));
         Direction incomingDirection = DirectionUtil.safeGet((byte) tag.getInt("incdir"));
 
         if (toInsert.isEmpty()) {
@@ -76,9 +46,37 @@ public class ItemInsertTransportCallback implements TransportCallback {
     }
 
     @Override
-    public CompoundNBT writeToNbt(CompoundNBT tag) {
-        tag.putLong("ihpos", itemHandlerPosition.toLong());
-        tag.put("s", toInsert.write(new CompoundNBT()));
+    public void call(Network network, Level level, BlockPos currentPos, TransportCallback cancelCallback) {
+        BlockEntity blockEntity = level.getBlockEntity(itemHandlerPosition);
+        if (blockEntity == null) {
+            LOGGER.warn("Destination item handler is gone at " + itemHandlerPosition);
+            cancelCallback.call(network, level, currentPos, cancelCallback);
+            return;
+        }
+
+        IItemHandler itemHandler = blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, incomingDirection.getOpposite()).orElse(null);
+        if (itemHandler == null) {
+            LOGGER.warn("Destination item handler is no longer exposing a capability at " + itemHandlerPosition);
+            cancelCallback.call(network, level, currentPos, cancelCallback);
+            return;
+        }
+
+        if (ItemHandlerHelper.insertItem(itemHandler, toInsert, true).isEmpty()) {
+            ItemHandlerHelper.insertItem(itemHandler, toInsert, false);
+        } else {
+            cancelCallback.call(network, level, currentPos, cancelCallback);
+        }
+    }
+
+    @Override
+    public ResourceLocation getId() {
+        return ID;
+    }
+
+    @Override
+    public CompoundTag writeToNbt(CompoundTag tag) {
+        tag.putLong("ihpos", itemHandlerPosition.asLong());
+        tag.put("s", toInsert.save(new CompoundTag()));
         tag.putInt("incdir", incomingDirection.ordinal());
 
         return tag;

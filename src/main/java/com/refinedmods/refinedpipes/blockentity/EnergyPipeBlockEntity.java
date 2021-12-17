@@ -1,13 +1,14 @@
-package com.refinedmods.refinedpipes.tile;
+package com.refinedmods.refinedpipes.blockentity;
 
 import com.refinedmods.refinedpipes.network.NetworkManager;
 import com.refinedmods.refinedpipes.network.pipe.Pipe;
 import com.refinedmods.refinedpipes.network.pipe.energy.ClientEnergyPipeEnergyStorage;
 import com.refinedmods.refinedpipes.network.pipe.energy.EnergyPipe;
 import com.refinedmods.refinedpipes.network.pipe.energy.EnergyPipeType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
@@ -15,12 +16,12 @@ import net.minecraftforge.energy.CapabilityEnergy;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class EnergyPipeTileEntity extends PipeTileEntity {
+public class EnergyPipeBlockEntity extends PipeBlockEntity {
     private final EnergyPipeType type;
     private final LazyOptional<ClientEnergyPipeEnergyStorage> clientEnergyStorage;
 
-    public EnergyPipeTileEntity(EnergyPipeType type) {
-        super(type.getTileType());
+    public EnergyPipeBlockEntity(BlockPos pos, BlockState state, EnergyPipeType type) {
+        super(type.getBlockEntityType(), pos, state);
 
         this.type = type;
         this.clientEnergyStorage = LazyOptional.of(() -> new ClientEnergyPipeEnergyStorage(type));
@@ -30,10 +31,10 @@ public class EnergyPipeTileEntity extends PipeTileEntity {
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
         if (cap == CapabilityEnergy.ENERGY) {
-            if (!world.isRemote) {
-                NetworkManager mgr = NetworkManager.get(world);
+            if (!level.isClientSide) {
+                NetworkManager mgr = NetworkManager.get(level);
 
-                Pipe pipe = mgr.getPipe(pos);
+                Pipe pipe = mgr.getPipe(worldPosition);
                 if (pipe instanceof EnergyPipe) {
                     return ((EnergyPipe) pipe).getEnergyStorage().cast();
                 }
@@ -46,7 +47,7 @@ public class EnergyPipeTileEntity extends PipeTileEntity {
     }
 
     @Override
-    protected Pipe createPipe(World world, BlockPos pos) {
-        return new EnergyPipe(world, pos, type);
+    protected Pipe createPipe(Level level, BlockPos pos) {
+        return new EnergyPipe(level, pos, type);
     }
 }

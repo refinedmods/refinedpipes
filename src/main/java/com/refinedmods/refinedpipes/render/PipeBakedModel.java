@@ -1,18 +1,18 @@
 package com.refinedmods.refinedpipes.render;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.math.Quaternion;
+import com.mojang.math.Transformation;
+import com.mojang.math.Vector3f;
 import com.refinedmods.refinedpipes.block.PipeBlock;
-import com.refinedmods.refinedpipes.tile.PipeTileEntity;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.renderer.model.BakedQuad;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.ItemOverrideList;
+import com.refinedmods.refinedpipes.blockentity.PipeBlockEntity;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Quaternion;
-import net.minecraft.util.math.vector.TransformationMatrix;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.pipeline.BakedQuadBuilder;
@@ -24,21 +24,57 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class PipeBakedModel implements IBakedModel {
-    private static final Map<Direction, TransformationMatrix> SIDE_TRANSFORMS = new EnumMap<>(Direction.class);
-    private final IBakedModel core;
-    private final IBakedModel extension;
-    private final IBakedModel straight;
-    private final IBakedModel inventoryAttachment;
-    private final Map<ResourceLocation, IBakedModel> attachmentModels;
+public class PipeBakedModel implements BakedModel {
+    private static final Map<Direction, Transformation> SIDE_TRANSFORMS = new EnumMap<>(Direction.class);
+    private final BakedModel core;
+    private final BakedModel extension;
+    private final BakedModel straight;
+    private final BakedModel inventoryAttachment;
+    private final Map<ResourceLocation, BakedModel> attachmentModels;
     private final Map<PipeState, List<BakedQuad>> cache = new ConcurrentHashMap<>();
 
-    public PipeBakedModel(IBakedModel core, IBakedModel extension, IBakedModel straight, IBakedModel inventoryAttachment, Map<ResourceLocation, IBakedModel> attachmentModels) {
+    public PipeBakedModel(BakedModel core, BakedModel extension, BakedModel straight, BakedModel inventoryAttachment, Map<ResourceLocation, BakedModel> attachmentModels) {
         this.core = core;
         this.extension = extension;
         this.straight = straight;
         this.inventoryAttachment = inventoryAttachment;
         this.attachmentModels = attachmentModels;
+    }
+
+    private static List<BakedQuad> getTransformedQuads(BakedModel model, Direction facing, PipeState state) {
+        Transformation transformation = SIDE_TRANSFORMS.computeIfAbsent(facing, face -> {
+            Quaternion quaternion;
+            if (face == Direction.UP) {
+                quaternion = TransformationHelper.quatFromXYZ(new Vector3f(90, 0, 0), true);
+            } else if (face == Direction.DOWN) {
+                quaternion = TransformationHelper.quatFromXYZ(new Vector3f(270, 0, 0), true);
+            } else {
+                double r = Math.PI * (360 - face.getOpposite().get2DDataValue() * 90) / 180d;
+
+                quaternion = TransformationHelper.quatFromXYZ(new Vector3f(0, (float) r, 0), false);
+            }
+
+            return new Transformation(null, quaternion, null, null).blockCenterToCorner();
+        });
+
+        ImmutableList.Builder<BakedQuad> quads = ImmutableList.builder();
+        Direction side = state.getSide();
+
+        if (side != null && side.get2DDataValue() > -1) {
+            int faceOffset = 4 + Direction.NORTH.get2DDataValue() - facing.get2DDataValue();
+            side = Direction.from2DDataValue((side.get2DDataValue() + faceOffset) % 4);
+        }
+
+        for (BakedQuad quad : model.getQuads(state.getState(), side, state.getRand(), EmptyModelData.INSTANCE)) {
+            BakedQuadBuilder builder = new BakedQuadBuilder(quad.getSprite());
+            TRSRTransformer transformer = new TRSRTransformer(builder, transformation);
+
+            quad.pipe(transformer);
+
+            quads.add(builder.build());
+        }
+
+        return quads.build();
     }
 
     @Override
@@ -49,7 +85,7 @@ public class PipeBakedModel implements IBakedModel {
     @Nonnull
     @Override
     public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @Nonnull Random rand, @Nonnull IModelData extraData) {
-        PipeState pipeState = new PipeState(state, extraData.getData(PipeTileEntity.ATTACHMENTS_PROPERTY), side, rand);
+        PipeState pipeState = new PipeState(state, extraData.getData(PipeBlockEntity.ATTACHMENTS_PROPERTY), side, rand);
 
         return cache.computeIfAbsent(pipeState, this::createQuads);
     }
@@ -58,12 +94,12 @@ public class PipeBakedModel implements IBakedModel {
         List<BakedQuad> quads = new ArrayList<>();
 
         if (state.getState() != null) {
-            boolean north = state.getState().get(PipeBlock.NORTH);
-            boolean east = state.getState().get(PipeBlock.EAST);
-            boolean south = state.getState().get(PipeBlock.SOUTH);
-            boolean west = state.getState().get(PipeBlock.WEST);
-            boolean up = state.getState().get(PipeBlock.UP);
-            boolean down = state.getState().get(PipeBlock.DOWN);
+            boolean north = state.getState().getValue(PipeBlock.NORTH);
+            boolean east = state.getState().getValue(PipeBlock.EAST);
+            boolean south = state.getState().getValue(PipeBlock.SOUTH);
+            boolean west = state.getState().getValue(PipeBlock.WEST);
+            boolean up = state.getState().getValue(PipeBlock.UP);
+            boolean down = state.getState().getValue(PipeBlock.DOWN);
 
             if (north && south && !east && !west && !up && !down) {
                 quads.addAll(straight.getQuads(state.getState(), state.getSide(), state.getRand(), EmptyModelData.INSTANCE));
@@ -113,12 +149,12 @@ public class PipeBakedModel implements IBakedModel {
         }
 
         if (state.getState() != null) {
-            boolean invNorth = state.getState().get(PipeBlock.INV_NORTH);
-            boolean invEast = state.getState().get(PipeBlock.INV_EAST);
-            boolean invSouth = state.getState().get(PipeBlock.INV_SOUTH);
-            boolean invWest = state.getState().get(PipeBlock.INV_WEST);
-            boolean invUp = state.getState().get(PipeBlock.INV_UP);
-            boolean invDown = state.getState().get(PipeBlock.INV_DOWN);
+            boolean invNorth = state.getState().getValue(PipeBlock.INV_NORTH);
+            boolean invEast = state.getState().getValue(PipeBlock.INV_EAST);
+            boolean invSouth = state.getState().getValue(PipeBlock.INV_SOUTH);
+            boolean invWest = state.getState().getValue(PipeBlock.INV_WEST);
+            boolean invUp = state.getState().getValue(PipeBlock.INV_UP);
+            boolean invDown = state.getState().getValue(PipeBlock.INV_DOWN);
 
             if (invNorth && !state.hasAttachmentState(Direction.NORTH)) {
                 quads.addAll(getTransformedQuads(inventoryAttachment, Direction.NORTH, state));
@@ -148,45 +184,9 @@ public class PipeBakedModel implements IBakedModel {
         return quads;
     }
 
-    private static List<BakedQuad> getTransformedQuads(IBakedModel model, Direction facing, PipeState state) {
-        TransformationMatrix transformation = SIDE_TRANSFORMS.computeIfAbsent(facing, face -> {
-            Quaternion quaternion;
-            if (face == Direction.UP) {
-                quaternion = TransformationHelper.quatFromXYZ(new Vector3f(90, 0, 0), true);
-            } else if (face == Direction.DOWN) {
-                quaternion = TransformationHelper.quatFromXYZ(new Vector3f(270, 0, 0), true);
-            } else {
-                double r = Math.PI * (360 - face.getOpposite().getHorizontalIndex() * 90) / 180d;
-
-                quaternion = TransformationHelper.quatFromXYZ(new Vector3f(0, (float) r, 0), false);
-            }
-
-            return new TransformationMatrix(null, quaternion, null, null).blockCenterToCorner();
-        });
-
-        ImmutableList.Builder<BakedQuad> quads = ImmutableList.builder();
-        Direction side = state.getSide();
-
-        if (side != null && side.getHorizontalIndex() > -1) {
-            int faceOffset = 4 + Direction.NORTH.getHorizontalIndex() - facing.getHorizontalIndex();
-            side = Direction.byHorizontalIndex((side.getHorizontalIndex() + faceOffset) % 4);
-        }
-
-        for (BakedQuad quad : model.getQuads(state.getState(), side, state.getRand(), EmptyModelData.INSTANCE)) {
-            BakedQuadBuilder builder = new BakedQuadBuilder(quad.func_187508_a());
-            TRSRTransformer transformer = new TRSRTransformer(builder, transformation);
-
-            quad.pipe(transformer);
-
-            quads.add(builder.build());
-        }
-
-        return quads.build();
-    }
-
     @Override
-    public boolean isAmbientOcclusion() {
-        return core.isAmbientOcclusion();
+    public boolean useAmbientOcclusion() {
+        return core.useAmbientOcclusion();
     }
 
     @Override
@@ -195,23 +195,23 @@ public class PipeBakedModel implements IBakedModel {
     }
 
     @Override
-    public boolean func_230044_c_() {
+    public boolean usesBlockLight() {
         return true;
     }
 
     @Override
-    public boolean isBuiltInRenderer() {
-        return core.isBuiltInRenderer();
+    public boolean isCustomRenderer() {
+        return core.isCustomRenderer();
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public TextureAtlasSprite getParticleTexture() {
-        return core.getParticleTexture();
+    public TextureAtlasSprite getParticleIcon() {
+        return core.getParticleIcon();
     }
 
     @Override
-    public ItemOverrideList getOverrides() {
+    public ItemOverrides getOverrides() {
         return core.getOverrides();
     }
 }

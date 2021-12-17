@@ -5,10 +5,10 @@ import com.refinedmods.refinedpipes.network.graph.NetworkGraphScannerResult;
 import com.refinedmods.refinedpipes.network.pipe.Destination;
 import com.refinedmods.refinedpipes.network.pipe.DestinationType;
 import com.refinedmods.refinedpipes.network.pipe.Pipe;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
 
 import java.util.List;
 import java.util.Objects;
@@ -32,26 +32,26 @@ public abstract class Network {
         return id;
     }
 
-    public NetworkGraphScannerResult scanGraph(World world, BlockPos pos) {
-        return graph.scan(world, pos);
+    public NetworkGraphScannerResult scanGraph(Level level, BlockPos pos) {
+        return graph.scan(level, pos);
     }
 
     public List<Destination> getDestinations(DestinationType type) {
         return graph.getDestinations(type);
     }
 
-    public CompoundNBT writeToNbt(CompoundNBT tag) {
+    public CompoundTag writeToNbt(CompoundTag tag) {
         tag.putString("id", id);
-        tag.putLong("origin", originPos.toLong());
+        tag.putLong("origin", originPos.asLong());
 
         return tag;
     }
 
-    public void update(World world) {
+    public void update(Level level) {
         if (!didDoInitialScan) {
             didDoInitialScan = true;
 
-            scanGraph(world, originPos);
+            scanGraph(level, originPos);
         }
 
         graph.getPipes().forEach(Pipe::update);

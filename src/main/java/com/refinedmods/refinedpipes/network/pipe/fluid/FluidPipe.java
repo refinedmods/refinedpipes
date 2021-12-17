@@ -4,10 +4,10 @@ import com.refinedmods.refinedpipes.RefinedPipes;
 import com.refinedmods.refinedpipes.message.FluidPipeMessage;
 import com.refinedmods.refinedpipes.network.fluid.FluidNetwork;
 import com.refinedmods.refinedpipes.network.pipe.Pipe;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
 
 public class FluidPipe extends Pipe {
     public static final ResourceLocation ID = new ResourceLocation(RefinedPipes.ID, "fluid");
@@ -15,8 +15,8 @@ public class FluidPipe extends Pipe {
     private final FluidPipeType type;
     private float lastFullness = 0;
 
-    public FluidPipe(World world, BlockPos pos, FluidPipeType type) {
-        super(world, pos);
+    public FluidPipe(Level level, BlockPos pos, FluidPipeType type) {
+        super(level, pos);
 
         this.type = type;
     }
@@ -34,7 +34,7 @@ public class FluidPipe extends Pipe {
     }
 
     public void sendFluidPipeUpdate() {
-        RefinedPipes.NETWORK.sendInArea(world, pos, 32, new FluidPipeMessage(pos, ((FluidNetwork) network).getFluidTank().getFluid(), getFullness()));
+        RefinedPipes.NETWORK.sendInArea(level, pos, 32, new FluidPipeMessage(pos, ((FluidNetwork) network).getFluidTank().getFluid(), getFullness()));
     }
 
     public float getFullness() {
@@ -49,7 +49,7 @@ public class FluidPipe extends Pipe {
     }
 
     @Override
-    public CompoundNBT writeToNbt(CompoundNBT tag) {
+    public CompoundTag writeToNbt(CompoundTag tag) {
         tag = super.writeToNbt(tag);
 
         tag.putInt("type", type.ordinal());

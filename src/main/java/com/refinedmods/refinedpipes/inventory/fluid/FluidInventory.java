@@ -1,6 +1,6 @@
 package com.refinedmods.refinedpipes.inventory.fluid;
 
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.fluids.FluidStack;
 
 import javax.annotation.Nonnull;
@@ -52,21 +52,21 @@ public class FluidInventory {
         onContentsChanged();
     }
 
-    public CompoundNBT writeToNbt() {
-        CompoundNBT tag = new CompoundNBT();
+    public CompoundTag writeToNbt() {
+        CompoundTag tag = new CompoundTag();
 
         for (int i = 0; i < getSlots(); ++i) {
             FluidStack stack = getFluid(i);
 
             if (!stack.isEmpty()) {
-                tag.put(String.format(NBT_SLOT, i), stack.writeToNBT(new CompoundNBT()));
+                tag.put(String.format(NBT_SLOT, i), stack.writeToNBT(new CompoundTag()));
             }
         }
 
         return tag;
     }
 
-    public void readFromNbt(CompoundNBT tag) {
+    public void readFromNbt(CompoundTag tag) {
         for (int i = 0; i < getSlots(); ++i) {
             String key = String.format(NBT_SLOT, i);
 
