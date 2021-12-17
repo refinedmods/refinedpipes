@@ -7,16 +7,15 @@ import com.refinedmods.refinedpipes.network.pipe.transport.callback.TransportCal
 import com.refinedmods.refinedpipes.network.pipe.transport.callback.TransportCallbackFactory;
 import com.refinedmods.refinedpipes.network.pipe.transport.callback.TransportCallbackFactoryRegistry;
 import com.refinedmods.refinedpipes.util.DirectionUtil;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.nbt.LongNBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.LongTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -63,67 +62,6 @@ public class ItemTransport {
         this.progressInCurrentPipe = progressInCurrentPipe;
     }
 
-    public ItemStack getValue() {
-        return value;
-    }
-
-    public Direction getDirection(ItemPipe currentPipe) {
-        BlockPos nextPipe = path.peek();
-
-        if (nextPipe == null) {
-            return getDirection(currentPipe.getPos(), destination);
-        }
-
-        return getDirection(currentPipe.getPos(), nextPipe);
-    }
-
-    private boolean onDone(Network network, World world, ItemPipe currentPipe) {
-        finishedCallback.call(network, world, currentPipe.getPos(), cancelCallback);
-        return true;
-    }
-
-    private boolean onPipeGone(Network network, World world, BlockPos posWherePipeIsGone) {
-        LOGGER.warn("Pipe on path is gone");
-        pipeGoneCallback.call(network, world, posWherePipeIsGone, cancelCallback);
-        return true;
-    }
-
-    public boolean update(Network network, ItemPipe currentPipe) {
-        progressInCurrentPipe += 1;
-
-        double progress = (double) progressInCurrentPipe / (double) getMaxTicksInPipe(currentPipe);
-
-        BlockPos nextPos = currentPipe.getPos().relative(getDirection(currentPipe));
-        if (progress > 0.25 && currentPipe.getWorld().isEmptyBlock(nextPos)) {
-            currentPipe.removeTransport(this);
-            return onPipeGone(network, currentPipe.getWorld(), nextPos);
-        }
-
-        if (progressInCurrentPipe >= getMaxTicksInPipe(currentPipe)) {
-            currentPipe.removeTransport(this);
-            firstPipe = false;
-
-            BlockPos nextPipePos = path.poll();
-            if (nextPipePos == null) {
-                return onDone(network, currentPipe.getWorld(), currentPipe);
-            }
-
-            Pipe nextPipe = network.getPipe(nextPipePos);
-            if (nextPipe == null) {
-                return onPipeGone(network, currentPipe.getWorld(), nextPipePos);
-            }
-
-            progressInCurrentPipe = 0;
-            ((ItemPipe) nextPipe).addTransport(this);
-        }
-
-        return false;
-    }
-
-    private boolean isLastPipe() {
-        return path.isEmpty();
-    }
-
     private static Direction getDirection(BlockPos a, BlockPos b) {
         if (a.relative(Direction.NORTH).equals(b)) {
             return Direction.NORTH;
@@ -152,60 +90,8 @@ public class ItemTransport {
         return Direction.NORTH;
     }
 
-    private int getMaxTicksInPipe(ItemPipe currentPipe) {
-        double mt = currentPipe.getMaxTicksInPipe();
-
-        if (firstPipe) {
-            mt *= 1.25D;
-        }
-
-        if (isLastPipe()) {
-            mt *= 0.25D;
-        }
-
-        return (int) mt;
-    }
-
-    public ItemTransportProps createProps(ItemPipe currentPipe) {
-        return new ItemTransportProps(
-            value,
-            currentPipe.getMaxTicksInPipe(),
-            progressInCurrentPipe,
-            getDirection(currentPipe),
-            initialDirection,
-            isLastPipe(),
-            firstPipe
-        );
-    }
-
-    public CompoundNBT writeToNbt(CompoundNBT tag) {
-        tag.put("v", value.save(new CompoundNBT()));
-        tag.putLong("src", source.asLong());
-        tag.putLong("dst", destination.asLong());
-
-        ListNBT path = new ListNBT();
-        for (BlockPos pathItem : this.path) {
-            path.add(LongNBT.valueOf(pathItem.asLong()));
-        }
-        tag.put("pth", path);
-
-        tag.putInt("initiald", initialDirection.ordinal());
-
-        tag.put("fc", finishedCallback.writeToNbt(new CompoundNBT()));
-        tag.putString("fcid", finishedCallback.getId().toString());
-        tag.put("cc", cancelCallback.writeToNbt(new CompoundNBT()));
-        tag.putString("ccid", cancelCallback.getId().toString());
-        tag.put("pgc", pipeGoneCallback.writeToNbt(new CompoundNBT()));
-        tag.putString("pgcid", pipeGoneCallback.getId().toString());
-
-        tag.putBoolean("fp", firstPipe);
-        tag.putInt("p", progressInCurrentPipe);
-
-        return tag;
-    }
-
     @Nullable
-    public static ItemTransport of(CompoundNBT tag) {
+    public static ItemTransport of(CompoundTag tag) {
         ItemStack value = ItemStack.of(tag.getCompound("v"));
         if (value.isEmpty()) {
             LOGGER.warn("Item no longer exists");
@@ -215,10 +101,10 @@ public class ItemTransport {
         BlockPos source = BlockPos.of(tag.getLong("src"));
         BlockPos destination = BlockPos.of(tag.getLong("dst"));
 
-        ListNBT pathTag = tag.getList("pth", Constants.NBT.TAG_LONG);
+        ListTag pathTag = tag.getList("pth", Tag.TAG_LONG);
         Deque<BlockPos> path = new ArrayDeque<>();
-        for (INBT pathItem : pathTag) {
-            path.add(BlockPos.of(((LongNBT) pathItem).getAsLong()));
+        for (Tag pathItem : pathTag) {
+            path.add(BlockPos.of(((LongTag) pathItem).getAsLong()));
         }
 
         Direction initialDirection = DirectionUtil.safeGet((byte) tag.getInt("initd"));
@@ -274,5 +160,118 @@ public class ItemTransport {
             firstPipe,
             progressInCurrentPipe
         );
+    }
+
+    public ItemStack getValue() {
+        return value;
+    }
+
+    public Direction getDirection(ItemPipe currentPipe) {
+        BlockPos nextPipe = path.peek();
+
+        if (nextPipe == null) {
+            return getDirection(currentPipe.getPos(), destination);
+        }
+
+        return getDirection(currentPipe.getPos(), nextPipe);
+    }
+
+    private boolean onDone(Network network, Level world, ItemPipe currentPipe) {
+        finishedCallback.call(network, world, currentPipe.getPos(), cancelCallback);
+        return true;
+    }
+
+    private boolean onPipeGone(Network network, Level world, BlockPos posWherePipeIsGone) {
+        LOGGER.warn("Pipe on path is gone");
+        pipeGoneCallback.call(network, world, posWherePipeIsGone, cancelCallback);
+        return true;
+    }
+
+    public boolean update(Network network, ItemPipe currentPipe) {
+        progressInCurrentPipe += 1;
+
+        double progress = (double) progressInCurrentPipe / (double) getMaxTicksInPipe(currentPipe);
+
+        BlockPos nextPos = currentPipe.getPos().relative(getDirection(currentPipe));
+        if (progress > 0.25 && currentPipe.getWorld().isEmptyBlock(nextPos)) {
+            currentPipe.removeTransport(this);
+            return onPipeGone(network, currentPipe.getWorld(), nextPos);
+        }
+
+        if (progressInCurrentPipe >= getMaxTicksInPipe(currentPipe)) {
+            currentPipe.removeTransport(this);
+            firstPipe = false;
+
+            BlockPos nextPipePos = path.poll();
+            if (nextPipePos == null) {
+                return onDone(network, currentPipe.getWorld(), currentPipe);
+            }
+
+            Pipe nextPipe = network.getPipe(nextPipePos);
+            if (nextPipe == null) {
+                return onPipeGone(network, currentPipe.getWorld(), nextPipePos);
+            }
+
+            progressInCurrentPipe = 0;
+            ((ItemPipe) nextPipe).addTransport(this);
+        }
+
+        return false;
+    }
+
+    private boolean isLastPipe() {
+        return path.isEmpty();
+    }
+
+    private int getMaxTicksInPipe(ItemPipe currentPipe) {
+        double mt = currentPipe.getMaxTicksInPipe();
+
+        if (firstPipe) {
+            mt *= 1.25D;
+        }
+
+        if (isLastPipe()) {
+            mt *= 0.25D;
+        }
+
+        return (int) mt;
+    }
+
+    public ItemTransportProps createProps(ItemPipe currentPipe) {
+        return new ItemTransportProps(
+            value,
+            currentPipe.getMaxTicksInPipe(),
+            progressInCurrentPipe,
+            getDirection(currentPipe),
+            initialDirection,
+            isLastPipe(),
+            firstPipe
+        );
+    }
+
+    public CompoundTag writeToNbt(CompoundTag tag) {
+        tag.put("v", value.save(new CompoundTag()));
+        tag.putLong("src", source.asLong());
+        tag.putLong("dst", destination.asLong());
+
+        ListTag path = new ListTag();
+        for (BlockPos pathItem : this.path) {
+            path.add(LongTag.valueOf(pathItem.asLong()));
+        }
+        tag.put("pth", path);
+
+        tag.putInt("initiald", initialDirection.ordinal());
+
+        tag.put("fc", finishedCallback.writeToNbt(new CompoundTag()));
+        tag.putString("fcid", finishedCallback.getId().toString());
+        tag.put("cc", cancelCallback.writeToNbt(new CompoundTag()));
+        tag.putString("ccid", cancelCallback.getId().toString());
+        tag.put("pgc", pipeGoneCallback.writeToNbt(new CompoundTag()));
+        tag.putString("pgcid", pipeGoneCallback.getId().toString());
+
+        tag.putBoolean("fp", firstPipe);
+        tag.putInt("p", progressInCurrentPipe);
+
+        return tag;
     }
 }

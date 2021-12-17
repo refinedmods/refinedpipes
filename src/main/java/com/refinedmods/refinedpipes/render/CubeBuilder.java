@@ -1,9 +1,9 @@
 package com.refinedmods.refinedpipes.render;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.Direction;
+import net.minecraft.core.Direction;
 
 import javax.annotation.Nullable;
 
@@ -15,11 +15,11 @@ public class CubeBuilder {
     private CubeBuilder() {
     }
 
-    public void putCube(MatrixStack matrixStack, IVertexBuilder builder, float x1, float y1, float z1, float x2, float y2, float z2, int r, int g, int b, int a, int light, TextureAtlasSprite sprite) {
+    public void putCube(PoseStack matrixStack, VertexConsumer builder, float x1, float y1, float z1, float x2, float y2, float z2, int r, int g, int b, int a, int light, TextureAtlasSprite sprite) {
         putCube(matrixStack, builder, x1, y1, z1, x2, y2, z2, r, g, b, a, light, sprite, null);
     }
 
-    public void putCube(MatrixStack matrixStack, IVertexBuilder builder, float x1, float y1, float z1, float x2, float y2, float z2, int r, int g, int b, int a, int light, TextureAtlasSprite sprite, @Nullable Direction exclude) {
+    public void putCube(PoseStack matrixStack, VertexConsumer builder, float x1, float y1, float z1, float x2, float y2, float z2, int r, int g, int b, int a, int light, TextureAtlasSprite sprite, @Nullable Direction exclude) {
         matrixStack.pushPose();
 
         for (Direction face : Direction.values()) {
@@ -31,7 +31,7 @@ public class CubeBuilder {
         matrixStack.popPose();
     }
 
-    public void putFace(MatrixStack matrixStack, IVertexBuilder builder, float x1, float y1, float z1, float x2, float y2, float z2, int r, int g, int b, int a, int light, TextureAtlasSprite sprite, Direction face) {
+    public void putFace(PoseStack matrixStack, VertexConsumer builder, float x1, float y1, float z1, float x2, float y2, float z2, int r, int g, int b, int a, int light, TextureAtlasSprite sprite, Direction face) {
         UvVector uv = getDefaultUv(face, sprite, x1, y1, z1, x2, y2, z2);
 
         switch (face) {
@@ -121,7 +121,7 @@ public class CubeBuilder {
     }
 
     // uv.u1, uv.v1
-    private void putVertexTL(IVertexBuilder builder, MatrixStack matrixStack, Direction face, int r, int g, int b, int a, int light, float x, float y, float z, UvVector uv) {
+    private void putVertexTL(VertexConsumer builder, PoseStack matrixStack, Direction face, int r, int g, int b, int a, int light, float x, float y, float z, UvVector uv) {
         float u, v;
 
         switch (this.uvRotations[face.ordinal()]) {
@@ -148,7 +148,7 @@ public class CubeBuilder {
     }
 
     // uv.u2, uv.v1
-    private void putVertexTR(IVertexBuilder builder, MatrixStack matrixStack, Direction face, int r, int g, int b, int a, int light, float x, float y, float z, UvVector uv) {
+    private void putVertexTR(VertexConsumer builder, PoseStack matrixStack, Direction face, int r, int g, int b, int a, int light, float x, float y, float z, UvVector uv) {
         float u, v;
 
         switch (this.uvRotations[face.ordinal()]) {
@@ -175,7 +175,7 @@ public class CubeBuilder {
     }
 
     // uv.u2, uv.v2
-    private void putVertexBR(IVertexBuilder builder, MatrixStack matrixStack, Direction face, int r, int g, int b, int a, int light, float x, float y, float z, UvVector uv) {
+    private void putVertexBR(VertexConsumer builder, PoseStack matrixStack, Direction face, int r, int g, int b, int a, int light, float x, float y, float z, UvVector uv) {
 
         float u;
         float v;
@@ -204,7 +204,7 @@ public class CubeBuilder {
     }
 
     // uv.u1, uv.v2
-    private void putVertexBL(IVertexBuilder builder, MatrixStack matrixStack, Direction face, int r, int g, int b, int a, int light, float x, float y, float z, UvVector uv) {
+    private void putVertexBL(VertexConsumer builder, PoseStack matrixStack, Direction face, int r, int g, int b, int a, int light, float x, float y, float z, UvVector uv) {
 
         float u;
         float v;
@@ -232,7 +232,7 @@ public class CubeBuilder {
         this.putVertex(builder, matrixStack, r, g, b, a, light, x, y, z, u, v);
     }
 
-    private void putVertex(IVertexBuilder builder, MatrixStack matrixStack, int r, int g, int b, int a, int light, float x, float y, float z, float u, float v) {
+    private void putVertex(VertexConsumer builder, PoseStack matrixStack, int r, int g, int b, int a, int light, float x, float y, float z, float u, float v) {
         builder.vertex(matrixStack.last().pose(), x, y, z)
             .color(r, g, b, a)
             .uv(u, v)

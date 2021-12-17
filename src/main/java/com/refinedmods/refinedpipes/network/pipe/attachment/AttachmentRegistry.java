@@ -1,6 +1,6 @@
 package com.refinedmods.refinedpipes.network.pipe.attachment;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nullable;
 import java.util.Collection;

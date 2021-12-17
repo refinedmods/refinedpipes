@@ -1,42 +1,45 @@
 package com.refinedmods.refinedpipes.tile;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 
-public abstract class BaseTileEntity extends TileEntity {
-    public BaseTileEntity(TileEntityType<?> type) {
-        super(type);
+import javax.annotation.Nullable;
+
+public abstract class BaseTileEntity extends BlockEntity {
+    protected BaseTileEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
     }
 
     @Override
-    public final CompoundNBT getUpdateTag() {
+    public final CompoundTag getUpdateTag() {
         return writeUpdate(super.getUpdateTag());
     }
 
     @Override
-    public final SUpdateTileEntityPacket getUpdatePacket() {
-        return new SUpdateTileEntityPacket(worldPosition, 1, getUpdateTag());
+    public final ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this, BlockEntity::getUpdateTag);
     }
 
     @Override
-    public final void onDataPacket(net.minecraft.network.NetworkManager net, SUpdateTileEntityPacket packet) {
+    public final void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet) {
         readUpdate(packet.getTag());
     }
 
     @Override
-    public final void handleUpdateTag(BlockState state, CompoundNBT tag) {
-        super.load(state, tag);
-
+    public final void handleUpdateTag(CompoundTag tag) {
+        super.load(tag);
         readUpdate(tag);
     }
 
-    public CompoundNBT writeUpdate(CompoundNBT tag) {
+    public CompoundTag writeUpdate(CompoundTag tag) {
         return tag;
     }
 
-    public void readUpdate(CompoundNBT tag) {
+    public void readUpdate(@Nullable CompoundTag tag) {
     }
 }

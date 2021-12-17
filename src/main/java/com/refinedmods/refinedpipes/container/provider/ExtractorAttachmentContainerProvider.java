@@ -4,18 +4,18 @@ import com.refinedmods.refinedpipes.RefinedPipes;
 import com.refinedmods.refinedpipes.container.ExtractorAttachmentContainer;
 import com.refinedmods.refinedpipes.network.pipe.Pipe;
 import com.refinedmods.refinedpipes.network.pipe.attachment.extractor.ExtractorAttachment;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraftforge.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 
-public class ExtractorAttachmentContainerProvider implements INamedContainerProvider {
+public class ExtractorAttachmentContainerProvider implements MenuProvider {
     private final Pipe pipe;
     private final ExtractorAttachment attachment;
 
@@ -24,14 +24,30 @@ public class ExtractorAttachmentContainerProvider implements INamedContainerProv
         this.attachment = attachment;
     }
 
+    public static void open(Pipe pipe, ExtractorAttachment attachment, ServerPlayer player) {
+        ExtractorAttachmentContainerProvider provider = new ExtractorAttachmentContainerProvider(pipe, attachment);
+
+        NetworkHooks.openGui(player, provider, buf -> {
+            buf.writeBlockPos(pipe.getPos());
+            buf.writeByte(attachment.getDirection().ordinal());
+            buf.writeByte(attachment.getRedstoneMode().ordinal());
+            buf.writeByte(attachment.getBlacklistWhitelist().ordinal());
+            buf.writeByte(attachment.getRoutingMode().ordinal());
+            buf.writeInt(attachment.getStackSize());
+            buf.writeBoolean(attachment.isExactMode());
+            buf.writeByte(attachment.getType().ordinal());
+            buf.writeBoolean(attachment.isFluidMode());
+        });
+    }
+
     @Override
-    public ITextComponent getDisplayName() {
-        return new TranslationTextComponent("item." + RefinedPipes.ID + "." + attachment.getType().getId().getPath() + "_attachment");
+    public Component getDisplayName() {
+        return new TranslatableComponent("item." + RefinedPipes.ID + "." + attachment.getType().getId().getPath() + "_attachment");
     }
 
     @Nullable
     @Override
-    public Container createMenu(int windowId, PlayerInventory inv, PlayerEntity player) {
+    public AbstractContainerMenu createMenu(int windowId, Inventory inv, Player player) {
         return new ExtractorAttachmentContainer(
             windowId,
             player,
@@ -47,21 +63,5 @@ public class ExtractorAttachmentContainerProvider implements INamedContainerProv
             attachment.getFluidFilter(),
             attachment.isFluidMode()
         );
-    }
-
-    public static void open(Pipe pipe, ExtractorAttachment attachment, ServerPlayerEntity player) {
-        ExtractorAttachmentContainerProvider provider = new ExtractorAttachmentContainerProvider(pipe, attachment);
-
-        NetworkHooks.openGui(player, provider, buf -> {
-            buf.writeBlockPos(pipe.getPos());
-            buf.writeByte(attachment.getDirection().ordinal());
-            buf.writeByte(attachment.getRedstoneMode().ordinal());
-            buf.writeByte(attachment.getBlacklistWhitelist().ordinal());
-            buf.writeByte(attachment.getRoutingMode().ordinal());
-            buf.writeInt(attachment.getStackSize());
-            buf.writeBoolean(attachment.isExactMode());
-            buf.writeByte(attachment.getType().ordinal());
-            buf.writeBoolean(attachment.isFluidMode());
-        });
     }
 }

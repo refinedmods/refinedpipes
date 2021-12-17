@@ -3,8 +3,8 @@ package com.refinedmods.refinedpipes.network.pipe.energy;
 import com.refinedmods.refinedpipes.RefinedPipes;
 import com.refinedmods.refinedpipes.RefinedPipesTileEntities;
 import com.refinedmods.refinedpipes.tile.EnergyPipeTileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 
 public enum EnergyPipeType {
     BASIC(1),
@@ -91,7 +91,7 @@ public enum EnergyPipeType {
         }
     }
 
-    public TileEntityType<EnergyPipeTileEntity> getTileType() {
+    public BlockEntityType<EnergyPipeTileEntity> getTileType() {
         switch (this) {
             case BASIC:
                 return RefinedPipesTileEntities.BASIC_ENERGY_PIPE;

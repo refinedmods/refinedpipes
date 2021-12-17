@@ -4,8 +4,8 @@ import com.refinedmods.refinedpipes.network.Network;
 import com.refinedmods.refinedpipes.network.pipe.Destination;
 import com.refinedmods.refinedpipes.network.pipe.DestinationType;
 import com.refinedmods.refinedpipes.network.pipe.Pipe;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 import java.util.*;
 
@@ -19,7 +19,7 @@ public class NetworkGraph {
         this.network = network;
     }
 
-    public NetworkGraphScannerResult scan(World originWorld, BlockPos originPos) {
+    public NetworkGraphScannerResult scan(Level originWorld, BlockPos originPos) {
         NetworkGraphScanner scanner = new NetworkGraphScanner(pipes, network.getType());
 
         NetworkGraphScannerResult result = scanner.scanAt(originWorld, originPos);

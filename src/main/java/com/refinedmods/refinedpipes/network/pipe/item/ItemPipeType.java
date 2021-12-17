@@ -3,8 +3,8 @@ package com.refinedmods.refinedpipes.network.pipe.item;
 import com.refinedmods.refinedpipes.RefinedPipes;
 import com.refinedmods.refinedpipes.RefinedPipesTileEntities;
 import com.refinedmods.refinedpipes.tile.ItemPipeTileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 
 public enum ItemPipeType {
     BASIC(1),
@@ -45,7 +45,7 @@ public enum ItemPipeType {
         return (int) ((float) mySpeed / (float) speedOfBasicTier * 100F);
     }
 
-    public TileEntityType<ItemPipeTileEntity> getTileType() {
+    public BlockEntityType<ItemPipeTileEntity> getTileType() {
         switch (this) {
             case BASIC:
                 return RefinedPipesTileEntities.BASIC_ITEM_PIPE;

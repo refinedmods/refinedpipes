@@ -6,27 +6,27 @@ import com.refinedmods.refinedpipes.network.pipe.attachment.Attachment;
 import com.refinedmods.refinedpipes.network.pipe.attachment.AttachmentManager;
 import com.refinedmods.refinedpipes.network.pipe.attachment.ClientAttachmentManager;
 import com.refinedmods.refinedpipes.network.pipe.attachment.DummyAttachmentManager;
-import net.minecraft.block.BlockState;
-import net.minecraft.inventory.InventoryHelper;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.Containers;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelDataMap;
 import net.minecraftforge.client.model.data.ModelProperty;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public abstract class PipeTileEntity extends BaseTileEntity {
     public static final ModelProperty<ResourceLocation[]> ATTACHMENTS_PROPERTY = new ModelProperty<>();
-
-    public PipeTileEntity(TileEntityType<?> type) {
-        super(type);
-    }
-
     private final AttachmentManager clientAttachmentManager = new ClientAttachmentManager();
+
+    protected PipeTileEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
+    }
 
     public AttachmentManager getAttachmentManager() {
         if (level.isClientSide) {
@@ -55,11 +55,20 @@ public abstract class PipeTileEntity extends BaseTileEntity {
         }
     }
 
+    // TODO: remove when https://github.com/MinecraftForge/MinecraftForge/pull/8303/files is merged
+    private boolean unloaded;
+
+    @Override
+    public void onChunkUnloaded() {
+        super.onChunkUnloaded();
+        unloaded = true;
+    }
+
     @Override
     public void setRemoved() {
         super.setRemoved();
 
-        if (!level.isClientSide) {
+        if (!level.isClientSide && !unloaded) {
             NetworkManager mgr = NetworkManager.get(level);
 
             Pipe pipe = mgr.getPipe(worldPosition);
@@ -67,7 +76,7 @@ public abstract class PipeTileEntity extends BaseTileEntity {
                 spawnDrops(pipe);
 
                 for (Attachment attachment : pipe.getAttachmentManager().getAttachments()) {
-                    InventoryHelper.dropItemStack(level, worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), attachment.getDrop());
+                    Containers.dropItemStack(level, worldPosition.getX(), worldPosition.getY(), worldPosition.getZ(), attachment.getDrop());
                 }
             }
 
@@ -85,14 +94,14 @@ public abstract class PipeTileEntity extends BaseTileEntity {
     }
 
     @Override
-    public CompoundNBT writeUpdate(CompoundNBT tag) {
+    public CompoundTag writeUpdate(CompoundTag tag) {
         getAttachmentManager().writeUpdate(tag);
 
         return tag;
     }
 
     @Override
-    public void readUpdate(CompoundNBT tag) {
+    public void readUpdate(@Nullable CompoundTag tag) {
         getAttachmentManager().readUpdate(tag);
 
         requestModelDataUpdate();
@@ -101,5 +110,5 @@ public abstract class PipeTileEntity extends BaseTileEntity {
         level.sendBlockUpdated(worldPosition, state, state, 1 | 2);
     }
 
-    protected abstract Pipe createPipe(World world, BlockPos pos);
+    protected abstract Pipe createPipe(Level world, BlockPos pos);
 }

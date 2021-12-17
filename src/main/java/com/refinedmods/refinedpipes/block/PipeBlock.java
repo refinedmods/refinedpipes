@@ -10,28 +10,28 @@ import com.refinedmods.refinedpipes.network.pipe.shape.PipeShapeCache;
 import com.refinedmods.refinedpipes.network.pipe.shape.PipeShapeProps;
 import com.refinedmods.refinedpipes.tile.PipeTileEntity;
 import com.refinedmods.refinedpipes.util.Raytracer;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.StateContainer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
 
@@ -64,7 +64,7 @@ public abstract class PipeBlock extends Block {
     }
 
     @Override
-    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
 
         builder.add(
@@ -75,7 +75,7 @@ public abstract class PipeBlock extends Block {
 
     @Override
     @SuppressWarnings("deprecation")
-    public void neighborChanged(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
+    public void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
         super.neighborChanged(state, world, pos, block, fromPos, isMoving);
 
         if (!world.isClientSide) {
@@ -89,12 +89,12 @@ public abstract class PipeBlock extends Block {
 
     @Override
     @SuppressWarnings("deprecation")
-    public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit) {
+    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         Direction dirClicked = getAttachmentDirectionClicked(pos, hit.getLocation());
 
         if (dirClicked != null) {
             ItemStack held = player.getMainHandItem();
-            TileEntity tile = world.getBlockEntity(pos);
+            BlockEntity tile = world.getBlockEntity(pos);
 
             if (held.isEmpty() && player.isCrouching()) {
                 return removeAttachment(world, pos, dirClicked);
@@ -108,14 +108,14 @@ public abstract class PipeBlock extends Block {
         return super.use(state, world, pos, player, hand, hit);
     }
 
-    private ActionResultType addAttachment(PlayerEntity player, World world, BlockPos pos, ItemStack attachment, Direction dir) {
+    private InteractionResult addAttachment(Player player, Level world, BlockPos pos, ItemStack attachment, Direction dir) {
         if (!world.isClientSide) {
             Pipe pipe = NetworkManager.get(world).getPipe(pos);
 
             if (pipe != null && !pipe.getAttachmentManager().hasAttachment(dir)) {
                 AttachmentFactory type = ((AttachmentItem) attachment.getItem()).getFactory();
                 if (!type.canPlaceOnPipe(this)) {
-                    return ActionResultType.SUCCESS;
+                    return InteractionResult.SUCCESS;
                 }
 
                 pipe.getAttachmentManager().setAttachmentAndScanGraph(dir, type.create(pipe, dir));
@@ -130,10 +130,10 @@ public abstract class PipeBlock extends Block {
             }
         }
 
-        return ActionResultType.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
-    private ActionResultType removeAttachment(World world, BlockPos pos, Direction dir) {
+    private InteractionResult removeAttachment(Level world, BlockPos pos, Direction dir) {
         if (!world.isClientSide) {
             Pipe pipe = NetworkManager.get(world).getPipe(pos);
 
@@ -149,39 +149,39 @@ public abstract class PipeBlock extends Block {
                 Block.popResource(world, pos.relative(dir), attachment.getDrop());
             }
 
-            return ActionResultType.SUCCESS;
+            return InteractionResult.SUCCESS;
         } else {
-            return ((PipeTileEntity) world.getBlockEntity(pos)).getAttachmentManager().hasAttachment(dir) ? ActionResultType.SUCCESS : ActionResultType.FAIL;
+            return ((PipeTileEntity) world.getBlockEntity(pos)).getAttachmentManager().hasAttachment(dir) ? InteractionResult.SUCCESS : InteractionResult.FAIL;
         }
     }
 
-    private ActionResultType openAttachmentContainer(PlayerEntity player, BlockPos pos, AttachmentManager attachmentManager, Direction dir) {
-        if (player instanceof ServerPlayerEntity) {
-            attachmentManager.openAttachmentContainer(dir, (ServerPlayerEntity) player);
+    private InteractionResult openAttachmentContainer(Player player, BlockPos pos, AttachmentManager attachmentManager, Direction dir) {
+        if (player instanceof ServerPlayer) {
+            attachmentManager.openAttachmentContainer(dir, (ServerPlayer) player);
         }
 
-        return ActionResultType.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
     @Nullable
     @Override
-    public BlockState getStateForPlacement(BlockItemUseContext ctx) {
+    public BlockState getStateForPlacement(BlockPlaceContext ctx) {
         return getState(defaultBlockState(), ctx.getLevel(), ctx.getClickedPos());
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public BlockState updateShape(BlockState state, Direction dir, BlockState facingState, IWorld world, BlockPos pos, BlockPos facingPos) {
+    public BlockState updateShape(BlockState state, Direction dir, BlockState facingState, LevelAccessor world, BlockPos pos, BlockPos facingPos) {
         return getState(state, world, pos);
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext ctx) {
+    public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext ctx) {
         return shapeCache.getShape(state, world, pos, ctx);
     }
 
-    private BlockState getState(BlockState currentState, IWorld world, BlockPos pos) {
+    private BlockState getState(BlockState currentState, LevelAccessor world, BlockPos pos) {
         return currentState
             .setValue(NORTH, hasConnection(world, pos, Direction.NORTH))
             .setValue(EAST, hasConnection(world, pos, Direction.EAST))
@@ -198,21 +198,21 @@ public abstract class PipeBlock extends Block {
     }
 
     @Override
-    public ItemStack getPickBlock(BlockState state, RayTraceResult target, IBlockReader world, BlockPos pos, PlayerEntity player) {
+    public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter world, BlockPos pos, Player player) {
         Direction dirClicked = getAttachmentDirectionClicked(pos, target.getLocation());
 
         if (dirClicked != null) {
-            TileEntity tile = world.getBlockEntity(pos);
+            BlockEntity tile = world.getBlockEntity(pos);
             if (tile instanceof PipeTileEntity) {
                 return ((PipeTileEntity) tile).getAttachmentManager().getPickBlock(dirClicked);
             }
         }
 
-        return super.getPickBlock(state, target, world, pos, player);
+        return super.getCloneItemStack(state, target, world, pos, player);
     }
 
     @Nullable
-    public Direction getAttachmentDirectionClicked(BlockPos pos, Vector3d hit) {
+    public Direction getAttachmentDirectionClicked(BlockPos pos, Vec3 hit) {
         if (Raytracer.inclusiveContains(PipeShapeProps.NORTH_ATTACHMENT_SHAPE.bounds().move(pos), hit)) {
             return Direction.NORTH;
         }
@@ -240,7 +240,7 @@ public abstract class PipeBlock extends Block {
         return null;
     }
 
-    protected abstract boolean hasConnection(IWorld world, BlockPos pos, Direction direction);
+    protected abstract boolean hasConnection(LevelAccessor world, BlockPos pos, Direction direction);
 
-    protected abstract boolean hasInvConnection(IWorld world, BlockPos pos, Direction direction);
+    protected abstract boolean hasInvConnection(LevelAccessor world, BlockPos pos, Direction direction);
 }

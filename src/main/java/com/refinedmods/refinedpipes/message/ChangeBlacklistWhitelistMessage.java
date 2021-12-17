@@ -6,11 +6,11 @@ import com.refinedmods.refinedpipes.network.pipe.attachment.extractor.BlacklistW
 import com.refinedmods.refinedpipes.network.pipe.attachment.extractor.ExtractorAttachment;
 import com.refinedmods.refinedpipes.tile.PipeTileEntity;
 import com.refinedmods.refinedpipes.util.DirectionUtil;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -25,13 +25,13 @@ public class ChangeBlacklistWhitelistMessage {
         this.blacklistWhitelist = blacklistWhitelist;
     }
 
-    public static void encode(ChangeBlacklistWhitelistMessage message, PacketBuffer buf) {
+    public static void encode(ChangeBlacklistWhitelistMessage message, FriendlyByteBuf buf) {
         buf.writeBlockPos(message.pos);
         buf.writeByte(message.direction.ordinal());
         buf.writeByte(message.blacklistWhitelist.ordinal());
     }
 
-    public static ChangeBlacklistWhitelistMessage decode(PacketBuffer buf) {
+    public static ChangeBlacklistWhitelistMessage decode(FriendlyByteBuf buf) {
         BlockPos pos = buf.readBlockPos();
         Direction direction = DirectionUtil.safeGet(buf.readByte());
         BlacklistWhitelist blacklistWhitelist = BlacklistWhitelist.get(buf.readByte());
@@ -41,7 +41,7 @@ public class ChangeBlacklistWhitelistMessage {
 
     public static void handle(ChangeBlacklistWhitelistMessage message, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            TileEntity tile = ctx.get().getSender().level.getBlockEntity(message.pos);
+            BlockEntity tile = ctx.get().getSender().level.getBlockEntity(message.pos);
 
             if (tile instanceof PipeTileEntity) {
                 Attachment attachment = ((PipeTileEntity) tile).getAttachmentManager().getAttachment(message.direction);

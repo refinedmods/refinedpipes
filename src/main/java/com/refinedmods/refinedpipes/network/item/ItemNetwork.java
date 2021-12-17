@@ -13,9 +13,9 @@ import com.refinedmods.refinedpipes.routing.Edge;
 import com.refinedmods.refinedpipes.routing.Graph;
 import com.refinedmods.refinedpipes.routing.Node;
 import com.refinedmods.refinedpipes.routing.NodeIndex;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
 
 import java.util.List;
 import java.util.Set;
@@ -31,7 +31,7 @@ public class ItemNetwork extends Network {
     }
 
     @Override
-    public NetworkGraphScannerResult scanGraph(World world, BlockPos pos) {
+    public NetworkGraphScannerResult scanGraph(Level world, BlockPos pos) {
         NetworkGraphScannerResult result = super.scanGraph(world, pos);
 
         updateRouting(result, graph.getDestinations(DestinationType.ITEM_HANDLER));

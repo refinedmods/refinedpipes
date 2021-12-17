@@ -5,9 +5,10 @@ import com.refinedmods.refinedpipes.network.pipe.Pipe;
 import com.refinedmods.refinedpipes.network.pipe.energy.ClientEnergyPipeEnergyStorage;
 import com.refinedmods.refinedpipes.network.pipe.energy.EnergyPipe;
 import com.refinedmods.refinedpipes.network.pipe.energy.EnergyPipeType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
@@ -19,8 +20,8 @@ public class EnergyPipeTileEntity extends PipeTileEntity {
     private final EnergyPipeType type;
     private final LazyOptional<ClientEnergyPipeEnergyStorage> clientEnergyStorage;
 
-    public EnergyPipeTileEntity(EnergyPipeType type) {
-        super(type.getTileType());
+    public EnergyPipeTileEntity(BlockPos pos, BlockState state, EnergyPipeType type) {
+        super(type.getTileType(), pos, state);
 
         this.type = type;
         this.clientEnergyStorage = LazyOptional.of(() -> new ClientEnergyPipeEnergyStorage(type));
@@ -46,7 +47,7 @@ public class EnergyPipeTileEntity extends PipeTileEntity {
     }
 
     @Override
-    protected Pipe createPipe(World world, BlockPos pos) {
+    protected Pipe createPipe(Level world, BlockPos pos) {
         return new EnergyPipe(world, pos, type);
     }
 }

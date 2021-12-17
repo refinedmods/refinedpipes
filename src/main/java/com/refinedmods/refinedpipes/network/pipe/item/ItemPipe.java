@@ -7,11 +7,11 @@ import com.refinedmods.refinedpipes.network.item.ItemNetwork;
 import com.refinedmods.refinedpipes.network.pipe.Pipe;
 import com.refinedmods.refinedpipes.network.pipe.transport.ItemTransport;
 import com.refinedmods.refinedpipes.network.pipe.transport.ItemTransportProps;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +24,7 @@ public class ItemPipe extends Pipe {
     private final List<ItemTransport> transportsToRemove = new ArrayList<>();
     private final ItemPipeType type;
 
-    public ItemPipe(World world, BlockPos pos, ItemPipeType type) {
+    public ItemPipe(Level world, BlockPos pos, ItemPipeType type) {
         super(world, pos);
 
         this.type = type;
@@ -75,14 +75,14 @@ public class ItemPipe extends Pipe {
     }
 
     @Override
-    public CompoundNBT writeToNbt(CompoundNBT tag) {
+    public CompoundTag writeToNbt(CompoundTag tag) {
         tag = super.writeToNbt(tag);
 
         tag.putInt("type", type.ordinal());
 
-        ListNBT transports = new ListNBT();
+        ListTag transports = new ListTag();
         for (ItemTransport transport : this.transports) {
-            transports.add(transport.writeToNbt(new CompoundNBT()));
+            transports.add(transport.writeToNbt(new CompoundTag()));
         }
         tag.put("transports", transports);
 

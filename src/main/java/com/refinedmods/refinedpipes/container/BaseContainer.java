@@ -4,25 +4,25 @@ import com.refinedmods.refinedpipes.RefinedPipes;
 import com.refinedmods.refinedpipes.container.slot.FilterSlot;
 import com.refinedmods.refinedpipes.container.slot.FluidFilterSlot;
 import com.refinedmods.refinedpipes.message.FluidFilterSlotUpdateMessage;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.ClickType;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BaseContainer extends Container {
+public class BaseContainer extends AbstractContainerMenu {
     private final List<FluidFilterSlot> fluidSlots = new ArrayList<>();
     private final List<FluidStack> fluids = new ArrayList<>();
-    private final PlayerEntity player;
+    private final Player player;
 
-    protected BaseContainer(@Nullable ContainerType<?> type, int windowId, PlayerEntity player) {
+    protected BaseContainer(@Nullable MenuType<?> type, int windowId, Player player) {
         super(type, windowId);
 
         this.player = player;
@@ -33,7 +33,7 @@ public class BaseContainer extends Container {
 
         for (int y = 0; y < 3; y++) {
             for (int x = 0; x < 9; x++) {
-                addSlot(new Slot(player.inventory, id, xInventory + x * 18, yInventory + y * 18));
+                addSlot(new Slot(player.getInventory(), id, xInventory + x * 18, yInventory + y * 18));
 
                 id++;
             }
@@ -45,17 +45,17 @@ public class BaseContainer extends Container {
             int x = xInventory + i * 18;
             int y = yInventory + 4 + (3 * 18);
 
-            addSlot(new Slot(player.inventory, id, x, y));
+            addSlot(new Slot(player.getInventory(), id, x, y));
 
             id++;
         }
     }
 
     @Override
-    public ItemStack clicked(int id, int dragType, ClickType clickType, PlayerEntity player) {
+    public void clicked(int id, int dragType, ClickType clickType, Player player) {
         Slot slot = id >= 0 ? getSlot(id) : null;
 
-        ItemStack holding = player.inventory.getCarried();
+        ItemStack holding = player.containerMenu.getCarried();
 
         if (slot instanceof FilterSlot) {
             if (holding.isEmpty()) {
@@ -64,7 +64,7 @@ public class BaseContainer extends Container {
                 slot.set(holding.copy());
             }
 
-            return holding;
+            return;
         } else if (slot instanceof FluidFilterSlot) {
             if (holding.isEmpty()) {
                 ((FluidFilterSlot) slot).onContainerClicked(ItemStack.EMPTY);
@@ -72,10 +72,10 @@ public class BaseContainer extends Container {
                 ((FluidFilterSlot) slot).onContainerClicked(holding);
             }
 
-            return holding;
+            return;
         }
 
-        return super.clicked(id, dragType, clickType, player);
+        super.clicked(id, dragType, clickType, player);
     }
 
     @Override
@@ -92,7 +92,7 @@ public class BaseContainer extends Container {
     public void broadcastChanges() {
         super.broadcastChanges();
 
-        if (!(player instanceof ServerPlayerEntity)) {
+        if (!(player instanceof ServerPlayer)) {
             return;
         }
 
@@ -105,13 +105,13 @@ public class BaseContainer extends Container {
             if (!cached.equals(actual)) {
                 this.fluids.set(i, actual.copy());
 
-                RefinedPipes.NETWORK.sendToClient((ServerPlayerEntity) player, new FluidFilterSlotUpdateMessage(slot.getInventoryIndex(), actual));
+                RefinedPipes.NETWORK.sendToClient((ServerPlayer) player, new FluidFilterSlotUpdateMessage(slot.getInventoryIndex(), actual));
             }
         }
     }
 
     @Override
-    public boolean stillValid(PlayerEntity player) {
+    public boolean stillValid(Player player) {
         return true;
     }
 

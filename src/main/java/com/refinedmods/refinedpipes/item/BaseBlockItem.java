@@ -1,9 +1,9 @@
 package com.refinedmods.refinedpipes.item;
 
 import com.refinedmods.refinedpipes.RefinedPipes;
-import net.minecraft.block.Block;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 
 public class BaseBlockItem extends BlockItem {
     public BaseBlockItem(Block block) {

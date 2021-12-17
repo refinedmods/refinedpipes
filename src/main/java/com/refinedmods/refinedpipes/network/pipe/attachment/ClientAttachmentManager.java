@@ -1,10 +1,10 @@
 package com.refinedmods.refinedpipes.network.pipe.attachment;
 
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -26,7 +26,7 @@ public class ClientAttachmentManager implements AttachmentManager {
     }
 
     @Override
-    public void openAttachmentContainer(Direction dir, ServerPlayerEntity player) {
+    public void openAttachmentContainer(Direction dir, ServerPlayer player) {
         throw new RuntimeException("Server-side only");
     }
 
@@ -43,19 +43,19 @@ public class ClientAttachmentManager implements AttachmentManager {
     }
 
     @Override
-    public void writeUpdate(CompoundNBT tag) {
+    public void writeUpdate(CompoundTag tag) {
         throw new RuntimeException("Server-side only");
     }
 
     @Override
-    public void readUpdate(CompoundNBT tag) {
+    public void readUpdate(@Nullable CompoundTag tag) {
         this.pickBlocks.clear();
 
         for (Direction dir : Direction.values()) {
             String attachmentKey = "attch_" + dir.ordinal();
             String pickBlockKey = "pb_" + dir.ordinal();
 
-            if (tag.contains(attachmentKey) || tag.contains(pickBlockKey)) {
+            if (tag != null && (tag.contains(attachmentKey) || tag.contains(pickBlockKey))) {
                 pickBlocks.put(dir, ItemStack.of(tag.getCompound(pickBlockKey)));
 
                 attachmentState[dir.ordinal()] = new ResourceLocation(tag.getString(attachmentKey));

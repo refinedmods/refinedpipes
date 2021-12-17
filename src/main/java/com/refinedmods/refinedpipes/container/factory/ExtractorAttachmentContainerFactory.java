@@ -3,13 +3,13 @@ package com.refinedmods.refinedpipes.container.factory;
 import com.refinedmods.refinedpipes.container.ExtractorAttachmentContainer;
 import com.refinedmods.refinedpipes.network.pipe.attachment.extractor.*;
 import com.refinedmods.refinedpipes.util.DirectionUtil;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.IContainerFactory;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraftforge.network.IContainerFactory;
 
 public class ExtractorAttachmentContainerFactory implements IContainerFactory<ExtractorAttachmentContainer> {
     @Override
-    public ExtractorAttachmentContainer create(int windowId, PlayerInventory inv, PacketBuffer buf) {
+    public ExtractorAttachmentContainer create(int windowId, Inventory inv, FriendlyByteBuf buf) {
         return new ExtractorAttachmentContainer(
             windowId,
             inv.player,

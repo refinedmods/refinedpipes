@@ -3,26 +3,24 @@ package com.refinedmods.refinedpipes.network.pipe;
 import com.refinedmods.refinedpipes.network.Network;
 import com.refinedmods.refinedpipes.network.pipe.attachment.Attachment;
 import com.refinedmods.refinedpipes.network.pipe.attachment.ServerAttachmentManager;
-import net.minecraft.block.BlockState;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.Objects;
 
 public abstract class Pipe {
-    private final Logger logger = LogManager.getLogger(getClass());
-
-    protected final World world;
+    protected final Level world;
     protected final BlockPos pos;
     protected final ServerAttachmentManager attachmentManager = new ServerAttachmentManager(this);
-
+    private final Logger logger = LogManager.getLogger(getClass());
     protected Network network;
 
-    public Pipe(World world, BlockPos pos) {
+    public Pipe(Level world, BlockPos pos) {
         this.world = world;
         this.pos = pos;
     }
@@ -37,7 +35,7 @@ public abstract class Pipe {
         return attachmentManager;
     }
 
-    public World getWorld() {
+    public Level getWorld() {
         return world;
     }
 
@@ -70,7 +68,7 @@ public abstract class Pipe {
         world.sendBlockUpdated(pos, state, state, 1 | 2);
     }
 
-    public CompoundNBT writeToNbt(CompoundNBT tag) {
+    public CompoundTag writeToNbt(CompoundTag tag) {
         tag.putLong("pos", pos.asLong());
 
         attachmentManager.writeToNbt(tag);

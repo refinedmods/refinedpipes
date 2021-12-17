@@ -4,9 +4,9 @@ import com.refinedmods.refinedpipes.network.item.ItemNetwork;
 import com.refinedmods.refinedpipes.network.pipe.Destination;
 import com.refinedmods.refinedpipes.network.pipe.DestinationType;
 import com.refinedmods.refinedpipes.network.pipe.attachment.Attachment;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -80,7 +80,7 @@ public class ItemDestinationFinder {
     }
 
     private boolean isDestinationApplicable(BlockPos sourcePos, ItemStack extracted, Destination destination) {
-        TileEntity tile = destination.getConnectedPipe().getWorld().getBlockEntity(destination.getReceiver());
+        BlockEntity tile = destination.getConnectedPipe().getWorld().getBlockEntity(destination.getReceiver());
         if (tile == null) {
             return false;
         }

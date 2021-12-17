@@ -6,10 +6,10 @@ import com.refinedmods.refinedpipes.network.pipe.Destination;
 import com.refinedmods.refinedpipes.network.pipe.DestinationType;
 import com.refinedmods.refinedpipes.network.pipe.energy.EnergyPipe;
 import com.refinedmods.refinedpipes.network.pipe.energy.EnergyPipeType;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 
@@ -28,7 +28,7 @@ public class EnergyNetwork extends Network {
     }
 
     @Override
-    public NetworkGraphScannerResult scanGraph(World world, BlockPos pos) {
+    public NetworkGraphScannerResult scanGraph(Level world, BlockPos pos) {
         NetworkGraphScannerResult result = super.scanGraph(world, pos);
 
         energyStorage.setCapacityAndMaxExtract(
@@ -51,7 +51,7 @@ public class EnergyNetwork extends Network {
     }
 
     @Override
-    public void update(World world) {
+    public void update(Level world) {
         super.update(world);
 
         List<Destination> destinations = graph.getDestinations(DestinationType.ENERGY_STORAGE);
@@ -62,7 +62,7 @@ public class EnergyNetwork extends Network {
             }
 
             for (Destination destination : destinations) {
-                TileEntity tile = destination.getConnectedPipe().getWorld().getBlockEntity(destination.getReceiver());
+                BlockEntity tile = destination.getConnectedPipe().getWorld().getBlockEntity(destination.getReceiver());
                 if (tile == null) {
                     continue;
                 }

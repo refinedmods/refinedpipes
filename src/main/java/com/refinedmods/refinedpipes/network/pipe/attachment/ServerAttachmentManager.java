@@ -1,14 +1,13 @@
 package com.refinedmods.refinedpipes.network.pipe.attachment;
 
 import com.refinedmods.refinedpipes.network.pipe.Pipe;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -36,7 +35,7 @@ public class ServerAttachmentManager implements AttachmentManager {
     }
 
     @Override
-    public void openAttachmentContainer(Direction dir, ServerPlayerEntity player) {
+    public void openAttachmentContainer(Direction dir, ServerPlayer player) {
         if (hasAttachment(dir)) {
             getAttachment(dir).openContainer(player);
         }
@@ -78,10 +77,10 @@ public class ServerAttachmentManager implements AttachmentManager {
         return attachments.values();
     }
 
-    public CompoundNBT writeToNbt(CompoundNBT tag) {
-        ListNBT attch = new ListNBT();
+    public CompoundTag writeToNbt(CompoundTag tag) {
+        ListTag attch = new ListTag();
         getAttachments().forEach(a -> {
-            CompoundNBT attchTag = new CompoundNBT();
+            CompoundTag attchTag = new CompoundTag();
             attchTag.putString("typ", a.getId().toString());
             attch.add(a.writeToNbt(attchTag));
         });
@@ -89,10 +88,10 @@ public class ServerAttachmentManager implements AttachmentManager {
         return tag;
     }
 
-    public void readFromNbt(CompoundNBT tag) {
-        ListNBT attch = tag.getList("attch", Constants.NBT.TAG_COMPOUND);
-        for (INBT item : attch) {
-            CompoundNBT attchTag = (CompoundNBT) item;
+    public void readFromNbt(CompoundTag tag) {
+        ListTag attch = tag.getList("attch", Tag.TAG_COMPOUND);
+        for (Tag item : attch) {
+            CompoundTag attchTag = (CompoundTag) item;
 
             AttachmentFactory factory = AttachmentRegistry.INSTANCE.getFactory(new ResourceLocation(attchTag.getString("typ")));
             if (factory != null) {
@@ -110,17 +109,17 @@ public class ServerAttachmentManager implements AttachmentManager {
     }
 
     @Override
-    public void writeUpdate(CompoundNBT tag) {
+    public void writeUpdate(CompoundTag tag) {
         for (Direction dir : Direction.values()) {
             if (hasAttachment(dir)) {
                 tag.putString("attch_" + dir.ordinal(), getAttachment(dir).getId().toString());
-                tag.put("pb_" + dir.ordinal(), getAttachment(dir).getDrop().save(new CompoundNBT()));
+                tag.put("pb_" + dir.ordinal(), getAttachment(dir).getDrop().save(new CompoundTag()));
             }
         }
     }
 
     @Override
-    public void readUpdate(CompoundNBT tag) {
+    public void readUpdate(@Nullable CompoundTag tag) {
         throw new RuntimeException("Client-side only");
     }
 }

@@ -25,7 +25,7 @@ apply plugin: 'maven-publish'
 
 group = 'com.refinedmods'
 archivesBaseName = 'refinedpipes'
-version = '0.5.2'
+version = '0.6.0'
 
 if (System.getenv('GITHUB_SHA') != null) {
     version += '+' + System.getenv('GITHUB_SHA').substring(0, 7)
@@ -35,10 +35,10 @@ if (System.getenv('RELEASE') != null) {
     version = System.getenv('RELEASE').substring(1) // remove 'v'
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(8)
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 minecraft {
-    mappings channel: 'official', version: '1.16.5'
+    mappings channel: 'official', version: '1.18.1'
 
     runs {
         client {
@@ -86,8 +86,8 @@ processResources {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.16.5-36.2.19'
-    runtimeOnly fg.deobf("mezz.jei:jei-1.16.5:7.7.1.137")
+    minecraft 'net.minecraftforge:forge:1.18.1-39.0.0'
+    runtimeOnly fg.deobf("mezz.jei:jei-1.18.1:9.1.0.41")
 }
 
 jar {
@@ -136,6 +136,10 @@ publishing {
             from(components.java)
         }
     }
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
 }
 
 jar.finalizedBy('reobfJar')

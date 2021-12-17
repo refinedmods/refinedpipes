@@ -15,13 +15,13 @@ import com.refinedmods.refinedpipes.network.pipe.transport.callback.ItemBounceBa
 import com.refinedmods.refinedpipes.network.pipe.transport.callback.ItemInsertTransportCallback;
 import com.refinedmods.refinedpipes.network.pipe.transport.callback.ItemPipeGoneTransportCallback;
 import com.refinedmods.refinedpipes.routing.Path;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -35,10 +35,8 @@ import org.apache.logging.log4j.Logger;
 import javax.annotation.Nullable;
 
 public class ExtractorAttachment extends Attachment {
-    private static final Logger LOGGER = LogManager.getLogger(ExtractorAttachment.class);
-
     public static final int MAX_FILTER_SLOTS = 15;
-
+    private static final Logger LOGGER = LogManager.getLogger(ExtractorAttachment.class);
     private final ExtractorAttachmentType type;
     private final ItemStackHandler itemFilter;
     private final FluidInventory fluidFilter;
@@ -59,6 +57,32 @@ public class ExtractorAttachment extends Attachment {
         this.stackSize = type.getItemsToExtract();
         this.itemFilter = createItemFilterInventory(this);
         this.fluidFilter = createFluidFilterInventory(this);
+    }
+
+    public static ItemStackHandler createItemFilterInventory(@Nullable ExtractorAttachment attachment) {
+        return new ItemStackHandler(MAX_FILTER_SLOTS) {
+            @Override
+            protected void onContentsChanged(int slot) {
+                super.onContentsChanged(slot);
+
+                if (attachment != null) {
+                    NetworkManager.get(attachment.pipe.getWorld()).setDirty();
+                }
+            }
+        };
+    }
+
+    public static FluidInventory createFluidFilterInventory(@Nullable ExtractorAttachment attachment) {
+        return new FluidInventory(MAX_FILTER_SLOTS) {
+            @Override
+            protected void onContentsChanged() {
+                super.onContentsChanged();
+
+                if (attachment != null) {
+                    NetworkManager.get(attachment.pipe.getWorld()).setDirty();
+                }
+            }
+        };
     }
 
     public boolean isFluidMode() {
@@ -86,7 +110,7 @@ public class ExtractorAttachment extends Attachment {
 
         BlockPos destinationPos = pipe.getPos().relative(getDirection());
 
-        TileEntity tile = pipe.getWorld().getBlockEntity(destinationPos);
+        BlockEntity tile = pipe.getWorld().getBlockEntity(destinationPos);
         if (tile == null) {
             return;
         }
@@ -263,7 +287,7 @@ public class ExtractorAttachment extends Attachment {
     }
 
     @Override
-    public void openContainer(ServerPlayerEntity player) {
+    public void openContainer(ServerPlayer player) {
         super.openContainer(player);
 
         ExtractorAttachmentContainerProvider.open(pipe, this, player);
@@ -280,7 +304,7 @@ public class ExtractorAttachment extends Attachment {
     }
 
     @Override
-    public CompoundNBT writeToNbt(CompoundNBT tag) {
+    public CompoundTag writeToNbt(CompoundTag tag) {
         tag.putByte("rm", (byte) redstoneMode.ordinal());
         tag.put("itemfilter", itemFilter.serializeNBT());
         tag.putByte("bw", (byte) blacklistWhitelist.ordinal());
@@ -317,6 +341,10 @@ public class ExtractorAttachment extends Attachment {
         this.redstoneMode = redstoneMode;
     }
 
+    public BlacklistWhitelist getBlacklistWhitelist() {
+        return blacklistWhitelist;
+    }
+
     public void setBlacklistWhitelist(BlacklistWhitelist blacklistWhitelist) {
         if (!type.getCanSetWhitelistBlacklist()) {
             return;
@@ -325,8 +353,8 @@ public class ExtractorAttachment extends Attachment {
         this.blacklistWhitelist = blacklistWhitelist;
     }
 
-    public BlacklistWhitelist getBlacklistWhitelist() {
-        return blacklistWhitelist;
+    public RoutingMode getRoutingMode() {
+        return routingMode;
     }
 
     public void setRoutingMode(RoutingMode routingMode) {
@@ -337,8 +365,8 @@ public class ExtractorAttachment extends Attachment {
         this.routingMode = routingMode;
     }
 
-    public RoutingMode getRoutingMode() {
-        return routingMode;
+    public int getStackSize() {
+        return stackSize;
     }
 
     public void setStackSize(int stackSize) {
@@ -353,12 +381,12 @@ public class ExtractorAttachment extends Attachment {
         this.stackSize = stackSize;
     }
 
-    public int getStackSize() {
-        return stackSize;
-    }
-
     public void setRoundRobinIndex(int roundRobinIndex) {
         itemDestinationFinder.setRoundRobinIndex(roundRobinIndex);
+    }
+
+    public boolean isExactMode() {
+        return exactMode;
     }
 
     public void setExactMode(boolean exactMode) {
@@ -367,35 +395,5 @@ public class ExtractorAttachment extends Attachment {
         }
 
         this.exactMode = exactMode;
-    }
-
-    public boolean isExactMode() {
-        return exactMode;
-    }
-
-    public static ItemStackHandler createItemFilterInventory(@Nullable ExtractorAttachment attachment) {
-        return new ItemStackHandler(MAX_FILTER_SLOTS) {
-            @Override
-            protected void onContentsChanged(int slot) {
-                super.onContentsChanged(slot);
-
-                if (attachment != null) {
-                    NetworkManager.get(attachment.pipe.getWorld()).setDirty();
-                }
-            }
-        };
-    }
-
-    public static FluidInventory createFluidFilterInventory(@Nullable ExtractorAttachment attachment) {
-        return new FluidInventory(MAX_FILTER_SLOTS) {
-            @Override
-            protected void onContentsChanged() {
-                super.onContentsChanged();
-
-                if (attachment != null) {
-                    NetworkManager.get(attachment.pipe.getWorld()).setDirty();
-                }
-            }
-        };
     }
 }

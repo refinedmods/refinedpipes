@@ -1,34 +1,29 @@
 package com.refinedmods.refinedpipes.render;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.refinedmods.refinedpipes.block.FluidPipeBlock;
 import com.refinedmods.refinedpipes.tile.FluidPipeTileEntity;
-import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.inventory.container.PlayerContainer;
-import net.minecraft.util.Direction;
-import net.minecraft.world.World;
+import net.minecraft.core.Direction;
+import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
 
-public class FluidPipeTileEntityRenderer extends TileEntityRenderer<FluidPipeTileEntity> {
+public class FluidPipeTileEntityRenderer implements BlockEntityRenderer<FluidPipeTileEntity> {
     private static final float INSET = 0.001F;
-
-    public FluidPipeTileEntityRenderer(TileEntityRendererDispatcher dispatcher) {
-        super(dispatcher);
-    }
 
     @Override
     @SuppressWarnings("deprecation")
-    public void render(FluidPipeTileEntity tile, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer bufferType, int combinedLight, int combinedOverlay) {
-        World world = tile.getLevel();
+    public void render(FluidPipeTileEntity tile, float partialTicks, PoseStack matrixStack, MultiBufferSource bufferType, int combinedLight, int combinedOverlay) {
+        Level world = tile.getLevel();
         if (world == null) {
             return;
         }
@@ -44,9 +39,9 @@ public class FluidPipeTileEntityRenderer extends TileEntityRenderer<FluidPipeTil
             return;
         }
 
-        int light = WorldRenderer.getLightColor(tile.getLevel(), tile.getBlockPos());
+        int light = LevelRenderer.getLightColor(tile.getLevel(), tile.getBlockPos());
         FluidAttributes attributes = fluidStack.getFluid().getAttributes();
-        TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(PlayerContainer.BLOCK_ATLAS).apply(attributes.getStillTexture(fluidStack));
+        TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(attributes.getStillTexture(fluidStack));
         int fluidColor = attributes.getColor(fluidStack);
 
         int r = fluidColor >> 16 & 0xFF;
@@ -54,7 +49,7 @@ public class FluidPipeTileEntityRenderer extends TileEntityRenderer<FluidPipeTil
         int b = fluidColor & 0xFF;
         int a = fluidColor >> 24 & 0xFF;
 
-        IVertexBuilder buffer = bufferType.getBuffer(RenderType.text(sprite.atlas().location()));
+        VertexConsumer buffer = bufferType.getBuffer(RenderType.text(sprite.atlas().location()));
 
         float fullness = tile.updateAndGetRenderFullness(partialTicks);
         if (fullness == 0) {

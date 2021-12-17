@@ -1,7 +1,7 @@
 package com.refinedmods.refinedpipes.network.pipe.shape;
 
-import net.minecraft.block.Block;
-import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class PipeShapeProps {
     public static final VoxelShape CORE_SHAPE = Block.box(4, 4, 4, 12, 12, 12);

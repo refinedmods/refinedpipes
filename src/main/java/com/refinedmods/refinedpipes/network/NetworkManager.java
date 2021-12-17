@@ -6,42 +6,42 @@ import com.refinedmods.refinedpipes.network.pipe.Pipe;
 import com.refinedmods.refinedpipes.network.pipe.PipeFactory;
 import com.refinedmods.refinedpipes.network.pipe.PipeRegistry;
 import com.refinedmods.refinedpipes.network.pipe.item.ItemPipe;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraft.world.storage.WorldSavedData;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.saveddata.SavedData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import java.util.*;
 
-public class NetworkManager extends WorldSavedData {
+public class NetworkManager extends SavedData {
     private static final String NAME = RefinedPipes.ID + "_networks";
     private static final Logger LOGGER = LogManager.getLogger(NetworkManager.class);
-
-    public static NetworkManager get(World world) {
-        return get((ServerWorld) world);
-    }
-
-    public static NetworkManager get(ServerWorld world) {
-        return world.getDataStorage().computeIfAbsent(() -> new NetworkManager(NAME, world), NAME);
-    }
-
-    private final World world;
+    private final Level world;
     private final Map<String, Network> networks = new HashMap<>();
     private final Map<BlockPos, Pipe> pipes = new HashMap<>();
 
-    public NetworkManager(String name, World world) {
-        super(name);
-
+    public NetworkManager(Level world) {
         this.world = world;
+    }
+
+    public static NetworkManager get(Level world) {
+        return get((ServerLevel) world);
+    }
+
+    public static NetworkManager get(ServerLevel world) {
+        return world.getDataStorage().computeIfAbsent((tag) -> {
+            NetworkManager networkManager = new NetworkManager(world);
+            networkManager.load(tag);
+            return networkManager;
+        }, () -> new NetworkManager(world), NAME);
     }
 
     public void addNetwork(Network network) {
@@ -68,7 +68,7 @@ public class NetworkManager extends WorldSavedData {
         setDirty();
     }
 
-    private void formNetworkAt(World world, BlockPos pos, ResourceLocation type) {
+    private void formNetworkAt(Level world, BlockPos pos, ResourceLocation type) {
         Network network = NetworkRegistry.INSTANCE.getFactory(type).create(pos);
 
         addNetwork(network);
@@ -76,7 +76,7 @@ public class NetworkManager extends WorldSavedData {
         network.scanGraph(world, pos);
     }
 
-    private void mergeNetworksIntoOne(Set<Pipe> candidates, World world, BlockPos pos) {
+    private void mergeNetworksIntoOne(Set<Pipe> candidates, Level world, BlockPos pos) {
         if (candidates.isEmpty()) {
             throw new RuntimeException("Cannot merge networks: no candidates");
         }
@@ -245,11 +245,10 @@ public class NetworkManager extends WorldSavedData {
         return networks.values();
     }
 
-    @Override
-    public void load(CompoundNBT tag) {
-        ListNBT pipes = tag.getList("pipes", Constants.NBT.TAG_COMPOUND);
-        for (INBT pipeTag : pipes) {
-            CompoundNBT pipeTagCompound = (CompoundNBT) pipeTag;
+    public void load(CompoundTag tag) {
+        ListTag pipes = tag.getList("pipes", Tag.TAG_COMPOUND);
+        for (Tag pipeTag : pipes) {
+            CompoundTag pipeTagCompound = (CompoundTag) pipeTag;
 
             // @BC
             ResourceLocation factoryId = pipeTagCompound.contains("id") ? new ResourceLocation(pipeTagCompound.getString("id")) : ItemPipe.ID;
@@ -265,9 +264,9 @@ public class NetworkManager extends WorldSavedData {
             this.pipes.put(pipe.getPos(), pipe);
         }
 
-        ListNBT nets = tag.getList("networks", Constants.NBT.TAG_COMPOUND);
-        for (INBT netTag : nets) {
-            CompoundNBT netTagCompound = (CompoundNBT) netTag;
+        ListTag nets = tag.getList("networks", Tag.TAG_COMPOUND);
+        for (Tag netTag : nets) {
+            CompoundTag netTagCompound = (CompoundTag) netTag;
             if (!netTagCompound.contains("type")) {
                 LOGGER.warn("Skipping network without type");
                 continue;
@@ -291,18 +290,18 @@ public class NetworkManager extends WorldSavedData {
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tag) {
-        ListNBT pipes = new ListNBT();
+    public CompoundTag save(CompoundTag tag) {
+        ListTag pipes = new ListTag();
         this.pipes.values().forEach(p -> {
-            CompoundNBT pipeTag = new CompoundNBT();
+            CompoundTag pipeTag = new CompoundTag();
             pipeTag.putString("id", p.getId().toString());
             pipes.add(p.writeToNbt(pipeTag));
         });
         tag.put("pipes", pipes);
 
-        ListNBT networks = new ListNBT();
+        ListTag networks = new ListTag();
         this.networks.values().forEach(n -> {
-            CompoundNBT networkTag = new CompoundNBT();
+            CompoundTag networkTag = new CompoundTag();
             networkTag.putString("type", n.getType().toString());
             networks.add(n.writeToNbt(networkTag));
         });

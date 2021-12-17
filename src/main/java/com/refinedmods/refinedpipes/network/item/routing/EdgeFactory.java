@@ -3,7 +3,7 @@ package com.refinedmods.refinedpipes.network.item.routing;
 import com.refinedmods.refinedpipes.network.graph.NetworkGraphScannerRequest;
 import com.refinedmods.refinedpipes.routing.Edge;
 import com.refinedmods.refinedpipes.routing.NodeIndex;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

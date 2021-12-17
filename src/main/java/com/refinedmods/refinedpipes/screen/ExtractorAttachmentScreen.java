@@ -1,7 +1,7 @@
 package com.refinedmods.refinedpipes.screen;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.refinedmods.refinedpipes.RefinedPipes;
 import com.refinedmods.refinedpipes.container.ExtractorAttachmentContainer;
 import com.refinedmods.refinedpipes.network.pipe.attachment.extractor.BlacklistWhitelist;
@@ -10,13 +10,15 @@ import com.refinedmods.refinedpipes.network.pipe.attachment.extractor.RedstoneMo
 import com.refinedmods.refinedpipes.network.pipe.attachment.extractor.RoutingMode;
 import com.refinedmods.refinedpipes.screen.widget.IconButton;
 import com.refinedmods.refinedpipes.screen.widget.IconButtonPreset;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.*;
-import net.minecraftforge.fml.client.gui.GuiUtils;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -25,7 +27,7 @@ import java.util.List;
 public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentContainer> {
     private static final ResourceLocation RESOURCE = new ResourceLocation(RefinedPipes.ID, "textures/gui/extractor_attachment.png");
 
-    private final List<ITextComponent> tooltip = new ArrayList<>();
+    private final List<Component> tooltip = new ArrayList<>();
 
     private Button redstoneModeButton;
     private Button blacklistWhitelistButton;
@@ -38,7 +40,7 @@ public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentCon
     @Nullable
     private Button minusButton;
 
-    public ExtractorAttachmentScreen(ExtractorAttachmentContainer container, PlayerInventory inv, ITextComponent title) {
+    public ExtractorAttachmentScreen(ExtractorAttachmentContainer container, Inventory inv, Component title) {
         super(container, inv, title);
 
         this.imageWidth = 176;
@@ -49,7 +51,7 @@ public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentCon
     protected void init() {
         super.init();
 
-        redstoneModeButton = addButton(new IconButton(
+        redstoneModeButton = this.addRenderableWidget(new IconButton(
             this.leftPos + 32,
             this.topPos + 76,
             IconButtonPreset.NORMAL,
@@ -61,7 +63,7 @@ public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentCon
 
         redstoneModeButton.active = menu.getExtractorAttachmentType().getCanSetRedstoneMode();
 
-        blacklistWhitelistButton = addButton(new IconButton(
+        blacklistWhitelistButton = this.addRenderableWidget(new IconButton(
             this.leftPos + 55,
             this.topPos + 76,
             IconButtonPreset.NORMAL,
@@ -73,7 +75,7 @@ public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentCon
 
         blacklistWhitelistButton.active = menu.getExtractorAttachmentType().getCanSetWhitelistBlacklist();
 
-        exactModeButton = addButton(new IconButton(
+        exactModeButton = this.addRenderableWidget(new IconButton(
             this.leftPos + 78,
             this.topPos + 76,
             IconButtonPreset.NORMAL,
@@ -86,7 +88,7 @@ public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentCon
         exactModeButton.active = menu.getExtractorAttachmentType().getCanSetExactMode();
 
         if (!menu.isFluidMode()) {
-            routingModeButton = addButton(new IconButton(
+            routingModeButton = this.addRenderableWidget(new IconButton(
                 this.leftPos + 101,
                 this.topPos + 76,
                 IconButtonPreset.NORMAL,
@@ -98,23 +100,23 @@ public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentCon
 
             routingModeButton.active = menu.getExtractorAttachmentType().getCanSetWhitelistBlacklist();
 
-            plusButton = addButton(new IconButton(
+            plusButton = this.addRenderableWidget(new IconButton(
                 this.leftPos + 125,
                 this.topPos + 76 - 3,
                 IconButtonPreset.SMALL,
                 198,
                 19,
-                new StringTextComponent("+"),
+                new TextComponent("+"),
                 btn -> updateStackSize(1)
             ));
 
-            minusButton = addButton(new IconButton(
+            minusButton = this.addRenderableWidget(new IconButton(
                 this.leftPos + 125,
                 this.topPos + 76 + 14 - 3,
                 IconButtonPreset.SMALL,
                 198,
                 34,
-                new StringTextComponent("-"),
+                new TextComponent("-"),
                 btn -> updateStackSize(-1)
             ));
 
@@ -156,8 +158,8 @@ public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentCon
         }
     }
 
-    private IFormattableTextComponent getRedstoneModeText(RedstoneMode redstoneMode) {
-        return new TranslationTextComponent("misc.refinedpipes.redstone_mode." + redstoneMode.toString().toLowerCase());
+    private MutableComponent getRedstoneModeText(RedstoneMode redstoneMode) {
+        return new TranslatableComponent("misc.refinedpipes.redstone_mode." + redstoneMode.toString().toLowerCase());
     }
 
     private void setRedstoneMode(IconButton button, RedstoneMode redstoneMode) {
@@ -178,8 +180,8 @@ public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentCon
         }
     }
 
-    private IFormattableTextComponent getBlacklistWhitelistText(BlacklistWhitelist blacklistWhitelist) {
-        return new TranslationTextComponent("misc.refinedpipes.mode." + blacklistWhitelist.toString().toLowerCase());
+    private MutableComponent getBlacklistWhitelistText(BlacklistWhitelist blacklistWhitelist) {
+        return new TranslatableComponent("misc.refinedpipes.mode." + blacklistWhitelist.toString().toLowerCase());
     }
 
     private void setBlacklistWhitelist(IconButton button, BlacklistWhitelist blacklistWhitelist) {
@@ -204,8 +206,8 @@ public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentCon
         }
     }
 
-    private IFormattableTextComponent getRoutingModeText(RoutingMode routingMode) {
-        return new TranslationTextComponent("misc.refinedpipes.routing_mode." + routingMode.toString().toLowerCase());
+    private MutableComponent getRoutingModeText(RoutingMode routingMode) {
+        return new TranslatableComponent("misc.refinedpipes.routing_mode." + routingMode.toString().toLowerCase());
     }
 
     private void setRoutingMode(IconButton button, RoutingMode routingMode) {
@@ -219,8 +221,8 @@ public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentCon
         return exactMode ? 177 : 198;
     }
 
-    private IFormattableTextComponent getExactModeText(boolean exactMode) {
-        return new TranslationTextComponent("misc.refinedpipes.exact_mode." + (exactMode ? "on" : "off"));
+    private MutableComponent getExactModeText(boolean exactMode) {
+        return new TranslatableComponent("misc.refinedpipes.exact_mode." + (exactMode ? "on" : "off"));
     }
 
     private void setExactMode(IconButton button, boolean exactMode) {
@@ -231,7 +233,7 @@ public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentCon
     }
 
     @Override
-    protected void renderLabels(MatrixStack matrixStack, int mouseX, int mouseY) {
+    protected void renderLabels(PoseStack matrixStack, int mouseX, int mouseY) {
         font.draw(matrixStack, title.getString(), 7, 7, 4210752);
         font.draw(matrixStack, I18n.get("container.inventory"), 7, 103 - 4, 4210752);
 
@@ -243,33 +245,34 @@ public class ExtractorAttachmentScreen extends BaseScreen<ExtractorAttachmentCon
 
         tooltip.clear();
 
-        if (blacklistWhitelistButton.isHovered()) {
-            tooltip.add(new TranslationTextComponent("misc.refinedpipes.mode"));
-            tooltip.add(getBlacklistWhitelistText(menu.getBlacklistWhitelist()).withStyle(TextFormatting.GRAY));
-        } else if (redstoneModeButton.isHovered()) {
-            tooltip.add(new TranslationTextComponent("misc.refinedpipes.redstone_mode"));
-            tooltip.add(getRedstoneModeText(menu.getRedstoneMode()).withStyle(TextFormatting.GRAY));
-        } else if (routingModeButton != null && routingModeButton.isHovered()) {
-            tooltip.add(new TranslationTextComponent("misc.refinedpipes.routing_mode"));
-            tooltip.add(getRoutingModeText(menu.getRoutingMode()).withStyle(TextFormatting.GRAY));
-        } else if (exactModeButton.isHovered()) {
-            tooltip.add(new TranslationTextComponent("misc.refinedpipes.exact_mode"));
-            tooltip.add(getExactModeText(menu.isExactMode()).withStyle(TextFormatting.GRAY));
+        if (blacklistWhitelistButton.isHoveredOrFocused()) {
+            tooltip.add(new TranslatableComponent("misc.refinedpipes.mode"));
+            tooltip.add(getBlacklistWhitelistText(menu.getBlacklistWhitelist()).withStyle(ChatFormatting.GRAY));
+        } else if (redstoneModeButton.isHoveredOrFocused()) {
+            tooltip.add(new TranslatableComponent("misc.refinedpipes.redstone_mode"));
+            tooltip.add(getRedstoneModeText(menu.getRedstoneMode()).withStyle(ChatFormatting.GRAY));
+        } else if (routingModeButton != null && routingModeButton.isHoveredOrFocused()) {
+            tooltip.add(new TranslatableComponent("misc.refinedpipes.routing_mode"));
+            tooltip.add(getRoutingModeText(menu.getRoutingMode()).withStyle(ChatFormatting.GRAY));
+        } else if (exactModeButton.isHoveredOrFocused()) {
+            tooltip.add(new TranslatableComponent("misc.refinedpipes.exact_mode"));
+            tooltip.add(getExactModeText(menu.isExactMode()).withStyle(ChatFormatting.GRAY));
         }
 
         if (!tooltip.isEmpty()) {
-            GuiUtils.drawHoveringText(matrixStack, tooltip, mouseX - leftPos, mouseY - topPos, width, height, -1, Minecraft.getInstance().font);
+            renderComponentTooltip(matrixStack, tooltip, mouseX - leftPos, mouseY - topPos);
         }
 
         super.renderLabels(matrixStack, mouseX, mouseY);
     }
 
     @Override
-    protected void renderBg(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
+    protected void renderBg(PoseStack matrixStack, float partialTicks, int mouseX, int mouseY) {
         renderBackground(matrixStack);
 
-        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        this.minecraft.getTextureManager().bind(RESOURCE);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.setShaderTexture(0, RESOURCE);
+
         int i = (this.width - this.imageWidth) / 2;
         int j = (this.height - this.imageHeight) / 2;
         this.blit(matrixStack, i, j, 0, 0, this.imageWidth, this.imageHeight);

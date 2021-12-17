@@ -3,13 +3,13 @@ package com.refinedmods.refinedpipes.item;
 import com.refinedmods.refinedpipes.block.FluidPipeBlock;
 import com.refinedmods.refinedpipes.network.pipe.fluid.FluidPipeType;
 import com.refinedmods.refinedpipes.util.StringUtil;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -24,19 +24,19 @@ public class FluidPipeBlockItem extends BaseBlockItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, ITooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag flag) {
         super.appendHoverText(stack, world, tooltip, flag);
 
-        tooltip.add(new TranslationTextComponent("misc.refinedpipes.tier", new TranslationTextComponent("enchantment.level." + type.getTier())).withStyle(TextFormatting.YELLOW));
+        tooltip.add(new TranslatableComponent("misc.refinedpipes.tier", new TranslatableComponent("enchantment.level." + type.getTier())).withStyle(ChatFormatting.YELLOW));
 
-        tooltip.add(new TranslationTextComponent(
+        tooltip.add(new TranslatableComponent(
             "tooltip.refinedpipes.fluid_pipe.capacity",
-            new StringTextComponent(StringUtil.formatNumber(type.getCapacity()) + " mB").withStyle(TextFormatting.WHITE)
-        ).withStyle(TextFormatting.GRAY));
+            new TextComponent(StringUtil.formatNumber(type.getCapacity()) + " mB").withStyle(ChatFormatting.WHITE)
+        ).withStyle(ChatFormatting.GRAY));
 
-        tooltip.add(new TranslationTextComponent(
+        tooltip.add(new TranslatableComponent(
             "tooltip.refinedpipes.fluid_pipe.transfer_rate",
-            new StringTextComponent(StringUtil.formatNumber(type.getTransferRate()) + " mB/t").withStyle(TextFormatting.WHITE)
-        ).withStyle(TextFormatting.GRAY));
+            new TextComponent(StringUtil.formatNumber(type.getTransferRate()) + " mB/t").withStyle(ChatFormatting.WHITE)
+        ).withStyle(ChatFormatting.GRAY));
     }
 }

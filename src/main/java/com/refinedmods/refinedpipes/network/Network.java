@@ -5,10 +5,10 @@ import com.refinedmods.refinedpipes.network.graph.NetworkGraphScannerResult;
 import com.refinedmods.refinedpipes.network.pipe.Destination;
 import com.refinedmods.refinedpipes.network.pipe.DestinationType;
 import com.refinedmods.refinedpipes.network.pipe.Pipe;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
 
 import java.util.List;
 import java.util.Objects;
@@ -32,7 +32,7 @@ public abstract class Network {
         return id;
     }
 
-    public NetworkGraphScannerResult scanGraph(World world, BlockPos pos) {
+    public NetworkGraphScannerResult scanGraph(Level world, BlockPos pos) {
         return graph.scan(world, pos);
     }
 
@@ -40,14 +40,14 @@ public abstract class Network {
         return graph.getDestinations(type);
     }
 
-    public CompoundNBT writeToNbt(CompoundNBT tag) {
+    public CompoundTag writeToNbt(CompoundTag tag) {
         tag.putString("id", id);
         tag.putLong("origin", originPos.asLong());
 
         return tag;
     }
 
-    public void update(World world) {
+    public void update(Level world) {
         if (!didDoInitialScan) {
             didDoInitialScan = true;
 

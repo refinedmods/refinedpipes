@@ -1,24 +1,19 @@
 package com.refinedmods.refinedpipes.render;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Quaternion;
 import com.refinedmods.refinedpipes.network.pipe.transport.ItemTransportProps;
 import com.refinedmods.refinedpipes.tile.ItemPipeTileEntity;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.vector.Quaternion;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.core.Direction;
 
-public class ItemPipeTileEntityRenderer extends TileEntityRenderer<ItemPipeTileEntity> {
-    public ItemPipeTileEntityRenderer(TileEntityRendererDispatcher dispatcher) {
-        super(dispatcher);
-    }
-
+public class ItemPipeTileEntityRenderer implements BlockEntityRenderer<ItemPipeTileEntity> {
     @Override
     @SuppressWarnings("deprecation")
-    public void render(ItemPipeTileEntity tile, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer bufferType, int combinedLight, int combinedOverlay) {
+    public void render(ItemPipeTileEntity tile, float partialTicks, PoseStack matrixStack, MultiBufferSource bufferType, int combinedLight, int combinedOverlay) {
         for (ItemTransportProps prop : tile.getProps()) {
             Direction dir = prop.getDirection();
 
@@ -71,11 +66,12 @@ public class ItemPipeTileEntityRenderer extends TileEntityRenderer<ItemPipeTileE
 
             Minecraft.getInstance().getItemRenderer().renderStatic(
                 prop.getStack(),
-                ItemCameraTransforms.TransformType.FIXED,
+                ItemTransforms.TransformType.FIXED,
                 combinedLight,
                 combinedOverlay,
                 matrixStack,
-                bufferType
+                bufferType,
+                0
             );
 
             matrixStack.popPose();

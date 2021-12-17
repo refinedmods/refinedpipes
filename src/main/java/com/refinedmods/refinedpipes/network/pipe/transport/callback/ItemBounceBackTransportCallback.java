@@ -2,22 +2,20 @@ package com.refinedmods.refinedpipes.network.pipe.transport.callback;
 
 import com.refinedmods.refinedpipes.RefinedPipes;
 import com.refinedmods.refinedpipes.network.Network;
-import net.minecraft.inventory.InventoryHelper;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.Containers;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 
 public class ItemBounceBackTransportCallback implements TransportCallback {
-    private static final Logger LOGGER = LogManager.getLogger(ItemBounceBackTransportCallback.class);
-
     public static final ResourceLocation ID = new ResourceLocation(RefinedPipes.ID, "item_bounce_back");
-
+    private static final Logger LOGGER = LogManager.getLogger(ItemBounceBackTransportCallback.class);
     private final BlockPos originalItemHandlerPosition;
     private final BlockPos bounceBackItemHandlerPosition;
     private final ItemStack toInsert;
@@ -28,19 +26,8 @@ public class ItemBounceBackTransportCallback implements TransportCallback {
         this.toInsert = toInsert;
     }
 
-    @Override
-    public void call(Network network, World world, BlockPos currentPos, TransportCallback cancelCallback) {
-        // TODO: Actually bounce back...
-        InventoryHelper.dropItemStack(world, originalItemHandlerPosition.getX(), originalItemHandlerPosition.getY(), originalItemHandlerPosition.getZ(), toInsert);
-    }
-
-    @Override
-    public ResourceLocation getId() {
-        return ID;
-    }
-
     @Nullable
-    public static ItemBounceBackTransportCallback of(CompoundNBT tag) {
+    public static ItemBounceBackTransportCallback of(CompoundTag tag) {
         BlockPos originalItemHandlerPosition = BlockPos.of(tag.getLong("oihpos"));
         BlockPos bounceBackItemHandlerPosition = BlockPos.of(tag.getLong("bbihpos"));
         ItemStack toInsert = ItemStack.of(tag.getCompound("s"));
@@ -54,10 +41,21 @@ public class ItemBounceBackTransportCallback implements TransportCallback {
     }
 
     @Override
-    public CompoundNBT writeToNbt(CompoundNBT tag) {
+    public void call(Network network, Level world, BlockPos currentPos, TransportCallback cancelCallback) {
+        // TODO: Actually bounce back...
+        Containers.dropItemStack(world, originalItemHandlerPosition.getX(), originalItemHandlerPosition.getY(), originalItemHandlerPosition.getZ(), toInsert);
+    }
+
+    @Override
+    public ResourceLocation getId() {
+        return ID;
+    }
+
+    @Override
+    public CompoundTag writeToNbt(CompoundTag tag) {
         tag.putLong("oihpos", originalItemHandlerPosition.asLong());
         tag.putLong("bbihpos", bounceBackItemHandlerPosition.asLong());
-        tag.put("s", toInsert.save(new CompoundNBT()));
+        tag.put("s", toInsert.save(new CompoundTag()));
 
         return tag;
     }

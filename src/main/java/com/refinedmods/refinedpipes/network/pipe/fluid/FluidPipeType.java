@@ -3,8 +3,8 @@ package com.refinedmods.refinedpipes.network.pipe.fluid;
 import com.refinedmods.refinedpipes.RefinedPipes;
 import com.refinedmods.refinedpipes.RefinedPipesTileEntities;
 import com.refinedmods.refinedpipes.tile.FluidPipeTileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 
 public enum FluidPipeType {
     BASIC(1),
@@ -23,7 +23,7 @@ public enum FluidPipeType {
         return tier;
     }
 
-    public TileEntityType<FluidPipeTileEntity> getTileType() {
+    public BlockEntityType<FluidPipeTileEntity> getTileType() {
         switch (this) {
             case BASIC:
                 return RefinedPipesTileEntities.BASIC_FLUID_PIPE;

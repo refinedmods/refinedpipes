@@ -11,11 +11,11 @@ import com.refinedmods.refinedpipes.network.pipe.attachment.extractor.ExtractorA
 import com.refinedmods.refinedpipes.network.pipe.attachment.extractor.RedstoneMode;
 import com.refinedmods.refinedpipes.network.pipe.attachment.extractor.RoutingMode;
 import com.refinedmods.refinedpipes.util.FluidUtil;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
@@ -35,7 +35,7 @@ public class ExtractorAttachmentContainer extends BaseContainer {
 
     public ExtractorAttachmentContainer(
         int windowId,
-        PlayerEntity player,
+        Player player,
         BlockPos pos,
         Direction dir,
         RedstoneMode redstoneMode,
@@ -92,26 +92,14 @@ public class ExtractorAttachmentContainer extends BaseContainer {
         return redstoneMode;
     }
 
-    public BlacklistWhitelist getBlacklistWhitelist() {
-        return blacklistWhitelist;
-    }
-
-    public RoutingMode getRoutingMode() {
-        return routingMode;
-    }
-
-    public int getStackSize() {
-        return stackSize;
-    }
-
-    public boolean isExactMode() {
-        return exactMode;
-    }
-
     public void setRedstoneMode(RedstoneMode redstoneMode) {
         this.redstoneMode = redstoneMode;
 
         RefinedPipes.NETWORK.sendToServer(new ChangeRedstoneModeMessage(pos, dir, redstoneMode));
+    }
+
+    public BlacklistWhitelist getBlacklistWhitelist() {
+        return blacklistWhitelist;
     }
 
     public void setBlacklistWhitelist(BlacklistWhitelist blacklistWhitelist) {
@@ -120,16 +108,28 @@ public class ExtractorAttachmentContainer extends BaseContainer {
         RefinedPipes.NETWORK.sendToServer(new ChangeBlacklistWhitelistMessage(pos, dir, blacklistWhitelist));
     }
 
+    public RoutingMode getRoutingMode() {
+        return routingMode;
+    }
+
     public void setRoutingMode(RoutingMode routingMode) {
         this.routingMode = routingMode;
 
         RefinedPipes.NETWORK.sendToServer(new ChangeRoutingModeMessage(pos, dir, routingMode));
     }
 
+    public int getStackSize() {
+        return stackSize;
+    }
+
     public void setStackSize(int stackSize) {
         this.stackSize = stackSize;
 
         RefinedPipes.NETWORK.sendToServer(new ChangeStackSizeMessage(pos, dir, stackSize));
+    }
+
+    public boolean isExactMode() {
+        return exactMode;
     }
 
     public void setExactMode(boolean exactMode) {
@@ -139,7 +139,7 @@ public class ExtractorAttachmentContainer extends BaseContainer {
     }
 
     @Override
-    public ItemStack quickMoveStack(PlayerEntity player, int index) {
+    public ItemStack quickMoveStack(Player player, int index) {
         Slot slot = slots.get(index);
         if (slot != null && slot.hasItem() && index < 9 * 4) {
             for (int i = 9 * 4; i < slots.size(); ++i) {

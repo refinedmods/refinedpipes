@@ -5,11 +5,11 @@ import com.refinedmods.refinedpipes.network.pipe.Destination;
 import com.refinedmods.refinedpipes.network.pipe.DestinationType;
 import com.refinedmods.refinedpipes.network.pipe.Pipe;
 import com.refinedmods.refinedpipes.network.pipe.energy.EnergyPipeEnergyStorage;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -33,7 +33,7 @@ public class NetworkGraphScanner {
         this.requiredNetworkType = requiredNetworkType;
     }
 
-    public NetworkGraphScannerResult scanAt(World world, BlockPos pos) {
+    public NetworkGraphScannerResult scanAt(Level world, BlockPos pos) {
         addRequest(new NetworkGraphScannerRequest(world, pos, null, null));
 
         NetworkGraphScannerRequest request;
@@ -85,7 +85,7 @@ public class NetworkGraphScanner {
 
             // If this destination is connected to a pipe with an attachment, then this is not a valid destination.
             if (!connectedPipe.getAttachmentManager().hasAttachment(request.getDirection())) {
-                TileEntity tile = request.getWorld().getBlockEntity(request.getPos());
+                BlockEntity tile = request.getWorld().getBlockEntity(request.getPos());
 
                 if (tile != null) {
                     tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, request.getDirection().getOpposite())

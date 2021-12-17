@@ -1,11 +1,11 @@
 package com.refinedmods.refinedpipes.network.pipe.attachment;
 
 import com.refinedmods.refinedpipes.network.pipe.Pipe;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
 
 public abstract class Attachment {
     protected final Pipe pipe;
@@ -24,7 +24,7 @@ public abstract class Attachment {
         return pipe;
     }
 
-    public CompoundNBT writeToNbt(CompoundNBT tag) {
+    public CompoundTag writeToNbt(CompoundTag tag) {
         tag.putInt("dir", direction.ordinal());
 
         return tag;
@@ -36,6 +36,6 @@ public abstract class Attachment {
 
     public abstract ItemStack getDrop();
 
-    public void openContainer(ServerPlayerEntity player) {
+    public void openContainer(ServerPlayer player) {
     }
 }

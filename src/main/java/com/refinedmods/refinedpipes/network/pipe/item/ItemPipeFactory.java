@@ -3,15 +3,15 @@ package com.refinedmods.refinedpipes.network.pipe.item;
 import com.refinedmods.refinedpipes.network.pipe.Pipe;
 import com.refinedmods.refinedpipes.network.pipe.PipeFactory;
 import com.refinedmods.refinedpipes.network.pipe.transport.ItemTransport;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.level.Level;
 
 public class ItemPipeFactory implements PipeFactory {
     @Override
-    public Pipe createFromNbt(World world, CompoundNBT tag) {
+    public Pipe createFromNbt(Level world, CompoundTag tag) {
         BlockPos pos = BlockPos.of(tag.getLong("pos"));
 
         ItemPipeType pipeType = ItemPipeType.values()[tag.getInt("type")];
@@ -20,9 +20,9 @@ public class ItemPipeFactory implements PipeFactory {
 
         pipe.getAttachmentManager().readFromNbt(tag);
 
-        ListNBT transports = tag.getList("transports", Constants.NBT.TAG_COMPOUND);
+        ListTag transports = tag.getList("transports", Tag.TAG_COMPOUND);
         for (int i = 0; i < transports.size(); ++i) {
-            CompoundNBT transportTag = transports.getCompound(i);
+            CompoundTag transportTag = transports.getCompound(i);
 
             ItemTransport itemTransport = ItemTransport.of(transportTag);
             if (itemTransport != null) {

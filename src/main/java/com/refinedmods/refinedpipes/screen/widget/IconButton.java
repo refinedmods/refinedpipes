@@ -1,14 +1,11 @@
 package com.refinedmods.refinedpipes.screen.widget;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.refinedmods.refinedpipes.RefinedPipes;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-
-import net.minecraft.client.gui.widget.button.Button.IPressable;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 
 public class IconButton extends Button {
     private static final ResourceLocation RESOURCE = new ResourceLocation(RefinedPipes.ID, "textures/gui/extractor_attachment.png");
@@ -17,7 +14,7 @@ public class IconButton extends Button {
     private int overlayTexX;
     private int overlayTexY;
 
-    public IconButton(int x, int y, IconButtonPreset preset, int overlayTexX, int overlayTexY, ITextComponent text, IPressable onPress) {
+    public IconButton(int x, int y, IconButtonPreset preset, int overlayTexX, int overlayTexY, Component text, OnPress onPress) {
         super(x, y, preset.getWidth(), preset.getHeight(), text, onPress);
 
         this.preset = preset;
@@ -30,9 +27,8 @@ public class IconButton extends Button {
     }
 
     @Override
-    public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        Minecraft minecraft = Minecraft.getInstance();
-        minecraft.getTextureManager().bind(RESOURCE);
+    public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+        RenderSystem.setShaderTexture(0, RESOURCE);
 
         RenderSystem.disableDepthTest();
 

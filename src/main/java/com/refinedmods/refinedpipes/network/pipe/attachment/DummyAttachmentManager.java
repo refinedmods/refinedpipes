@@ -1,18 +1,17 @@
 package com.refinedmods.refinedpipes.network.pipe.attachment;
 
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class DummyAttachmentManager implements AttachmentManager {
-    private static final ResourceLocation[] STATE = new ResourceLocation[Direction.values().length];
-
     public static final DummyAttachmentManager INSTANCE = new DummyAttachmentManager();
+    private static final ResourceLocation[] STATE = new ResourceLocation[Direction.values().length];
 
     private DummyAttachmentManager() {
     }
@@ -28,7 +27,7 @@ public class DummyAttachmentManager implements AttachmentManager {
     }
 
     @Override
-    public void openAttachmentContainer(Direction dir, ServerPlayerEntity player) {
+    public void openAttachmentContainer(Direction dir, ServerPlayer player) {
 
     }
 
@@ -45,12 +44,12 @@ public class DummyAttachmentManager implements AttachmentManager {
     }
 
     @Override
-    public void writeUpdate(CompoundNBT tag) {
+    public void writeUpdate(CompoundTag tag) {
 
     }
 
     @Override
-    public void readUpdate(CompoundNBT tag) {
+    public void readUpdate(@Nullable CompoundTag tag) {
 
     }
 }

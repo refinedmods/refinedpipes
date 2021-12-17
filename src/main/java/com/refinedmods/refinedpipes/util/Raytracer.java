@@ -1,9 +1,13 @@
 package com.refinedmods.refinedpipes.util;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.util.math.*;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeMod;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -12,31 +16,31 @@ import java.util.Collections;
 
 // https://github.com/mekanism/Mekanism/blob/9a3fe1a5d78bb38fa963a3bcbc8d3846412315e4/src/main/java/mekanism/common/util/MultipartUtils.java
 public class Raytracer {
-    public static Pair<Vector3d, Vector3d> getVectors(Entity entity) {
-        float pitch = entity.xRot;
-        float yaw = entity.yRot;
-        Vector3d start = new Vector3d(entity.getX(), entity.getY() + entity.getEyeHeight(), entity.getZ());
-        float f1 = MathHelper.cos(-yaw * 0.017453292F - (float) Math.PI);
-        float f2 = MathHelper.sin(-yaw * 0.017453292F - (float) Math.PI);
-        float f3 = -MathHelper.cos(-pitch * 0.017453292F);
-        float f4 = MathHelper.sin(-pitch * 0.017453292F);
+    public static Pair<Vec3, Vec3> getVectors(Entity entity) {
+        float pitch = entity.getXRot();
+        float yaw = entity.getYRot();
+        Vec3 start = new Vec3(entity.getX(), entity.getY() + entity.getEyeHeight(), entity.getZ());
+        float f1 = Mth.cos(-yaw * 0.017453292F - (float) Math.PI);
+        float f2 = Mth.sin(-yaw * 0.017453292F - (float) Math.PI);
+        float f3 = -Mth.cos(-pitch * 0.017453292F);
+        float f4 = Mth.sin(-pitch * 0.017453292F);
         float f5 = f2 * f3;
         float f6 = f1 * f3;
         double d3 = 5.0D;
-        if (entity instanceof ServerPlayerEntity) {
-            d3 = ((ServerPlayerEntity) entity).getAttribute(ForgeMod.REACH_DISTANCE.get()).getValue();
+        if (entity instanceof ServerPlayer) {
+            d3 = ((ServerPlayer) entity).getAttribute(ForgeMod.REACH_DISTANCE.get()).getValue();
         }
-        Vector3d end = start.add(f5 * d3, f4 * d3, f6 * d3);
+        Vec3 end = start.add(f5 * d3, f4 * d3, f6 * d3);
         return Pair.of(start, end);
     }
 
-    public static AdvancedRayTraceResult<BlockRayTraceResult> collisionRayTrace(BlockPos pos, Vector3d start, Vector3d end, Collection<AxisAlignedBB> boxes) {
+    public static AdvancedRayTraceResult<BlockHitResult> collisionRayTrace(BlockPos pos, Vec3 start, Vec3 end, Collection<AABB> boxes) {
         double minDistance = Double.POSITIVE_INFINITY;
-        AdvancedRayTraceResult<BlockRayTraceResult> hit = null;
+        AdvancedRayTraceResult<BlockHitResult> hit = null;
         int i = -1;
 
-        for (AxisAlignedBB aabb : boxes) {
-            AdvancedRayTraceResult<BlockRayTraceResult> result = aabb == null ? null : collisionRayTrace(pos, start, end, aabb, i, null);
+        for (AABB aabb : boxes) {
+            AdvancedRayTraceResult<BlockHitResult> result = aabb == null ? null : collisionRayTrace(pos, start, end, aabb, i, null);
             if (result != null) {
                 double d = result.squareDistanceTo(start);
                 if (d < minDistance) {
@@ -50,42 +54,34 @@ public class Raytracer {
         return hit;
     }
 
-    public static AdvancedRayTraceResult<BlockRayTraceResult> collisionRayTrace(BlockPos pos, Vector3d start, Vector3d end, AxisAlignedBB bounds, int subHit, Object hitInfo) {
-        BlockRayTraceResult result = AxisAlignedBB.clip(Collections.singleton(bounds), start, end, pos);
+    public static AdvancedRayTraceResult<BlockHitResult> collisionRayTrace(BlockPos pos, Vec3 start, Vec3 end, AABB bounds, int subHit, Object hitInfo) {
+        BlockHitResult result = AABB.clip(Collections.singleton(bounds), start, end, pos);
         if (result == null) {
             return null;
         }
-
-        result.subHit = subHit;
-        result.hitInfo = hitInfo;
-
         return new AdvancedRayTraceResult<>(result, bounds);
     }
 
-    public static class AdvancedRayTraceResult<T extends RayTraceResult> {
-        public final AxisAlignedBB bounds;
-        public final T hit;
-
-        public AdvancedRayTraceResult(T mop, AxisAlignedBB aabb) {
-            hit = mop;
-            bounds = aabb;
-        }
-
-        public boolean valid() {
-            return hit != null && bounds != null;
-        }
-
-        public double squareDistanceTo(Vector3d vec) {
-            return hit.getLocation().distanceToSqr(vec);
-        }
-    }
-
-    public static boolean inclusiveContains(AxisAlignedBB aabb, Vector3d hit) {
+    public static boolean inclusiveContains(AABB aabb, Vec3 hit) {
         return hit.x >= aabb.minX
             && hit.x <= aabb.maxX
             && hit.y >= aabb.minY
             && hit.y <= aabb.maxY
             && hit.z >= aabb.minZ
             && hit.z <= aabb.maxZ;
+    }
+
+    public static class AdvancedRayTraceResult<T extends HitResult> {
+        public final AABB bounds;
+        public final T hit;
+
+        public AdvancedRayTraceResult(T mop, AABB aabb) {
+            hit = mop;
+            bounds = aabb;
+        }
+
+        public double squareDistanceTo(Vec3 vec) {
+            return hit.getLocation().distanceToSqr(vec);
+        }
     }
 }

@@ -1,13 +1,13 @@
 package com.refinedmods.refinedpipes.network.graph;
 
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 
 public class NetworkGraphScannerRequest {
-    private final World world;
+    private final Level world;
     private final BlockPos pos;
     @Nullable
     private final Direction direction;
@@ -15,14 +15,14 @@ public class NetworkGraphScannerRequest {
     private final NetworkGraphScannerRequest parent;
     private boolean successful;
 
-    public NetworkGraphScannerRequest(World world, BlockPos pos, @Nullable Direction direction, @Nullable NetworkGraphScannerRequest parent) {
+    public NetworkGraphScannerRequest(Level world, BlockPos pos, @Nullable Direction direction, @Nullable NetworkGraphScannerRequest parent) {
         this.world = world;
         this.pos = pos;
         this.direction = direction;
         this.parent = parent;
     }
 
-    public World getWorld() {
+    public Level getWorld() {
         return world;
     }
 
@@ -40,11 +40,11 @@ public class NetworkGraphScannerRequest {
         return parent;
     }
 
-    public void setSuccessful(boolean successful) {
-        this.successful = successful;
-    }
-
     public boolean isSuccessful() {
         return successful;
+    }
+
+    public void setSuccessful(boolean successful) {
+        this.successful = successful;
     }
 }

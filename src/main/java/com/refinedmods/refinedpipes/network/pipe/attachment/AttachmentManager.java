@@ -1,10 +1,10 @@
 package com.refinedmods.refinedpipes.network.pipe.attachment;
 
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -14,7 +14,7 @@ public interface AttachmentManager {
 
     boolean hasAttachment(Direction dir);
 
-    void openAttachmentContainer(Direction dir, ServerPlayerEntity player);
+    void openAttachmentContainer(Direction dir, ServerPlayer player);
 
     @Nonnull
     ItemStack getPickBlock(Direction dir);
@@ -22,7 +22,7 @@ public interface AttachmentManager {
     @Nullable
     Attachment getAttachment(Direction dir);
 
-    void writeUpdate(CompoundNBT tag);
+    void writeUpdate(CompoundTag tag);
 
-    void readUpdate(CompoundNBT tag);
+    void readUpdate(@Nullable CompoundTag tag);
 }
