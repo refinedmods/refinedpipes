@@ -15,7 +15,7 @@ public class AttachmentItem extends Item {
     private final AttachmentFactory type;
 
     public AttachmentItem(AttachmentFactory type) {
-        super(new Item.Properties().tab(RefinedPipes.MAIN_GROUP));
+        super(new Item.Properties().tab(RefinedPipes.CREATIVE_MODE_TAB));
 
         this.type = type;
 

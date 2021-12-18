@@ -20,7 +20,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 @Mod(RefinedPipes.ID)
 public class RefinedPipes {
     public static final String ID = "refinedpipes";
-    public static final CreativeModeTab MAIN_GROUP = new MainCreativeModeTab();
+    public static final CreativeModeTab CREATIVE_MODE_TAB = new MainCreativeModeTab();
     public static final RefinedPipesNetwork NETWORK = new RefinedPipesNetwork();
     public static final ServerConfig SERVER_CONFIG = new ServerConfig();
 
