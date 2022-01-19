@@ -26,8 +26,7 @@ public class RefinedPipes {
 
     public RefinedPipes() {
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
-            FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::onClientSetup);
-            FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::onModelBake);
+            FMLJavaModLoadingContext.get().getModEventBus().register(ClientSetup.class);
         });
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, SERVER_CONFIG.getSpec());
