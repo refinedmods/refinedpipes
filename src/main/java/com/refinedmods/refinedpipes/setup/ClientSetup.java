@@ -21,6 +21,7 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.event.ModelBakeEvent;
+import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ForgeModelBakery;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -38,7 +39,7 @@ public final class ClientSetup {
     }
 
     @SubscribeEvent
-    public static void onClientSetup(FMLClientSetupEvent e) {
+    public static void registerSpecialModels(ModelRegistryEvent ev) {
         for (AttachmentFactory factory : AttachmentRegistry.INSTANCE.all()) {
             LOGGER.debug("Registering attachment model {}", factory.getModelLocation());
 
@@ -70,7 +71,10 @@ public final class ClientSetup {
         }
 
         ForgeModelBakery.addSpecialModel(new ResourceLocation(RefinedPipes.ID + ":block/pipe/attachment/inventory_attachment"));
+    }
 
+    @SubscribeEvent
+    public static void onClientSetup(FMLClientSetupEvent e) {
         MenuScreens.register(RefinedPipesContainerMenus.EXTRACTOR_ATTACHMENT, ExtractorAttachmentScreen::new);
 
         ItemBlockRenderTypes.setRenderLayer(RefinedPipesBlocks.BASIC_ITEM_PIPE, RenderType.cutout());
