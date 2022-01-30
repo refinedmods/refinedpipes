@@ -7,6 +7,10 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- Fixed random client crashes by [@malte0811](https://github.com/malte0811).
+
 ## [0.5.1] - 2021-11-28
 
 ### Added
