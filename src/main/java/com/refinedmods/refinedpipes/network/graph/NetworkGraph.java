@@ -19,10 +19,10 @@ public class NetworkGraph {
         this.network = network;
     }
 
-    public NetworkGraphScannerResult scan(Level originWorld, BlockPos originPos) {
+    public NetworkGraphScannerResult scan(Level originLevel, BlockPos originPos) {
         NetworkGraphScanner scanner = new NetworkGraphScanner(pipes, network.getType());
 
-        NetworkGraphScannerResult result = scanner.scanAt(originWorld, originPos);
+        NetworkGraphScannerResult result = scanner.scanAt(originLevel, originPos);
 
         this.pipes = result.getFoundPipes();
 
