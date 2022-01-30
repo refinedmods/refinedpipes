@@ -7,6 +7,15 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Added German translation by [@Wizqok](https://github.com/Wizqok).
+- Added Korean translation by [@mindy15963](https://github.com/mindy15963).
+
+### Fixed
+
+- Fixed random client crashes by [@malte0811](https://github.com/malte0811).
+
 ## [0.6.0] - 2021-12-18
 
 ### Added
