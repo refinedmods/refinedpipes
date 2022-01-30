@@ -15,6 +15,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Fixed
 
 - Fixed random client crashes by [@malte0811](https://github.com/malte0811).
+- Fixed crash when Extractor Attachment is interacting with inventories that have no slots.
 
 ## [0.6.0] - 2021-12-18
 
