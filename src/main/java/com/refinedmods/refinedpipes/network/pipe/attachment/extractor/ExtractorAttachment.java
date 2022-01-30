@@ -139,6 +139,10 @@ public class ExtractorAttachment extends Attachment {
     }
 
     private Pair<Destination, Integer> findDestinationAndSourceSlot(BlockPos sourcePos, IItemHandler source) {
+        if (source.getSlots() <= 0) {
+            return null;
+        }
+        
         int startIndex = 0;
 
         do {
