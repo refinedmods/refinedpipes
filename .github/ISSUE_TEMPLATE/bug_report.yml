@@ -49,10 +49,10 @@ body:
     id: refined-pipes
     attributes:
       label: What Refined Pipes version is this happening on?
-        description: |
-          Ensure that you are running on the latest Refined Pipes version.
-      validations:
-        required: true
+      description: |
+        Ensure that you are running on the latest Refined Pipes version.
+    validations:
+      required: true
   - type: textarea
     id: logs
     attributes:
