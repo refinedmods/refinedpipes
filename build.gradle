@@ -38,7 +38,7 @@ if (System.getenv('RELEASE') != null) {
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 minecraft {
-    mappings channel: 'official', version: '1.18.1'
+    mappings channel: 'official', version: '1.18.2'
 
     runs {
         client {
@@ -86,8 +86,8 @@ processResources {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.18.1-39.0.59'
-    runtimeOnly fg.deobf("mezz.jei:jei-1.18.1:9.1.0.41")
+    minecraft 'net.minecraftforge:forge:1.18.2-40.0.32'
+    runtimeOnly fg.deobf("mezz.jei:jei-1.18.2:9.5.4.171")
 }
 
 jar {
@@ -112,7 +112,7 @@ if (System.getenv("CURSEFORGE_TOKEN") != null) {
             changelog = System.getenv("CHANGELOG")
             changelogType = 'markdown'
             releaseType = project.version.toString().contains('beta') ? 'beta' : (project.version.toString().contains('alpha') ? 'alpha' : 'release')
-            addGameVersion "1.18.1"
+            addGameVersion "1.18.2"
             mainArtifact(jar) {
                 displayName = "v$project.version"
             }
@@ -128,6 +128,14 @@ publishing {
             credentials {
                 username = System.getenv("GITHUB_ACTOR")
                 password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+        maven {
+            name = "CreeperHost"
+            url = uri("https://maven.creeperhost.net/release")
+            credentials {
+                username = System.getenv("CREEPERHOST_MAVEN_USERNAME")
+                password = System.getenv("CREEPERHOST_MAVEN_TOKEN")
             }
         }
     }
