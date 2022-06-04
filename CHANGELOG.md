@@ -7,6 +7,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.6.2] - 2022-06-04
+
 ### Changed
 
 - Ported to Minecraft 1.18.2.
