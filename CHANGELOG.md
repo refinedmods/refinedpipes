@@ -7,6 +7,12 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- Ported to Minecraft 1.18.2.
+
+## [0.6.1] - 2022-01-30
+
 ### Added
 
 - Added German translation by [@Wizqok](https://github.com/Wizqok).
@@ -22,6 +28,13 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - Ported to Minecraft 1.18.1.
+
+## [0.5.2] - 2022-01-30
+
+### Fixed
+
+- Fixed random client crashes by [@malte0811](https://github.com/malte0811).
+- Fixed crash when Extractor Attachment is interacting with inventories that have no slots.
 
 ## [0.5.1] - 2021-11-28
 
